@@ -1,7 +1,7 @@
 class AzielSeraph {
     constructor(game) {
         this.game = game;
-        this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/idle.png`), 8, 0, 32, 32, 4, .35);
+        this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/idle.png`), 8, 0, 32, 32, 4, .35,);
         this.x = 0;
         this.y = 300;
         this.velocity = { x: 0, y: 0 };
@@ -56,8 +56,8 @@ class AzielSeraph {
         if (this.x < 0) {
             this.x = 0;
         }
-        if (this.x > 1024) {
-            this.x = 900;
+        if (this.x > 975) {
+            this.x = 975;
         }
         this.x += this.velocity.x * TICK;
         this.y += this.velocity.y * TICK;

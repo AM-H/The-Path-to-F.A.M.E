@@ -9,6 +9,6 @@ class Spaceship {
         
     };
     draw(ctx) {
-        ctx.drawImage(this.spritesheet,0 , 0, gameWorld.width, gameWorld.height);
+        ctx.drawImage(this.spritesheet, 0 , 0, gameWorld.width, gameWorld.height);
     };
 }
