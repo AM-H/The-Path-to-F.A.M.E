@@ -15,6 +15,11 @@ class GameEngine {
         this.wheel = null;
         this.keys = {};
 
+        this.jump = false;
+        this.left = false;
+        this.right = false;
+
+
         // Options and the Details
         this.options = options || {
             debugging: false,
@@ -64,6 +69,35 @@ class GameEngine {
             this.wheel = e;
         });
 
+        this.ctx.canvas.addEventListener("keydown", e => {
+            switch (e.code) {
+                case "KeyA":
+                    this.left = true;
+                    break;
+                case "KeyD":
+                    this.right = true;
+                    break;
+                case "Space":
+                    this.jump = true;
+                    break;
+            }
+
+        }); 
+        this.ctx.canvas.addEventListener("keyup", e => {
+            switch (e.code) {
+                case "KeyA":
+                    this.left = false;
+                    break;
+                case "KeyD":
+                    this.right = false;
+                    break;
+                case "Space":
+                    this.jump = false;
+                    break;
+            }
+
+        }); 
+
         this.ctx.canvas.addEventListener("contextmenu", e => {
             if (this.options.debugging) {
                 console.log("RIGHT_CLICK", getXandY(e));
@@ -71,9 +105,6 @@ class GameEngine {
             e.preventDefault(); // Prevent Context Menu
             this.rightclick = getXandY(e);
         });
-
-        this.ctx.canvas.addEventListener("keydown", event => this.keys[event.key] = true);
-        this.ctx.canvas.addEventListener("keyup", event => this.keys[event.key] = false);
     };
 
     addEntity(entity) {
