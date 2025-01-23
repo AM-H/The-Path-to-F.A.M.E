@@ -11,5 +11,6 @@ ASSET_MANAGER.downloadAll(() => {
 	gameEngine.addEntity(new AzielSeraph(gameEngine));
 	gameEngine.addEntity(new Spaceship(gameEngine));
 	gameEngine.init(ctx);
+
 	gameEngine.start();
 });
