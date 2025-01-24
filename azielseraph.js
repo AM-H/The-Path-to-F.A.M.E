@@ -3,7 +3,7 @@ class AzielSeraph {
         this.game = game;
         this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/idleRight.png`), 8, 0, 32, 32, 4, .35,);
         this.x = 0;
-        this.y = 300;
+        this.y = 500;
         this.velocity = { x: 0, y: 0 };
         this.fallAcc = 562.5;
         this.facing = "right";
@@ -12,9 +12,15 @@ class AzielSeraph {
         this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/runLeft.png'), 8, 0, 32, 32, 6, 0.2));
         this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleRight.png'), 8, 0, 32, 32, 4, 0.2));
         this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleLeft.png'), 8, 0, 32, 32, 4, 0.2));
+        this.box = new BoundingBox(this.x, this.y, 16, 32);
+        this.updateBoundingBox();
 
     };
+    updateBoundingBox() {
+        this.box = new BoundingBox(this.x, this.y, 16, 32);
+    };
     update () {
+        this.updateBoundingBox();
         const TICK = this.game.clockTick;
 
         const STOP_FALL = 1575;
@@ -24,6 +30,21 @@ class AzielSeraph {
         const MAX_FALL = 270;
         this.velocity.y += this.fallAcc * TICK;
 
+        //collision with floor and platforms:
+        this.game.entities.forEach(entity => {
+            if (entity instanceof FirstLevelGround && entity.box && this.box.collide(entity.box)) {
+                if (this.box.bottom >= entity.box.top) {
+                    this.y = entity.box.y-32;
+                }
+                this.velocity.y = 0;
+            } else if ((entity instanceof FirstLevelPlatform1 || entity instanceof FirstLevelPlatform2) && entity.box && this.box.collide(entity.box)) {
+                if (this.box.bottom >= entity.box.top) {
+                    this.y = entity.box.y-32;
+                }
+                this.velocity.y = 0;
+            }
+            
+        });
         if (this.game.left) {
             this.x -= 4;
             if (this.facing !== "left") {
@@ -69,19 +90,15 @@ class AzielSeraph {
         }
 
         this.velocity.y += this.fallAcc * TICK;
-        if (this.y > 300) {
-            this.y = 300;
-        }
         
-
         if (this.y < 0) {
             this.y = 300;
         }
         if (this.x < 0) {
             this.x = 0;
         }
-        if (this.x > 975) {
-            this.x = 975;
+        if (this.x > gameWorld.width-16) {
+            this.x = gameWorld.width-16;
         }
         this.x += this.velocity.x * TICK;
         this.y += this.velocity.y * TICK;

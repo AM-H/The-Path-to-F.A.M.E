@@ -13,6 +13,8 @@ ASSET_MANAGER.downloadAll(() => {
 	const ctx = canvas.getContext("2d");
 	gameEngine.addEntity(new AzielSeraph(gameEngine));
 	gameEngine.addEntity(new FirstLevelGround(gameEngine));
+	gameEngine.addEntity(new FirstLevelPlatform1(gameEngine));
+	gameEngine.addEntity(new FirstLevelPlatform2(gameEngine));
 	gameEngine.addEntity(new Spaceship(gameEngine));
 	gameEngine.init(ctx);
 
