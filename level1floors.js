@@ -21,7 +21,7 @@ class FirstLevelPlatform1{
         this.width = gameWorld.width/4;
         this.height = 30;
         this.x = Math.floor(gameWorld.width/8);
-        this.y = Math.floor(gameWorld.height/1.5);
+        this.y = Math.floor(gameWorld.height/1.3);
         this.box = new BoundingBox(this.x, this.y, this.width, this.height);
     };
     update() {
@@ -38,7 +38,7 @@ class FirstLevelPlatform2{
         this.width = gameWorld.width/4;
         this.height = 30;
         this.x = gameWorld.width-(Math.floor(gameWorld.width/8))-this.width;
-        this.y = Math.floor(gameWorld.height/1.5);
+        this.y = Math.floor(gameWorld.height/1.3);
         this.box = new BoundingBox(this.x, this.y, this.width, this.height);
     };
     update() {
