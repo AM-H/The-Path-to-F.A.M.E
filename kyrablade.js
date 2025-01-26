@@ -28,7 +28,7 @@ class KyraBlade {
                 this.fallAcc = WALK_FALL;
             }
             else {
-                this.velocity.y = -300;
+                this.velocity.yd = -300;
                 this.fallAcc = RUN_FALL;
             }
         } else {
