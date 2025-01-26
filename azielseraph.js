@@ -1,7 +1,7 @@
 class AzielSeraph {
     constructor(game) {
         this.game = game;
-        this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/idleRight.png`), 8, 0, 32, 32, 4, .35,);
+        this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/idleRightAziel.png`), 13, 0, 32, 32, 5, .35,);
         this.x = 0;
         this.y = 500;
         this.velocity = { x: 0, y: 0 };
@@ -10,8 +10,8 @@ class AzielSeraph {
         this.animationMap = new Map();
         this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/runRight.png'), 8, 0, 32, 32, 6, 0.2));
         this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/runLeft.png'), 8, 0, 32, 32, 6, 0.2));
-        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleRight.png'), 8, 0, 32, 32, 4, 0.2));
-        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleLeft.png'), 8, 0, 32, 32, 4, 0.2));
+        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleRightAziel.png'), 13, 0, 32, 32, 4, 0.2));
+        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleLeftAziel.png'), 13, 0, 32, 32, 4, 0.2));
         this.box = new BoundingBox(this.x, this.y, 16, 32);
         this.updateBoundingBox();
         this.landed = false;
