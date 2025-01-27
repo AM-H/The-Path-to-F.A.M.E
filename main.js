@@ -5,8 +5,8 @@ const ASSET_MANAGER = new AssetManager();
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level1_background.png`);
 ASSET_MANAGER.queueDownload(`./sprites/idleRightAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/idleLeftAziel.png`);
-ASSET_MANAGER.queueDownload(`./sprites/runRight.png`);
-ASSET_MANAGER.queueDownload(`./sprites/runLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/moveRightAziel.png`);
+ASSET_MANAGER.queueDownload(`./sprites/moveLeftAziel.png`);
 
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");

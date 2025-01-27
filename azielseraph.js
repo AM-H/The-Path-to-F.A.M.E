@@ -8,8 +8,8 @@ class AzielSeraph {
         this.fallGrav = 2000;
         this.facing = "right";
         this.animationMap = new Map();
-        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/runRight.png'), 8, 0, 32, 32, 6, 0.2));
-        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/runLeft.png'), 8, 0, 32, 32, 6, 0.2));
+        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/moveRightAziel.png'), 2, 0, 32, 32, 6, 0.2));
+        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/moveLeftAziel.png'), 2, 0, 32, 32, 6, 0.2));
         this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleRightAziel.png'), 13, 0, 32, 32, 4, 0.2));
         this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleLeftAziel.png'), 13, 0, 32, 32, 4, 0.2));
         this.box = new BoundingBox(this.x, this.y, 16, 32);
