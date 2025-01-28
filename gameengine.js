@@ -108,7 +108,7 @@ class GameEngine {
                     this.closeRange = true;
                     break;
                 case 2:
-                    this.LongRange = true;
+                    this.longRange = true;
                     break;
             }
         })
@@ -123,7 +123,7 @@ class GameEngine {
                     this.closeRange = false;
                     break;
                 case 2:
-                    this.LongRange = false;
+                    this.longRange = false;
                     break;
             }
         })

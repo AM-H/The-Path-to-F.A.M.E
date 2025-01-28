@@ -12,7 +12,10 @@ class KyraBlade {
         this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/runLeft.png'), 0, 0, 50, 50, 6, 0.2));
         this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleRight.png'), 0, 0, 48, 50, 4, .2));
         this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleLeft.png'), 0, 0, 48, 50, 4, 0.2));
-        this.animationMap.set(`attackRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/attack1.png'), 0, 0, 48, 50, 8, 0.1));
+        this.animationMap.set(`attackRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/attack1Right.png'), 0, 0, 48, 50, 8, 0.1));
+        this.animationMap.set(`attackLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/attack1Left.png'), 0, 0, 48, 50, 8, 0.1));
+        this.animationMap.set(`longRangeRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/attack2Right.png'), 0, 0, 48, 50, 8, 0.1));
+        this.animationMap.set(`longRangeLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/attack2Left.png'), 0, 0, 48, 50, 8, 0.1));
         this.box = new BoundingBox(this.x, this.y, 16, 32);
         this.updateBoundingBox();
         this.landed = false;
@@ -48,10 +51,8 @@ class KyraBlade {
        //logic for which way our sprite is facing
         if (!this.game.left && !this.game.right) {
             if (this.facing === "left" && this.facing !== "idle") {
-                this.facing = "idle";
                 this.animator = this.animationMap.get(`idleLeft`);
             } else if (this.facing === "right" && this.facing !== "idle") {
-                this.facing = "idle";
                 this.animator = this.animationMap.get(`idleRight`);
             }
         }
@@ -107,7 +108,25 @@ class KyraBlade {
 
         //close-range logic
         if (this.game.closeRange) {
-            this.animator = this.animationMap.get(`attackRight`);
+            this.attacking = true;
+            if (this.facing === 'right') {
+                this.animator = this.animationMap.get('attackRight');
+            } else if (this.facing === 'left'){
+                this.animator = this.animationMap.get('attackLeft');
+            }
+        } else if (this.game.longRange) {
+            this.attacking = true;
+            if (this.facing === 'right') {
+                this.animator = this.animationMap.get('longRangeRight');
+            } else if (this.facing === 'left'){
+                this.animator = this.animationMap.get('longRangeLeft');
+            }
+        }
+
+        // Reset attacking state after animation completes
+        if (this.attacking && this.animator.isDone()) {
+            this.attacking = false;
+            this.animator.reset();
         }
     };
     draw(ctx) {
