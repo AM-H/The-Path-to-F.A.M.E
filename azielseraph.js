@@ -2,6 +2,7 @@ class AzielSeraph {
     constructor(game) {
         this.game = game;
         this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/idleRightAziel.png`), 13, 0, 32, 32, 5, .35,);
+        this.attackAnimator = new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiver.png`), 0, 0, 32, 32, 8, 0.1);
         this.x = 0;
         this.y = 500;
         this.velocity = { x: 0, y: 0 };
@@ -12,6 +13,7 @@ class AzielSeraph {
         this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/moveLeftAziel.png'), 2, 0, 32, 32, 6, 0.2));
         this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleRightAziel.png'), 13, 0, 32, 32, 4, 0.2));
         this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleLeftAziel.png'), 13, 0, 32, 32, 4, 0.2));
+        this.animationMap.set(`attack`, new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiver.png`), 0, 0, 32, 32, 8, 0.1));
         this.box = new BoundingBox(this.x, this.y, 16, 32);
         this.updateBoundingBox();
         this.landed = false;
@@ -25,6 +27,7 @@ class AzielSeraph {
     };
     update () {
         //console.log(this.velocity.y);
+        //console.log(this.game.mouseX);
         const TICK = this.game.clockTick;
         
         //left control
@@ -70,6 +73,12 @@ class AzielSeraph {
         this.updateLastBB();
         this.updateBoundingBox();
 
+        if (this.game.closeAttack) {
+            console.log(`close attack`);
+            this.attackAnimator = this.animationMap.get(`attack`);
+        } else if (this.game.rangeAttack) {
+            console.log(`range attack`);
+        }
         //collision with floor and platforms:
         this.game.entities.forEach(entity => {
             if (entity.box && this.box.collide(entity.box)) {
@@ -105,5 +114,11 @@ class AzielSeraph {
     };
     draw(ctx) {
         this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 25, 25);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "red";
+        ctx.strokeRect(this.box.x,this.box.y, this.box.width, this.box.height);
+        // if (this.game.closeAttack) {
+        //     this.attackAnimator.drawFrame(this.game.clockTick, ctx, this.box.right, this.y, 25, 25)
+        // }
     };
 };

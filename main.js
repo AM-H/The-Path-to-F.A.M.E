@@ -7,11 +7,14 @@ ASSET_MANAGER.queueDownload(`./sprites/idleRightAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/idleLeftAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/moveRightAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/moveLeftAziel.png`);
+ASSET_MANAGER.queueDownload(`./sprites/HolyDiver.png`);
 
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");
 	const ctx = canvas.getContext("2d");
-	gameEngine.addEntity(new AzielSeraph(gameEngine));
+	const aziel = new AzielSeraph(gameEngine);
+	gameEngine.addEntity(aziel);
+	gameEngine.addEntity(new HolyDiver(gameEngine, aziel))
 	gameEngine.addEntity(new FirstLevelGround(gameEngine));
 	gameEngine.addEntity(new FirstLevelPlatform1(gameEngine));
 	gameEngine.addEntity(new FirstLevelPlatform2(gameEngine));
