@@ -79,7 +79,7 @@ class GameEngine {
                     break;
                 case "Space":
                     this.jump = true;
-                    break;
+                    break;   
             }
 
         }); 
@@ -97,6 +97,28 @@ class GameEngine {
             }
 
         }); 
+
+        this.ctx.canvas.addEventListener("mousedown", e => {
+            switch (e.button) {
+                case 0:
+                    this.closeRange = true;
+                    break;
+                case 2:
+                    this.longRange = true;
+                    break;
+            }
+        })
+
+        this.ctx.canvas.addEventListener("mouseup", e => {
+            switch (e.button) {
+                case 0:
+                    this.closeRange = false;
+                    break;
+                case 2:
+                    this.longRange = false;
+                    break;
+            }
+        })
 
         this.ctx.canvas.addEventListener("contextmenu", e => {
             if (this.options.debugging) {
