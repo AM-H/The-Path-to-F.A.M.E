@@ -14,20 +14,18 @@ class AzielSeraph {
         this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleRightAziel.png'), 13, 0, 32, 32, 4, 0.2));
         this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleLeftAziel.png'), 13, 0, 32, 32, 4, 0.2));
         this.animationMap.set(`attack`, new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiver.png`), 0, 0, 32, 32, 8, 0.1));
-        this.box = new BoundingBox(this.x, this.y, 16, 32);
+        this.box = new BoundingBox(this.x, this.y, 32, 64);
         this.updateBoundingBox();
         this.landed = false;
 
     };
     updateBoundingBox() {
-        this.box = new BoundingBox(this.x, this.y, 16, 32);
+        this.box = new BoundingBox(this.x, this.y, 32, 64);
     };
     updateLastBB() {
         this.lastBox = this.box;
     };
     update () {
-        //console.log(this.velocity.y);
-        //console.log(this.game.mouseX);
         const TICK = this.game.clockTick;
         
         //left control
@@ -85,7 +83,7 @@ class AzielSeraph {
                 if (this.velocity.y > 0) {
                     if ((entity instanceof FirstLevelGround || entity instanceof FirstLevelPlatform1 || entity instanceof FirstLevelPlatform2) && (this.lastBox.bottom) <= entity.box.top) {
                         this.velocity.y = 0;
-                        this.y = entity.box.top-32;
+                        this.y = entity.box.top-64;
                         this.landed = true;
                         //console.log(`bottom collision`);
                     }
@@ -99,10 +97,10 @@ class AzielSeraph {
                     this.landed = false;
                 }
                 if (this.game.right || this.game.left) { // Only check side collisions if moving horizontally
-                    if (this.lastBox.right <= entity.box.left) {// Collision from the left of platform
+                    if (this.lastBox.right <= entity.box.left && !(entity instanceof HolyDiver)) {// Collision from the left of platform
                         console.log(`right collision`);
                         this.x = entity.box.left - this.box.width;
-                    } else if (this.lastBox.left >= entity.box.right) { // Collision from the right of platform
+                    } else if (this.lastBox.left >= entity.box.right && !(entity instanceof HolyDiver)) { // Collision from the right of platform
                         console.log(`left collision`);
                         this.x = entity.box.right;
                     }
@@ -113,12 +111,9 @@ class AzielSeraph {
         
     };
     draw(ctx) {
-        this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 25, 25);
+        this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
         ctx.lineWidth = 2;
         ctx.strokeStyle = "red";
         ctx.strokeRect(this.box.x,this.box.y, this.box.width, this.box.height);
-        // if (this.game.closeAttack) {
-        //     this.attackAnimator.drawFrame(this.game.clockTick, ctx, this.box.right, this.y, 25, 25)
-        // }
     };
 };

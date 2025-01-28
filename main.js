@@ -7,7 +7,8 @@ ASSET_MANAGER.queueDownload(`./sprites/idleRightAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/idleLeftAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/moveRightAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/moveLeftAziel.png`);
-ASSET_MANAGER.queueDownload(`./sprites/HolyDiver.png`);
+ASSET_MANAGER.queueDownload(`./sprites/HolyDiverRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/HolyDiverLeft.png`);
 
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");
