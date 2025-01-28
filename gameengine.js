@@ -99,10 +99,6 @@ class GameEngine {
         }); 
 
         this.ctx.canvas.addEventListener("mousedown", e => {
-            const rect = this.ctx.canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-
             switch (e.button) {
                 case 0:
                     this.closeRange = true;
@@ -114,10 +110,6 @@ class GameEngine {
         })
 
         this.ctx.canvas.addEventListener("mouseup", e => {
-            const rect = this.ctx.canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-
             switch (e.button) {
                 case 0:
                     this.closeRange = false;

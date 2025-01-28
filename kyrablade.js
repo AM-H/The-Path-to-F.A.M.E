@@ -121,6 +121,13 @@ class KyraBlade {
             } else if (this.facing === 'left'){
                 this.animator = this.animationMap.get('longRangeLeft');
             }
+
+            // Spawn a bullet with image
+            const bulletX = this.facing === "right" ? this.x + 50 : this.x - 10;
+            const bulletY = this.y + 20;
+            const bullet = new Bullet(this.game, bulletX, bulletY, this.facing);
+            console.log("Spawning bullet at:", bulletX, bulletY); // Debug log
+            this.game.addEntity(bullet);
         }
 
         // Reset attacking state after animation completes
