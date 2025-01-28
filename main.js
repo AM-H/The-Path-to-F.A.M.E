@@ -12,6 +12,8 @@ ASSET_MANAGER.queueDownload('./sprites/attack1Left.png');
 ASSET_MANAGER.queueDownload('./sprites/attack2Right.png');
 ASSET_MANAGER.queueDownload('./sprites/attack2Left.png');
 ASSET_MANAGER.queueDownload('./sprites/bullet.png');
+ASSET_MANAGER.queueDownload('./sprites/drone.png');
+
 
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");
