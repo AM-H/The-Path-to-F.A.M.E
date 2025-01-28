@@ -79,7 +79,7 @@ class GameEngine {
                     break;
                 case "Space":
                     this.jump = true;
-                    break;
+                    break;   
             }
 
         }); 
@@ -97,6 +97,36 @@ class GameEngine {
             }
 
         }); 
+
+        this.ctx.canvas.addEventListener("mousedown", e => {
+            const rect = this.ctx.canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            switch (e.button) {
+                case 0:
+                    this.closeRange = true;
+                    break;
+                case 2:
+                    this.LongRange = true;
+                    break;
+            }
+        })
+
+        this.ctx.canvas.addEventListener("mouseup", e => {
+            const rect = this.ctx.canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            switch (e.button) {
+                case 0:
+                    this.closeRange = false;
+                    break;
+                case 2:
+                    this.LongRange = false;
+                    break;
+            }
+        })
 
         this.ctx.canvas.addEventListener("contextmenu", e => {
             if (this.options.debugging) {
