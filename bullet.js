@@ -3,12 +3,17 @@ class Bullet {
         this.game = game;
         this.x = x;
         this.y = y;
-        this.width = 10; // Bullet width
-        this.height = 5; // Bullet height
         this.speed = 400; // Bullet speed
-        this.facing = facing; // Direction the bullet is facing
+        this.facing = facing;
+        
+        // Load bullet image
+        this.sprite = ASSET_MANAGER.getAsset('./sprites/bullet.png');
+        this.width = this.sprite.width;  // Adjust to image dimensions or set manually
+        this.height = this.sprite.height;
+        
         this.velocity = facing === "right" ? { x: this.speed, y: 0 } : { x: -this.speed, y: 0 };
-        this.removeFromWorld = false; // Mark bullets for removal if they go off-screen
+        this.box = new BoundingBox(this.x, this.y, this.width, this.height);
+        this.removeFromWorld = false;
     }
 
     update() {
@@ -17,15 +22,17 @@ class Bullet {
         // Move the bullet
         this.x += this.velocity.x * TICK;
 
-        // Mark for removal if out of bounds
+        // Update the bounding box
+        this.box = new BoundingBox(this.x, this.y, this.width, this.height);
+
+        // Remove the bullet if it goes out of bounds
         if (this.x < 0 || this.x > this.game.ctx.canvas.width) {
             this.removeFromWorld = true;
         }
     }
 
     draw(ctx) {
-        // Draw the bullet as a rectangle
-        ctx.fillStyle = "red";
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        // Draw the bullet image
+        ctx.drawImage(this.sprite, this.x, this.y, this.width, this.height);
     }
 }
