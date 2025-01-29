@@ -111,7 +111,7 @@ class AzielSeraph {
         
     };
     draw(ctx) {
-        this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+        this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y);
         ctx.lineWidth = 2;
         ctx.strokeStyle = "red";
         ctx.strokeRect(this.box.x,this.box.y, this.box.width, this.box.height);
