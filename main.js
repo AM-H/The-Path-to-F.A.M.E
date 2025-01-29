@@ -3,12 +3,12 @@ const gameEngine = new GameEngine();
 const ASSET_MANAGER = new AssetManager();
 
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level3_background.png`);
-ASSET_MANAGER.queueDownload(`./sprites/kanjiIdleLeft.png`);
-ASSET_MANAGER.queueDownload(`./sprites/kanjiIdleRight.png`);
-ASSET_MANAGER.queueDownload(`./sprites/kanjiRunLeft.png`);
-ASSET_MANAGER.queueDownload(`./sprites/kanjiRunRight.png`);
-ASSET_MANAGER.queueDownload(`./sprites/kanjiJumpLeft.png`);
-ASSET_MANAGER.queueDownload(`./sprites/kanjiJumpRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/idleLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/idleRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/runLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/runRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/jumpLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/jumpRight.png`);
 
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");

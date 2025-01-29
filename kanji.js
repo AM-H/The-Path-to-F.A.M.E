@@ -9,12 +9,12 @@ class Kanji {
         this.isJumping = false;
 
         this.animationMap = {
-            IdleLeft: new Animator(ASSET_MANAGER.getAsset('./sprites/kanjiIdleLeft.png'), 0, 0, 200, 205, 8, 0.33),
-            IdleRight: new Animator(ASSET_MANAGER.getAsset('./sprites/kanjiIdleRight.png'), 0, 0, 200, 205, 8, 0.33),
-            RunLeft: new Animator(ASSET_MANAGER.getAsset('./sprites/kanjiRunLeft.png'), 0, 0, 200, 205, 8, 0.33),
-            RunRight: new Animator(ASSET_MANAGER.getAsset('./sprites/kanjiRunRight.png'), 0, 0, 200, 205, 8, 0.33),
-            JumpLeft: new Animator(ASSET_MANAGER.getAsset('./sprites/kanjiJumpLeft.png'), 0, 0, 200, 205, 8, 0.33),
-            JumpRight: new Animator(ASSET_MANAGER.getAsset('./sprites/kanjiJumpRight.png'), 0, 0, 200, 205, 8, 0.33),
+            IdleLeft: new Animator(ASSET_MANAGER.getAsset('./sprites/kanji/idleLeft.png'), 0, 0, 200, 205, 8, 0.20),
+            IdleRight: new Animator(ASSET_MANAGER.getAsset('./sprites/kanji/idleRight.png'), 0, 0, 200, 205, 8, 0.33),
+            RunLeft: new Animator(ASSET_MANAGER.getAsset('./sprites/kanji/runLeft.png'), 0, 0, 200, 205, 8, 0.33),
+            RunRight: new Animator(ASSET_MANAGER.getAsset('./sprites/kanji/runRight.png'), 0, 0, 200, 205, 8, 0.33),
+            JumpLeft: new Animator(ASSET_MANAGER.getAsset('./sprites/kanji/jumpLeft.png'), 0, 0, 200, 205, 8, 0.33),
+            JumpRight: new Animator(ASSET_MANAGER.getAsset('./sprites/kanji/jumpRight.png'), 0, 0, 200, 205, 8, 0.33),
         };
 
 
@@ -85,6 +85,7 @@ class Kanji {
 
 
     draw(ctx){
+        
         this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y);
     }
 }
