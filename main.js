@@ -60,11 +60,14 @@ ASSET_MANAGER.downloadAll(() => {
 	gameEngine.addEntity(new Drone(gameEngine, 222, 200,300));
 	gameEngine.addEntity(new Drone(gameEngine, 500, 111, 200));
 
-
 	gameEngine.addEntity(new Boss(gameEngine));
 	gameEngine.addEntity(new FirstLevelGround(gameEngine));
-	gameEngine.addEntity(new FirstLevelPlatform1(gameEngine));
-	gameEngine.addEntity(new FirstLevelPlatform2(gameEngine));
+	gameEngine.addEntity(new FirstLevelPlatform(gameEngine, Math.floor(gameWorld.width/8), Math.floor(gameWorld.height/1.3), gameWorld.width/4, 30));
+	gameEngine.addEntity(new FirstLevelPlatform(gameEngine, gameWorld.width-(Math.floor(gameWorld.width/8))-gameWorld.width/4, Math.floor(gameWorld.height/1.3), gameWorld.width/4, 30));
+	gameEngine.addEntity(new FirstLevelPlatform(gameEngine, gameWorld.width/6, gameWorld.height/1.6, gameWorld.width/6, 30));
+	gameEngine.addEntity(new FirstLevelPlatform(gameEngine, gameWorld.width - (gameWorld.width/6)*2, gameWorld.height/1.6, gameWorld.width/6, 30));
+	gameEngine.addEntity(new FirstLevelPlatform(gameEngine, gameWorld.width/2-(gameWorld.width/8), gameWorld.height/2, gameWorld.width/4, 30));
+	//gameEngine.addEntity(new FirstLevelPlatform2(gameEngine));
 	gameEngine.addEntity(new Spaceship(gameEngine));
 	gameEngine.init(ctx);
 
