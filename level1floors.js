@@ -13,6 +13,11 @@ class FirstLevelGround {
     draw(ctx) {
         ctx.fillStyle = `#282745`;
         ctx.fillRect(this.x,this.y, this.width, this.height);
+
+        // Draw collision box
+        ctx.strokeStyle = 'green';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
     };
 }
 class FirstLevelPlatform1{
@@ -30,6 +35,11 @@ class FirstLevelPlatform1{
     draw(ctx) {
         ctx.fillStyle = `white`;
         ctx.fillRect(this.x, this.y, this.width, this.height);
+
+        // Draw collision box
+        ctx.strokeStyle = 'green';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
     };
 }
 class FirstLevelPlatform2{
@@ -47,5 +57,10 @@ class FirstLevelPlatform2{
     draw(ctx) {
         ctx.fillStyle = `white`;
         ctx.fillRect(this.x, this.y, this.width, this.height);
+
+        // Draw collision box
+        ctx.strokeStyle = 'green';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
     };
 }
