@@ -37,7 +37,7 @@ class FirstLevelPlatform{
         
     };
     draw(ctx) {
-        ctx.fillStyle = `white`;
+        ctx.fillStyle = `#818087`;
         ctx.fillRect(this.x, this.y, this.width, this.height);
 
         // Draw collision box
