@@ -1,5 +1,5 @@
 class Drone {
-    constructor(game, x, y) {
+    constructor(game, x, y, speed) {
         this.game = game;
 
         this.droneImg = new Animator(ASSET_MANAGER.getAsset("./sprites/drone.png"), 0, 0, 48, 50, 4, 0.35);
@@ -7,6 +7,7 @@ class Drone {
 
         this.x = x;
         this.y = y;
+
 
 
         this.spriteScale = 2;
@@ -19,7 +20,7 @@ class Drone {
         this.updateBoundingBox();
 
         // Movement properties
-        this.moveSpeed = 100;
+        this.moveSpeed = speed;
         this.followRange = 600;
         this.attackRange = 200;
         this.attackCooldown = 2;
@@ -82,8 +83,8 @@ class Drone {
 
     shoot(player) {
         // Calculate direction to the player
-        const dx = player.x - this.x;
-        const dy = player.y - this.y;
+        const dx = (player.box.x + player.box.width/2) - this.x;
+        const dy = (player.box.y + player.box.height/2) - this.y;
         const angle = Math.atan2(dy, dx);
 
         // Create a bullet in the direction of the player

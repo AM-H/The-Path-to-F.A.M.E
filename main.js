@@ -47,12 +47,20 @@ ASSET_MANAGER.downloadAll(() => {
 	gameEngine.addEntity(new HolyDiver(gameEngine, aziel))
 	//gameEngine.addEntity(new KyraBlade(gameEngine));
 
-	for (let i = 0; i < 5; i++) {
-		const x = Math.random() * (canvas.width - 64); // Random x position within screen bounds
-		const y = Math.random() * (canvas.height - 100); // Random y position within screen bounds
-		const  drone = new Drone(gameEngine, x, y);
-		gameEngine.addEntity(drone);
-	}
+	// for (let i = 0; i < 5; i++) {
+	// 	const x = Math.random() * (canvas.width - 64); // Random x position within screen bounds
+	// 	const y = Math.random() * (canvas.height - 100); // Random y position within screen bounds
+	// 	const  drone = new Drone(gameEngine, x, y);
+	// 	gameEngine.addEntity(drone);
+	// }
+
+	gameEngine.addEntity(new Drone(gameEngine, 221, 500, 20));
+	gameEngine.addEntity(new Drone(gameEngine, 43, 74, 10));
+	gameEngine.addEntity(new Drone(gameEngine, 20, 300,500));
+	gameEngine.addEntity(new Drone(gameEngine, 222, 200,300));
+	gameEngine.addEntity(new Drone(gameEngine, 500, 111, 200));
+
+
 	gameEngine.addEntity(new Boss(gameEngine));
 	gameEngine.addEntity(new FirstLevelGround(gameEngine));
 	gameEngine.addEntity(new FirstLevelPlatform1(gameEngine));

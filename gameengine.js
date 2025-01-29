@@ -145,12 +145,19 @@ class GameEngine {
     draw() {
         // Clear the whole canvas with transparent color (rgba(0, 0, 0, 0))
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-
-        // Draw latest things first
-        for (let i = this.entities.length - 1; i >= 0; i--) {
-            this.entities[i].draw(this.ctx, this);
+    
+        // First draw the background (Spaceship)
+        const background = this.entities.find(entity => entity instanceof Spaceship);
+        if (background) {
+            background.draw(this.ctx, this);
         }
-
+    
+        // Then draw everything else
+        for (let i = this.entities.length - 1; i >= 0; i--) {
+            if (!(this.entities[i] instanceof Spaceship)) {
+                this.entities[i].draw(this.ctx, this);
+            }
+        }
     };
 
 
