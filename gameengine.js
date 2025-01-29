@@ -11,13 +11,16 @@ class GameEngine {
 
         // Information on the input
         this.click = null;
-        this.mouse = null;
+        this.mouseX = null;
+        this.mouseY = null;
         this.wheel = null;
         this.keys = {};
 
         this.jump = false;
         this.left = false;
         this.right = false;
+        this.closeAttack = false;
+        this.rangeAttack = false;
 
 
         // Options and the Details
@@ -51,14 +54,31 @@ class GameEngine {
             if (this.options.debugging) {
                 console.log("MOUSE_MOVE", getXandY(e));
             }
-            this.mouse = getXandY(e);
+            this.mouseX = getXandY(e).x;
+            this.mouseY = getXandY(e).y;
         });
 
-        this.ctx.canvas.addEventListener("click", e => {
+        // this.ctx.canvas.addEventListener("click", e => {
+        //     if (this.options.debugging) {
+        //         console.log("CLICK", getXandY(e));
+        //     }
+        //     this.click = getXandY(e);
+        //     this.closeAttack = true;
+        // });
+
+        this.ctx.canvas.addEventListener("mousedown", e => {
             if (this.options.debugging) {
                 console.log("CLICK", getXandY(e));
             }
             this.click = getXandY(e);
+            switch (e.button) {
+                case 0:
+                    this.closeAttack = true;
+                    break;
+                case 2 :
+                    this.rangeAttack = true;
+                    break;
+            }
         });
 
         this.ctx.canvas.addEventListener("wheel", e => {
@@ -104,6 +124,17 @@ class GameEngine {
             }
             e.preventDefault(); // Prevent Context Menu
             this.rightclick = getXandY(e);
+        });
+
+        this.ctx.canvas.addEventListener("mouseup", e => {
+            switch (e.button) {
+                case 0:
+                    this.closeAttack = false;
+                    break;
+                case 2 :
+                    this.rangeAttack = false;
+                    break;
+            }
         });
     };
 
