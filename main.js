@@ -67,7 +67,6 @@ ASSET_MANAGER.downloadAll(() => {
 	gameEngine.addEntity(new FirstLevelPlatform(gameEngine, gameWorld.width/6, gameWorld.height/1.6, gameWorld.width/6, 30));
 	gameEngine.addEntity(new FirstLevelPlatform(gameEngine, gameWorld.width - (gameWorld.width/6)*2, gameWorld.height/1.6, gameWorld.width/6, 30));
 	gameEngine.addEntity(new FirstLevelPlatform(gameEngine, gameWorld.width/2-(gameWorld.width/8), gameWorld.height/2, gameWorld.width/4, 30));
-	//gameEngine.addEntity(new FirstLevelPlatform2(gameEngine));
 	gameEngine.addEntity(new Spaceship(gameEngine));
 	gameEngine.init(ctx);
 
