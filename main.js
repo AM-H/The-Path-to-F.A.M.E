@@ -12,7 +12,8 @@ ASSET_MANAGER.queueDownload(`./levelBackgrounds/level1_background.png`);
 // ASSET_MANAGER.queueDownload('./sprites/attack2Right.png');
 // ASSET_MANAGER.queueDownload('./sprites/attack2Left.png');
 // ASSET_MANAGER.queueDownload('./sprites/bullet.png');
-// ASSET_MANAGER.queueDownload('./sprites/drone.png');
+ASSET_MANAGER.queueDownload('./sprites/drone.png');
+ASSET_MANAGER.queueDownload('./sprites/bullet.png');
 
 
 
@@ -45,6 +46,13 @@ ASSET_MANAGER.downloadAll(() => {
 	gameEngine.addEntity(aziel);
 	gameEngine.addEntity(new HolyDiver(gameEngine, aziel))
 	//gameEngine.addEntity(new KyraBlade(gameEngine));
+
+	for (let i = 0; i < 5; i++) {
+		const x = Math.random() * (canvas.width - 64); // Random x position within screen bounds
+		const y = Math.random() * (canvas.height - 100); // Random y position within screen bounds
+		const  drone = new Drone(gameEngine, x, y);
+		gameEngine.addEntity(drone);
+	}
 	gameEngine.addEntity(new Boss(gameEngine));
 	gameEngine.addEntity(new FirstLevelGround(gameEngine));
 	gameEngine.addEntity(new FirstLevelPlatform1(gameEngine));
