@@ -3,12 +3,12 @@ class Boss {
         this.game = game;
       
         // Load animations
-        this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset("./sprites/BossIdleR.png"), 0, 0, 32, 32, 4, 0.35);
-        this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset("./sprites/BossIdleL.png"), 0, 0, 32, 32, 4, 0.35);
-        this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset("./sprites/BossWalkR.png"), 0, 0, 32, 32, 6, 0.35);
-        this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset("./sprites/BossWalkL.png"), 0, 0, 32, 32, 6, 0.35);
-        this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset("./sprites/BossAttackR.png"), 0, 0, 32, 32, 6, 0.25);
-        this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset("./sprites/BossAttackL.png"), 0, 0, 32, 32, 6, 0.25);
+        this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset(getAssetPath('sprites/BossIdleR.png')), 0, 0, 32, 32, 4, 0.35);
+        this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(getAssetPath('sprites/BossIdleL.png')), 0, 0, 32, 32, 4, 0.35);
+        this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset(getAssetPath('sprites/BossWalkR.png')), 0, 0, 32, 32, 6, 0.35);
+        this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset(getAssetPath('sprites/BossWalkL.png')), 0, 0, 32, 32, 6, 0.35);
+        this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset(getAssetPath('sprites/BossAttackR.png')), 0, 0, 32, 32, 6, 0.25);
+        this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset(getAssetPath('sprites/BossAttackL.png')), 0, 0, 32, 32, 6, 0.25);
         
         // Position setup
         this.x = 600;
