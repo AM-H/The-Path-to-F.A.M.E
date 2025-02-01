@@ -2,7 +2,7 @@ const gameEngine = new GameEngine();
 
 const ASSET_MANAGER = new AssetManager();
 
-ASSET_MANAGER.queueDownload(`./levelBackgrounds/level1_background.png`);
+ASSET_MANAGER.queueDownload('./levelBackgrounds/level1_background.png');
 // ASSET_MANAGER.queueDownload('./sprites/idleLeft.png');
 // ASSET_MANAGER.queueDownload('./sprites/idleRight.png');
 // ASSET_MANAGER.queueDownload('./sprites/runLeft.png');
