@@ -29,14 +29,14 @@ ASSET_MANAGER.queueDownload(`./sprites/HolyDiverLeft.png`);
 
 
 //Boss
-ASSET_MANAGER.queueDownload("./sprites/BossIdleR.png");
-ASSET_MANAGER.queueDownload("./sprites/BossIdleL.png");
+ASSET_MANAGER.queueDownload('./sprites/BossIdleR.png');
+ASSET_MANAGER.queueDownload('./sprites/BossIdleL.png');
 
-ASSET_MANAGER.queueDownload("./sprites/BossWalkL.png");
-ASSET_MANAGER.queueDownload("./sprites/BossWalkR.png");
+ASSET_MANAGER.queueDownload('./sprites/BossWalkL.png');
+ASSET_MANAGER.queueDownload('./sprites/BossWalkR.png');
 
-ASSET_MANAGER.queueDownload("./sprites/BossAttackR.png");
-ASSET_MANAGER.queueDownload("./sprites/BossAttackL.png");
+ASSET_MANAGER.queueDownload('./sprites/BossAttackL.png');
+ASSET_MANAGER.queueDownload('./sprites/BossAttackR.png');
 
 
 ASSET_MANAGER.downloadAll(() => {

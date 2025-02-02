@@ -45,7 +45,7 @@ class Bullet {
         this.speed = 200; // Bullet speed
         this.angle = angle; // Direction of the bullet
 
-        this.sprite = ASSET_MANAGER.getAsset('sprites/bullet.png');
+        this.sprite = ASSET_MANAGER.getAsset('./sprites/bullet.png');
         this.width = this.sprite.width;  // Adjust to image dimensions or set manually
         this.height = this.sprite.height;
 
