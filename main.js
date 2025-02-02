@@ -22,8 +22,8 @@ ASSET_MANAGER.queueDownload(getAssetPath('sprites/drone.png'));
 ASSET_MANAGER.queueDownload(getAssetPath('sprites/bullet.png'));
 
 // Aziel Seraph sprites
-ASSET_MANAGER.queueDownload(getAssetPath('sprites/idleRightAziel.png'));
-ASSET_MANAGER.queueDownload(getAssetPath('sprites/idleLeftAziel.png'));
+ASSET_MANAGER.queueDownload(getAssetPath('sprites/IdleRightAziel.png'));
+ASSET_MANAGER.queueDownload(getAssetPath('sprites/IdleLeftAziel.png'));
 ASSET_MANAGER.queueDownload(getAssetPath('sprites/moveRightAziel.png'));
 ASSET_MANAGER.queueDownload(getAssetPath('sprites/moveLeftAziel.png'));
 ASSET_MANAGER.queueDownload(getAssetPath('sprites/HolyDiverRight.png'));
