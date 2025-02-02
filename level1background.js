@@ -1,8 +1,7 @@
 class Spaceship {
     constructor(game) {
         this.game = game;
-        const backgroundPath = getAssetPath('levelBackgrounds/level1_background.png');
-        this.spritesheet = ASSET_MANAGER.getAsset(backgroundPath);
+        this.spritesheet = ASSET_MANAGER.getAsset(`./levelBackgrounds/level1_background.png`);
         this.x = 0;
         this.y = 0;
     };
@@ -10,8 +9,6 @@ class Spaceship {
         
     };
     draw(ctx) {
-        if (this.spritesheet) {
-            ctx.drawImage(this.spritesheet, 0, 0, gameWorld.width, gameWorld.height);
-        }
+        ctx.drawImage(this.spritesheet, 0 , 0, gameWorld.width, gameWorld.height);
     };
 }
