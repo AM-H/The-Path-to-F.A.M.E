@@ -19,8 +19,8 @@ ASSET_MANAGER.queueDownload('./sprites/bullet.png');
 
 //azielseraph
 
-ASSET_MANAGER.queueDownload(`./sprites/idleRightAziel.png`);
-ASSET_MANAGER.queueDownload(`./sprites/idleLeftAziel.png`);
+ASSET_MANAGER.queueDownload(`./sprites/IdleRightAziel.png`);
+ASSET_MANAGER.queueDownload(`./sprites/IdleLeftAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/moveRightAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/moveLeftAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/HolyDiverRight.png`);
@@ -29,14 +29,14 @@ ASSET_MANAGER.queueDownload(`./sprites/HolyDiverLeft.png`);
 
 
 //Boss
-ASSET_MANAGER.queueDownload("./sprites/BossIdleR.png");
-ASSET_MANAGER.queueDownload("./sprites/BossIdleL.png");
+ASSET_MANAGER.queueDownload('./sprites/BossIdleR.png');
+ASSET_MANAGER.queueDownload('./sprites/BossIdleL.png');
 
-ASSET_MANAGER.queueDownload("./sprites/BossWalkL.png");
-ASSET_MANAGER.queueDownload("./sprites/BossWalkR.png");
+ASSET_MANAGER.queueDownload('./sprites/BossWalkL.png');
+ASSET_MANAGER.queueDownload('./sprites/BossWalkR.png');
 
-ASSET_MANAGER.queueDownload("./sprites/BossAttackR.png");
-ASSET_MANAGER.queueDownload("./sprites/BossAttackL.png");
+ASSET_MANAGER.queueDownload('./sprites/BossAttackL.png');
+ASSET_MANAGER.queueDownload('./sprites/BossAttackR.png');
 
 
 ASSET_MANAGER.downloadAll(() => {

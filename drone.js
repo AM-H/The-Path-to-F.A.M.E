@@ -2,7 +2,7 @@ class Drone {
     constructor(game, x, y, speed) {
         this.game = game;
 
-        this.droneImg = new Animator(ASSET_MANAGER.getAsset("./sprites/drone.png"), 0, 0, 48, 50, 4, 0.35);
+        this.droneImg = new Animator(ASSET_MANAGER.getAsset('./sprites/drone.png'), 0, 0, 48, 50, 4, 0.35);
 
 
         this.x = x;
