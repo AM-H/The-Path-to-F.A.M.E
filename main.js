@@ -18,8 +18,8 @@ ASSET_MANAGER.queueDownload(`./levelBackgrounds/level1_background.png`);
 
 //azielseraph
 
-ASSET_MANAGER.queueDownload(`./sprites/idleRightAziel.png`);
-ASSET_MANAGER.queueDownload(`./sprites/idleLeftAziel.png`);
+ASSET_MANAGER.queueDownload(`./sprites/IdleRightAziel.png`);
+ASSET_MANAGER.queueDownload(`./sprites/IdleLeftAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/moveRightAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/moveLeftAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/HolyDiverRight.png`);
