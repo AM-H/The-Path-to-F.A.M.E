@@ -3,12 +3,12 @@ class Boss {
         this.game = game;
       
         // Load animations
-        this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset('./sprites/BossIdleR.png'), 0, 0, 32, 32, 4, 0.35);
-        this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset('./sprites/BossIdleL.png'), 0, 0, 32, 32, 4, 0.35);
-        this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset('./sprites/BossWalkR.png'), 0, 0, 32, 32, 6, 0.35);
-        this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset('./sprites/BossWalkL.png'), 0, 0, 32, 32, 6, 0.35);
-        this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset('./sprites/BossAttackR.png'), 0, 0, 32, 32, 8, 0.25);
-        this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset('./sprites/BossAttackL.png'), 0, 0, 32, 32, 8, 0.25);
+        this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossIdleR.png`), 0, 0, 32, 32, 4, 0.35);
+        this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossIdleL.png`), 0, 0, 32, 32, 4, 0.35);
+        this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossWalkR.png`), 0, 0, 32, 32, 6, 0.35);
+        this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossWalkL.png`), 0, 0, 32, 32, 6, 0.35);
+        this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossAttackR.png`), 0, 0, 32, 32, 8, 0.25);
+        this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossAttackL.png`), 0, 0, 32, 32, 8, 0.25);
         
         // Position setup
         this.x = 600;
@@ -29,9 +29,9 @@ class Boss {
         
         // State
         this.facing = -1;
-        this.state = 'idle';
+        this.state = `idle`;
         this.targetPlatform = null;
-        this.jumpPhase = 'none';
+        this.jumpPhase = `none`;
         this.isOnPlatform = false;  
         
         // Combat ranges
@@ -130,10 +130,10 @@ class Boss {
             });
 
             // Reset jump behavior if player leaves platform
-            if (!playerIsOnPlatform && this.jumpPhase !== 'none') {
-                this.jumpPhase = 'none';
+            if (!playerIsOnPlatform && this.jumpPhase !== `none`) {
+                this.jumpPhase = `none`;
                 this.targetPlatform = null;
-                this.state = 'chasing';
+                this.state = `chasing`;
                 this.velocity = { x: 0, y: 0 };
             }
 
@@ -141,35 +141,35 @@ class Boss {
             // 1. Player is on platform
             // 2. Boss is not on any platform
             // 3. Boss is not already jumping
-            if (playerIsOnPlatform && currentPlatform && !this.isOnPlatform && this.jumpPhase === 'none' && this.landed) {
+            if (playerIsOnPlatform && currentPlatform && !this.isOnPlatform && this.jumpPhase === `none` && this.landed) {
                 this.targetPlatform = currentPlatform;
-                this.jumpPhase = 'moving_to_middle';
-                this.state = 'moving';
-            } else if (this.isOnPlatform || this.jumpPhase === 'none') {
+                this.jumpPhase = `moving_to_middle`;
+                this.state = `moving`;
+            } else if (this.isOnPlatform || this.jumpPhase === `none`) {
                 // Normal NPC chase behavior
                 const distToPlayer = Math.abs(this.x + this.width/2 - (player.x + player.box.width/2));
                 const moveDir = player.x > this.x ? 1 : -1;
                 
                 if (distToPlayer < this.attackRange) {
-                    this.state = 'attacking';
+                    this.state = `attacking`;
                 } else if (distToPlayer < this.chaseRange) {
-                    this.state = 'chasing';
+                    this.state = `chasing`;
                     this.x += this.moveSpeed * moveDir;
                     this.facing = moveDir;
                 } else {
-                    this.state = 'idle';
+                    this.state = `idle`;
                 }
             }
 
-            // Handle jump phases if we're in the middle of jumping
-            if (this.jumpPhase === 'moving_to_middle') {
+            // Handle jump phases if we`re in the middle of jumping
+            if (this.jumpPhase === `moving_to_middle`) {
                 if (this.moveToMiddle()) {
                     const targetX = currentPlatform.x + (currentPlatform.width / 2);
                     const targetY = currentPlatform.y - this.boxHeight;
                     const jumpVel = this.calculateJumpVelocity(targetX, targetY);
                     
                     this.velocity = jumpVel;
-                    this.jumpPhase = 'jumping';
+                    this.jumpPhase = `jumping`;
                     this.landed = false;
                     this.jumpCooldown = this.jumpCooldownTime;
                     this.facing = this.velocity.x > 0 ? 1 : -1;
@@ -178,7 +178,7 @@ class Boss {
         }
 
         // Apply movement
-        if (this.jumpPhase === 'jumping') {
+        if (this.jumpPhase === `jumping`) {
             this.x += this.velocity.x * TICK;
         }
 
@@ -209,9 +209,9 @@ class Boss {
                         this.isOnPlatform = true;
                     }
                     
-                    // Reset jump phase if we've landed
-                    if (this.jumpPhase === 'jumping') {
-                        this.jumpPhase = 'none';
+                    // Reset jump phase if we`ve landed
+                    if (this.jumpPhase === `jumping`) {
+                        this.jumpPhase = `none`;
                         this.targetPlatform = null;
                         this.velocity.x = 0;
                     }
@@ -231,7 +231,7 @@ class Boss {
     draw(ctx) {
         const scale = this.spriteScale;
         
-        if (this.state === 'attacking') {
+        if (this.state === `attacking`) {
             if (this.facing === -1) {
                 this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, scale);
             } else {
@@ -239,7 +239,7 @@ class Boss {
             }
         } else {
             // Use walk animation for moving and jumping states
-            if (this.state === 'chasing' || this.state === 'moving' || this.jumpPhase === 'jumping') {
+            if (this.state === `chasing` || this.state === `moving` || this.jumpPhase === `jumping`) {
                 if (this.facing === -1) {
                     this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, scale);
                 } else {
@@ -255,7 +255,7 @@ class Boss {
         }
         
         // Debugging tool
-        ctx.strokeStyle = 'red';
+        ctx.strokeStyle = `red`;
         ctx.lineWidth = 2;
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
     }

@@ -2,7 +2,7 @@ class Drone {
     constructor(game, x, y, speed) {
         this.game = game;
 
-        this.droneImg = new Animator(ASSET_MANAGER.getAsset('./sprites/drone.png'), 0, 0, 48, 50, 4, 0.35);
+        this.droneImg = new Animator(ASSET_MANAGER.getAsset(`./sprites/drone.png`), 0, 0, 48, 50, 4, 0.35);
 
 
         this.x = x;
@@ -27,7 +27,7 @@ class Drone {
         this.attackTimer = 0;
 
         // State
-        this.state = 'idle'; // Possible states: 'idle', 'chasing', 'attacking'
+        this.state = `idle`; // Possible states: `idle`, `chasing`, `attacking`
     }
 
     updateBoundingBox() {
@@ -52,19 +52,19 @@ class Drone {
 
             // Determine state
             if (distance < this.attackRange) {
-                this.state = 'attacking';
+                this.state = `attacking`;
             } else if (distance < this.followRange) {
-                this.state = 'chasing';
+                this.state = `chasing`;
             } else {
-                this.state = 'idle';
+                this.state = `idle`;
             }
 
             // Behavior
-            if (this.state === 'chasing') {
+            if (this.state === `chasing`) {
                 const angle = Math.atan2(dy, dx);
                 this.x += Math.cos(angle) * this.moveSpeed * TICK;
                 this.y += Math.sin(angle) * this.moveSpeed * TICK;
-            } else if (this.state === 'attacking') {
+            } else if (this.state === `attacking`) {
                 if (this.attackTimer <= 0) {
                     this.attackTimer = this.attackCooldown;
                     this.shoot(player);
@@ -95,7 +95,7 @@ class Drone {
     draw(ctx) {
         this.droneImg.drawFrame(this.game.clockTick, ctx, this.x, this.y, this.spriteScale);
 
-        ctx.strokeStyle = 'red';
+        ctx.strokeStyle = `red`;
         ctx.lineWidth = 2;
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
     }

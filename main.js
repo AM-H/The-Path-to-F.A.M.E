@@ -12,8 +12,8 @@ ASSET_MANAGER.queueDownload(`./levelBackgrounds/level1_background.png`);
 // ASSET_MANAGER.queueDownload('./sprites/attack2Right.png');
 // ASSET_MANAGER.queueDownload('./sprites/attack2Left.png');
 // ASSET_MANAGER.queueDownload('./sprites/bullet.png');
-ASSET_MANAGER.queueDownload('./sprites/drone.png');
-ASSET_MANAGER.queueDownload('./sprites/bullet.png');
+ASSET_MANAGER.queueDownload(`./sprites/drone.png`);
+ASSET_MANAGER.queueDownload(`./sprites/bullet.png`);
 
 
 
@@ -29,14 +29,14 @@ ASSET_MANAGER.queueDownload(`./sprites/HolyDiverLeft.png`);
 
 
 //Boss
-ASSET_MANAGER.queueDownload('./sprites/BossIdleR.png');
-ASSET_MANAGER.queueDownload('./sprites/BossIdleL.png');
+ASSET_MANAGER.queueDownload(`./sprites/BossIdleR.png`);
+ASSET_MANAGER.queueDownload(`./sprites/BossIdleL.png`);
 
-ASSET_MANAGER.queueDownload('./sprites/BossWalkL.png');
-ASSET_MANAGER.queueDownload('./sprites/BossWalkR.png');
+ASSET_MANAGER.queueDownload(`./sprites/BossWalkL.png`);
+ASSET_MANAGER.queueDownload(`./sprites/BossWalkR.png`);
 
-ASSET_MANAGER.queueDownload('./sprites/BossAttackL.png');
-ASSET_MANAGER.queueDownload('./sprites/BossAttackR.png');
+ASSET_MANAGER.queueDownload(`./sprites/BossAttackL.png`);
+ASSET_MANAGER.queueDownload(`./sprites/BossAttackR.png`);
 
 
 ASSET_MANAGER.downloadAll(() => {

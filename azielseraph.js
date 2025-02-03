@@ -2,18 +2,18 @@ class AzielSeraph {
     constructor(game) {
         this.game = game;
         this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 5, .35,);
-        this.attackAnimator = new Animator(ASSET_MANAGER.getAsset('./sprites/HolyDiver.png'), 0, 0, 32, 32, 8, 0.1);
+        this.attackAnimator = new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiver.png`), 0, 0, 32, 32, 8, 0.1);
         this.x = 0;
         this.y = 500;
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
         this.facing = "right";
         this.animationMap = new Map();
-        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/moveRightAziel.png'), 2, 0, 32, 32, 6, 0.2));
-        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/moveLeftAziel.png'), 2, 0, 32, 32, 6, 0.2));
-        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/IdleRightAziel.png'), 13, 0, 32, 32, 4, 0.2));
-        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/IdleLeftAziel.png'), 13, 0, 32, 32, 4, 0.2));
-        this.animationMap.set(`attack`, new Animator(ASSET_MANAGER.getAsset('./sprites/HolyDiver.png'), 0, 0, 32, 32, 8, 0.1));
+        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/moveRightAziel.png`), 2, 0, 32, 32, 6, 0.2));
+        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/moveLeftAziel.png`), 2, 0, 32, 32, 6, 0.2));
+        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 4, 0.2));
+        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleLeftAziel.png`), 13, 0, 32, 32, 4, 0.2));
+        this.animationMap.set(`attack`, new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiver.png`), 0, 0, 32, 32, 8, 0.1));
         this.box = new BoundingBox(this.x, this.y, 32, 64);
         this.updateBoundingBox();
         this.landed = false;
@@ -91,7 +91,7 @@ class AzielSeraph {
                     if ((entity instanceof FirstLevelPlatform) && (this.lastBox.top) >= entity.box.bottom) {
                         this.velocity.y = 300;
                         this.y = entity.box.bottom;
-                        console.log('top collision');
+                        console.log(`top collision`);
                     }
                 } else {
                     this.landed = false;
