@@ -8,8 +8,6 @@ class Drone {
         this.x = x;
         this.y = y;
 
-
-
         this.spriteScale = 2;
         this.width = 32 * this.spriteScale;
         this.height = 32 * this.spriteScale;
