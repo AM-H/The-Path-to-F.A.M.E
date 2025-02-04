@@ -13,6 +13,8 @@ class AzielSeraph {
         this.maxhitpoints = 100;
         this.radius = 20;
         this.lastDamageTime = 0;
+        this.isAttacking = false;
+        this.attackCooldown = 0;
 
         this.healthbar = new HealthBar(this);
 
@@ -120,20 +122,28 @@ class AzielSeraph {
             }
             this.updateBoundingBox();
 
-            this.game.entities.forEach(entity => {
-                if (entity instanceof Bullet && this.box.collide(entity.box)) {
-                    this.takeDamage(1); 
-                    entity.removeFromWorld = true; 
-                }
-            
-                if (entity instanceof Boss && this.box.collide(entity.box)) {
-                    if (this.lastDamageTime <= 0) { 
-                        this.takeDamage(5); 
-                        this.lastDamageTime = 0.5; 
-                    }
-                }
-            });
+           
         });
+        
+
+        this.attackCooldown -= TICK;
+
+        // Handle player attack
+        if (this.game.closeAttack && this.attackCooldown <= 0) {
+            this.isAttacking = true;
+            this.attackCooldown = 0.5; // 0.5s cooldown
+            console.log("Player is Attacking!");
+        }
+
+        // Check for boss collision & apply damage
+        this.game.entities.forEach(entity => {
+            if (entity instanceof Boss && this.box.collide(entity.box) && this.isAttacking) {
+                entity.takeDamage(10); // Deal 10 damage to boss
+                this.isAttacking = false; // Reset attack flag to prevent repeated hits
+                console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
+            }
+        });
+
         this.healthbar.update();
         
     };

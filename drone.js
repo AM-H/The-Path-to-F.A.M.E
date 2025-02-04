@@ -28,6 +28,7 @@ class Drone {
 
         // State
         this.state = 'idle'; // Possible states: 'idle', 'chasing', 'attacking'
+        this.removeFromWorld = false;
     }
 
     updateBoundingBox() {
@@ -74,6 +75,18 @@ class Drone {
             // Attack cooldown countdown
             if (this.attackTimer > 0) {
                 this.attackTimer -= TICK;
+            }
+
+
+            // Attack cooldown countdown
+            if (this.attackTimer > 0) {
+                this.attackTimer -= TICK;
+            }
+
+            // **Check if hit by player attack**
+            if (player.isAttacking && this.box.collide(player.box)) {
+                console.log("Drone Destroyed!");
+                this.removeFromWorld = true; // Mark drone for removal
             }
         }
 

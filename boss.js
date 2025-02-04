@@ -49,6 +49,13 @@ class Boss {
         // Initialize bounding boxes
         this.updateBoundingBox();
         this.lastBox = this.box;
+
+        //healthbar
+        this.hitpoints = 150;
+        this.maxhitpoints = 150;
+        this.radius = 20;
+        this.healthbar = new HealthBar(this);
+        this.damageCooldown = 0;
     }
 
     updateBoundingBox() {
@@ -101,6 +108,14 @@ class Boss {
     isOnSamePlatformLevel(platform) {
         if (!platform) return false;
         return Math.abs(this.y + this.boxHeight - platform.y) < 5;
+    }
+
+    takeDamage(amount) {
+        if (this.damageCooldown <= 0) { // Only take damage if cooldown is over
+            this.hitpoints = Math.max(0, this.hitpoints - amount);
+            this.damageCooldown = 0.5; // Prevent multiple damage per frame
+            console.log(`Boss takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+        }
     }
 
     update() {
@@ -226,6 +241,16 @@ class Boss {
         }
         
         this.updateBoundingBox();
+
+        this.damageCooldown -= TICK;
+
+        if (player && this.box.collide(player.box)) {
+            if (player.isAttacking) {
+                this.takeDamage(10);
+            }
+        }
+
+        this.healthbar.update();
     }
 
     draw(ctx) {
@@ -258,5 +283,7 @@ class Boss {
         ctx.strokeStyle = 'red';
         ctx.lineWidth = 2;
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+
+        this.healthbar.draw(ctx);
     }
 }
