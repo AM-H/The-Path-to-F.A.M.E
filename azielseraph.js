@@ -81,14 +81,14 @@ class AzielSeraph {
         this.game.entities.forEach(entity => {
             if (entity.box && this.box.collide(entity.box)) {
                 if (this.velocity.y > 0) {
-                    if ((entity instanceof FirstLevelGround || entity instanceof FirstLevelPlatform) && (this.lastBox.bottom) <= entity.box.top) {
+                    if ((entity instanceof Platform) && (this.lastBox.bottom) <= entity.box.top) {
                         this.velocity.y = 0;
                         this.y = entity.box.top-64;
                         this.landed = true;
                         //console.log(`bottom collision`);
                     }
                 } else if (this.velocity.y < 0) {
-                    if ((entity instanceof FirstLevelPlatform) && (this.lastBox.top) >= entity.box.bottom) {
+                    if ((entity instanceof Platform) && (this.lastBox.top) >= entity.box.bottom) {
                         this.velocity.y = 300;
                         this.y = entity.box.bottom;
                         console.log(`top collision`);

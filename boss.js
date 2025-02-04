@@ -117,7 +117,7 @@ class Boss {
 
             // Check if player is on any platform
             this.game.entities.forEach(entity => {
-                if ((entity instanceof FirstLevelPlatform)) {
+                if ((entity instanceof Platform)) {
                     if (this.isPlayerOnPlatform(player, entity)) {
                         playerIsOnPlatform = true;
                         currentPlatform = entity;
@@ -195,8 +195,7 @@ class Boss {
         
         // Platform and ground collisions
         this.game.entities.forEach(entity => {
-            if ((entity instanceof FirstLevelGround || 
-                 entity instanceof FirstLevelPlatform) && 
+            if ((entity instanceof Platform) && 
                 this.box.collide(entity.box)) {
                 
                 if (this.velocity.y > 0 && this.lastBox.bottom <= entity.box.top) {
@@ -205,7 +204,7 @@ class Boss {
                     this.landed = true;
                     
                     // Check if we landed on a platform
-                    if (entity instanceof FirstLevelPlatform) {
+                    if (entity instanceof Platform) {
                         this.isOnPlatform = true;
                     }
                     

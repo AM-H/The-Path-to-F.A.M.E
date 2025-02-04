@@ -67,8 +67,7 @@ class HolyDiver {
                 this.game.clockTick,
                 ctx,
                 -32, // Offset to align the center of the sprite
-                -32,
-                2 // Scale height
+                -32
             );
 
             ctx.restore(); // Restore the canvas to its original state

@@ -2,7 +2,6 @@ class TitleScreen {
     constructor(game) {
         this.game = game;
         this.spritesheet = ASSET_MANAGER.getAsset(`./levelBackgrounds/TitleScreen.png`);
-        this.removeFromWorld = false;
         this.playButton = {
             asset: ASSET_MANAGER.getAsset(`./levelBackgrounds/PLAYbutton.png`),
             x: (gameWorld.width/2)-100,
@@ -68,7 +67,7 @@ class SelectPlayerScreen {
             this.hovering4 = true;
             if (this.game.closeAttack) { //closeAttack is left click
                 this.removeFromWorld = true;
-                //this.game.addEntity(new LevelManager(this.game));
+                //this.game.addEntity(new LevelManager(this.game, `aziel`));
             }
         } else {
             this.hovering4 = false;

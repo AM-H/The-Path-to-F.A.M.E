@@ -147,14 +147,14 @@ class GameEngine {
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     
         // First draw the background (Spaceship)
-        const background = this.entities.find(entity => entity instanceof Spaceship);
+        const background = this.entities.find(entity => entity instanceof Background);
         if (background) {
             background.draw(this.ctx, this);
         }
     
         // Then draw everything else
         for (let i = this.entities.length - 1; i >= 0; i--) {
-            if (!(this.entities[i] instanceof Spaceship)) {
+            if (!(this.entities[i] instanceof Background)) {
                 this.entities[i].draw(this.ctx, this);
             }
         }
