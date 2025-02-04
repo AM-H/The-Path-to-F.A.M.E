@@ -119,23 +119,22 @@ class AzielSeraph {
                 }
             }
             this.updateBoundingBox();
-            this.healthbar.update();
+
             this.game.entities.forEach(entity => {
                 if (entity instanceof Bullet && this.box.collide(entity.box)) {
-                    this.takeDamage(1); // Adjust damage value as needed
-                    entity.removeFromWorld = true; // Remove bullet upon hit
+                    this.takeDamage(1); 
+                    entity.removeFromWorld = true; 
                 }
             
                 if (entity instanceof Boss && this.box.collide(entity.box)) {
-                    if (this.lastDamageTime <= 0) { // Apply damage only if cooldown is over
-                        this.takeDamage(5); // Boss damage
-                        this.lastDamageTime = 0.5; // 0.5-second cooldown
+                    if (this.lastDamageTime <= 0) { 
+                        this.takeDamage(5); 
+                        this.lastDamageTime = 0.5; 
                     }
                 }
             });
-            
-
         });
+        this.healthbar.update();
         
     };
     draw(ctx) {
