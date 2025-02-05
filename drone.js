@@ -45,6 +45,7 @@ class Drone {
     update() {
         const TICK = this.game.clockTick;
         const player = this.game.entities.find(entity => entity instanceof AzielSeraph);
+        const holydiver = this.game.entities.find(entity => entity instanceof HolyDiver);
 
         if (player) {
             const dx = player.x - this.x;
@@ -84,9 +85,10 @@ class Drone {
             }
 
             // **Check if hit by player attack**
-            if (player.isAttacking && this.box.collide(player.box)) {
+            if (player.isAttacking && this.box.collide(holydiver.box)) {
                 console.log("Drone Destroyed!");
                 this.removeFromWorld = true; // Mark drone for removal
+                player.isAttacking = false;
             }
         }
 
