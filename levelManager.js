@@ -10,11 +10,10 @@ class LevelManager {
     };
     loadLevel(level) {
         //redundant drone call and boss call needs to be put into levels.js
-        this.game.addEntity(new Drone(this.game, 221, 500, 20));
-        this.game.addEntity(new Drone(this.game, 43, 74, 10));
-        this.game.addEntity(new Drone(this.game, 20, 300,500));
-        this.game.addEntity(new Drone(this.game, 222, 200,300));
-        this.game.addEntity(new Drone(this.game, 500, 111, 200));
+        for (var i = 0; i < level.drones.length; i++) {
+            let drone = level.drones[i];
+            this.game.addEntity(new Drone(this.game, drone.x, drone.y, drone.speed));
+        }
         this.game.addEntity(new Boss(this.game));
         this.game.addEntity(this.player);
         this.game.addEntity(new HolyDiver(this.game, this.player));
