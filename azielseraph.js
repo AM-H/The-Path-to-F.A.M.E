@@ -18,6 +18,8 @@ class AzielSeraph {
 
         this.healthbar = new HealthBar(this);
 
+        
+
         this.animationMap = new Map();
         this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/moveRightAziel.png'), 2, 0, 32, 32, 6, 0.2));
         this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/moveLeftAziel.png'), 2, 0, 32, 32, 6, 0.2));

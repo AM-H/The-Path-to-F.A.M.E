@@ -66,6 +66,8 @@ class Boss {
             this.boxWidth,
             this.boxHeight
         );
+
+        
     }
 
     updateLastBB() {
@@ -121,6 +123,7 @@ class Boss {
     update() {
         const TICK = this.game.clockTick;
         const player = this.game.entities.find(entity => entity instanceof AzielSeraph);
+        const holydiver = this.game.entities.find(entity => entity instanceof HolyDiver);
         
         if (this.jumpCooldown > 0) {
             this.jumpCooldown -= TICK;
@@ -244,13 +247,22 @@ class Boss {
 
         this.damageCooldown -= TICK;
 
-        if (player && this.box.collide(player.box)) {
+        if (player && this.box.collide(holydiver.box)) {
+            console.log("Boss collision with player detected!");  // Debugging log
             if (player.isAttacking) {
+                console.log("Player is attacking!");  // Debugging log
                 this.takeDamage(10);
+                
             }
         }
+        
+        console.log(`Player Box: x=${player.box.x}, y=${player.box.y}, w=${player.box.width}, h=${player.box.height}`);
+        console.log(`Boss Box: x=${this.box.x}, y=${this.box.y}, w=${this.box.width}, h=${this.box.height}`);
+        console.log(`Collision detected: ${this.box.collide(player.box)}`);
 
         this.healthbar.update();
+
+        
     }
 
     draw(ctx) {
