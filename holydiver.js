@@ -5,9 +5,11 @@ class HolyDiver {
         this.animationMap = new Map();
         this.animationMap.set(`right`, new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiverRight.png`), 0, 0, 32, 32, 8, 0.1));
         this.animationMap.set(`left`, new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiverLeft.png`), 0, 0, 32, 32, 8, 0.1));
+        this.animator = this.animationMap.get(`right`);
         this.box = new BoundingBox(0, 0, 64, 64);
         this.rotation = 0; // Angle of rotation in radians
         this.distanceFromAziel = 60; // Distance from Aziel`s center
+        console.log('made it here');
     }
 
     updateBoundingBox() {

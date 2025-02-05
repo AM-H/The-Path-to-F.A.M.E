@@ -1,6 +1,7 @@
 class TitleScreen {
     constructor(game) {
         this.game = game;
+        this.removeFromWorld = false;
         this.spritesheet = ASSET_MANAGER.getAsset(`./levelBackgrounds/TitleScreen.png`);
         this.playButton = {
             asset: ASSET_MANAGER.getAsset(`./levelBackgrounds/PLAYbutton.png`),
@@ -28,7 +29,7 @@ class TitleScreen {
         }
     }
     loadSelectPlayerScreen() {
-        this.game.addEntity(new SelectPlayerScreen(this.game)) ;
+        this.game.addEntity(new SelectPlayerScreen(this.game));
     }
     draw(ctx) {
         ctx.drawImage(this.spritesheet, 0 , 0, gameWorld.width, gameWorld.height);
@@ -67,7 +68,7 @@ class SelectPlayerScreen {
             this.hovering4 = true;
             if (this.game.closeAttack) { //closeAttack is left click
                 this.removeFromWorld = true;
-                //this.game.addEntity(new LevelManager(this.game, `aziel`));
+                this.game.addEntity(new LevelManager(this.game, `aziel`));
             }
         } else {
             this.hovering4 = false;

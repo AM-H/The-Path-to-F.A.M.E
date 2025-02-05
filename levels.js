@@ -1,8 +1,8 @@
+var gameWorld = {
+        width: 1024,
+        height: 768
+    };
 var levelOne = {
-    gameWorld : {
-        x: 1024,
-        y: 768
-    },
     background: {
         x: 0,
         y: 0,
