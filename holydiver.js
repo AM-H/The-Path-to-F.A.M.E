@@ -5,11 +5,16 @@ class HolyDiver {
         this.animationMap = new Map();
         this.animationMap.set(`right`, new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiverRight.png`), 0, 0, 32, 32, 8, 0.1));
         this.animationMap.set(`left`, new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiverLeft.png`), 0, 0, 32, 32, 8, 0.1));
+        this.animationMap.set(`rightRanged`, new Animator(ASSET_MANAGER.getAsset(`./sprites/LaserHolyDiverRight.png`), 0, 0, 500, 32, 8, 0.1));
+        this.animationMap.set(`leftRanged`, new Animator(ASSET_MANAGER.getAsset(`./sprites/LaserHolyDiverLeft.png`), 0, 0, 500, 32, 8, 0.1));
         this.animator = this.animationMap.get(`right`);
+        this.laserAnimator = this.animationMap.get(`rightRanged`);
         this.box = new BoundingBox(0, 0, 64, 64);
+        this.laserBox = new BoundingBox(0,0, 500, 32);
         this.rotation = 0; // Angle of rotation in radians
         this.distanceFromAziel = 60; // Distance from Aziel`s center
-        console.log('made it here');
+        this.azielCenterX = this.aziel.box.x + this.aziel.box.width / 2;
+        this.azielCenterY = this.aziel.box.y + this.aziel.box.height / 2;
     }
 
     updateBoundingBox() {
@@ -22,16 +27,20 @@ class HolyDiver {
 
         // Update the bounding box position
         this.box = new BoundingBox(rotatedX - 32, rotatedY - 32, 64, 64);
+        this.laserBox = new BoundingBox(rotatedX - 32, rotatedY - 32, 1000, 32) //laser
     }
     
     updateLastBB() {
         this.lastBox = this.box;
+        this.lastLazerBox = this.laserBox; //laser
     }
 
     update() {
         // Calculate angle to the mouse position
         const azielCenterX = this.aziel.box.x + this.aziel.box.width / 2;
         const azielCenterY = this.aziel.box.y + this.aziel.box.height / 2;
+        this.azielCenterX = azielCenterX;
+        this.azielCenterY = azielCenterY;
 
         const dx = this.game.mouseX - azielCenterX;
         const dy = this.game.mouseY - azielCenterY;
@@ -41,8 +50,11 @@ class HolyDiver {
         // Switch animator based on mouse position
         if (this.game.mouseX < azielCenterX && this.game.closeAttack) {
             this.animator = this.animationMap.get(`left`);
+        } else if (this.game.mouseX < azielCenterX && this.game.rangeAttack) {
+            this.laserAnimator = this.animationMap.get(`leftRanged`);
         } else {
             this.animator = this.animationMap.get(`right`);
+            this.laserAnimator = this.animationMap.get(`rightRanged`);
         }
 
         this.updateBoundingBox();
@@ -73,11 +85,39 @@ class HolyDiver {
             );
 
             ctx.restore(); // Restore the canvas to its original state
+        } else if (this.game.rangeAttack) {
+            const azielCenterX = this.aziel.box.x + this.aziel.box.width / 2;
+            const azielCenterY = this.aziel.box.y + this.aziel.box.height / 2;
+
+            ctx.save(); // Save the current canvas state
+
+            // Move the canvas origin to Aziel`s center
+            ctx.translate(azielCenterX, azielCenterY);
+
+            // Rotate the canvas by the calculated angle
+            ctx.rotate(this.rotation);
+
+            // Move the sprite further from Aziel along the rotated direction
+            ctx.translate(this.distanceFromAziel, 0);
+
+            this.laserAnimator.drawFrame(
+                this.game.clockTick,
+                ctx,
+                -32, // Offset to align the center of the sprite
+                -32
+            );
+
+            ctx.restore(); // Restore the canvas to its original state
         }
 
         // Draw the bounding box
         ctx.lineWidth = 2;
         ctx.strokeStyle = "red";
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        ctx.strokeRect(this.laserBox.x, this.laserBox.y, this.laserBox.width, this.laserBox.height);
+        ctx.beginPath();
+        ctx.moveTo(this.azielCenterX, this.azielCenterY);
+        ctx.lineTo(this.game.mouseX, this.game.mouseY);
+        ctx.stroke();
     }
 }

@@ -28,6 +28,9 @@ ASSET_MANAGER.queueDownload(`./sprites/moveRightAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/moveLeftAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/HolyDiverRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/HolyDiverLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/HolyDiverRangeRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/LaserHolyDiverRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/LaserHolyDiverLeft.png`);
 
 
 
