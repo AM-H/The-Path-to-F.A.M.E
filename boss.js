@@ -29,9 +29,9 @@ class Boss {
         
         // State
         this.facing = -1;
-        this.state = `idle`;
+        this.state = 'idle';
         this.targetPlatform = null;
-        this.jumpPhase = `none`;
+        this.jumpPhase = 'none';
         this.isOnPlatform = false;  
         
         // Combat ranges
@@ -50,7 +50,7 @@ class Boss {
         this.updateBoundingBox();
         this.lastBox = this.box;
 
-        //healthbar
+        // Healthbar
         this.hitpoints = 150;
         this.maxhitpoints = 150;
         this.radius = 20;
@@ -66,8 +66,6 @@ class Boss {
             this.boxWidth,
             this.boxHeight
         );
-
-        
     }
 
     updateLastBB() {
@@ -82,23 +80,16 @@ class Boss {
     }
 
     calculateJumpVelocity(targetX, targetY) {
-        // Time we want the jump to take
         const jumpTime = 1.0;
-        
-        // Calculate x velocity needed to reach target in jumpTime seconds
         const dx = targetX - this.x;
         const vx = dx / jumpTime;
-        
-        // Calculate y velocity needed to reach target height with given gravity
         const dy = targetY - this.y;
         const vy = (dy - (0.5 * this.fallGrav * jumpTime * jumpTime)) / jumpTime;
-        
         return { x: vx, y: vy };
     }
 
     moveToMiddle() {
         const distanceToMiddle = Math.abs(this.x - this.canvasMiddle);
-
         if (distanceToMiddle > this.moveSpeed) {
             this.x += this.moveSpeed * (this.x < this.canvasMiddle ? 1 : -1);
             this.facing = this.x < this.canvasMiddle ? 1 : -1;
@@ -113,17 +104,44 @@ class Boss {
     }
 
     takeDamage(amount) {
-        if (this.damageCooldown <= 0) { // Only take damage if cooldown is over
+        if (this.damageCooldown <= 0) {
             this.hitpoints = Math.max(0, this.hitpoints - amount);
-            this.damageCooldown = 0.5; // Prevent multiple damage per frame
+            this.damageCooldown = 0.5;
             console.log(`Boss takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+        }
+    }
+
+    getPlayer() {
+        // Find any entity that's a player (AzielSeraph or Grim)
+        return this.game.entities.find(entity => 
+            entity instanceof AzielSeraph || entity instanceof Grim
+        );
+    }
+
+    checkPlayerAttack() {
+        const player = this.getPlayer();
+        if (!player) return;
+
+        // Check for close attack collision
+        if (this.box.collide(player.box)) {
+            if (player instanceof AzielSeraph) {
+                // Check for HolyDiver attack
+                const holyDiver = this.game.entities.find(entity => entity instanceof HolyDiver);
+                if (holyDiver && this.box.collide(holyDiver.box) && player.game.closeAttack) {
+                    this.takeDamage(10);
+                }
+            } else if (player instanceof Grim) {
+                // Handle Grim's attack
+                if (player.game.closeAttack) {
+                    this.takeDamage(10);
+                }
+            }
         }
     }
 
     update() {
         const TICK = this.game.clockTick;
-        const player = this.game.entities.find(entity => entity instanceof AzielSeraph);
-        const holydiver = this.game.entities.find(entity => entity instanceof HolyDiver);
+        const player = this.getPlayer();
         
         if (this.jumpCooldown > 0) {
             this.jumpCooldown -= TICK;
@@ -140,54 +158,47 @@ class Boss {
                         playerIsOnPlatform = true;
                         currentPlatform = entity;
                     }
-                    // Check if boss is on this platform
                     if (this.isOnSamePlatformLevel(entity)) {
                         this.isOnPlatform = true;
                     }
                 }
             });
 
-            // Reset jump behavior if player leaves platform
-            if (!playerIsOnPlatform && this.jumpPhase !== `none`) {
-                this.jumpPhase = `none`;
+            if (!playerIsOnPlatform && this.jumpPhase !== 'none') {
+                this.jumpPhase = 'none';
                 this.targetPlatform = null;
-                this.state = `chasing`;
+                this.state = 'chasing';
                 this.velocity = { x: 0, y: 0 };
             }
 
-            // Only initiate platform jumping if:
-            // 1. Player is on platform
-            // 2. Boss is not on any platform
-            // 3. Boss is not already jumping
-            if (playerIsOnPlatform && currentPlatform && !this.isOnPlatform && this.jumpPhase === `none` && this.landed) {
+            if (playerIsOnPlatform && currentPlatform && !this.isOnPlatform && 
+                this.jumpPhase === 'none' && this.landed) {
                 this.targetPlatform = currentPlatform;
-                this.jumpPhase = `moving_to_middle`;
-                this.state = `moving`;
-            } else if (this.isOnPlatform || this.jumpPhase === `none`) {
-                // Normal NPC chase behavior
+                this.jumpPhase = 'moving_to_middle';
+                this.state = 'moving';
+            } else if (this.isOnPlatform || this.jumpPhase === 'none') {
                 const distToPlayer = Math.abs(this.x + this.width/2 - (player.x + player.box.width/2));
                 const moveDir = player.x > this.x ? 1 : -1;
                 
                 if (distToPlayer < this.attackRange) {
-                    this.state = `attacking`;
+                    this.state = 'attacking';
                 } else if (distToPlayer < this.chaseRange) {
-                    this.state = `chasing`;
+                    this.state = 'chasing';
                     this.x += this.moveSpeed * moveDir;
                     this.facing = moveDir;
                 } else {
-                    this.state = `idle`;
+                    this.state = 'idle';
                 }
             }
 
-            // Handle jump phases if we`re in the middle of jumping
-            if (this.jumpPhase === `moving_to_middle`) {
+            if (this.jumpPhase === 'moving_to_middle') {
                 if (this.moveToMiddle()) {
                     const targetX = currentPlatform.x + (currentPlatform.width / 2);
                     const targetY = currentPlatform.y - this.boxHeight;
                     const jumpVel = this.calculateJumpVelocity(targetX, targetY);
                     
                     this.velocity = jumpVel;
-                    this.jumpPhase = `jumping`;
+                    this.jumpPhase = 'jumping';
                     this.landed = false;
                     this.jumpCooldown = this.jumpCooldownTime;
                     this.facing = this.velocity.x > 0 ? 1 : -1;
@@ -195,20 +206,16 @@ class Boss {
             }
         }
 
-        // Apply movement
-        if (this.jumpPhase === `jumping`) {
+        if (this.jumpPhase === 'jumping') {
             this.x += this.velocity.x * TICK;
         }
 
-        // Apply gravity
         this.velocity.y += this.fallGrav * TICK;
         this.y += this.velocity.y * TICK;
         
-        // Update collision boxes
         this.updateLastBB();
         this.updateBoundingBox();
         
-        // Reset isOnPlatform flag before platform checks
         this.isOnPlatform = false;
         
         // Platform and ground collisions
@@ -221,14 +228,12 @@ class Boss {
                     this.y = entity.box.top - this.boxHeight;
                     this.landed = true;
                     
-                    // Check if we landed on a platform
                     if (entity instanceof Platform) {
                         this.isOnPlatform = true;
                     }
                     
-                    // Reset jump phase if we`ve landed
-                    if (this.jumpPhase === `jumping`) {
-                        this.jumpPhase = `none`;
+                    if (this.jumpPhase === 'jumping') {
+                        this.jumpPhase = 'none';
                         this.targetPlatform = null;
                         this.velocity.x = 0;
                     }
@@ -243,45 +248,31 @@ class Boss {
         }
         
         this.updateBoundingBox();
-
         this.damageCooldown -= TICK;
-
-        if (player && this.box.collide(holydiver.box)) {
-            console.log("Boss collision with player detected!");  // Debugging log
-            if (player.isAttacking) {
-                console.log("Player is attacking!");  // Debugging log
-                this.takeDamage(10);
-                
-            }
-        }
         
-        console.log(`Player Box: x=${player.box.x}, y=${player.box.y}, w=${player.box.width}, h=${player.box.height}`);
-        console.log(`Boss Box: x=${this.box.x}, y=${this.box.y}, w=${this.box.width}, h=${this.box.height}`);
-        console.log(`Collision detected: ${this.box.collide(player.box)}`);
+        // Check for player attacks
+        this.checkPlayerAttack();
 
         this.healthbar.update();
-
-        
     }
 
     draw(ctx) {
         const scale = this.spriteScale;
         
-        if (this.state === `attacking`) {
+        if (this.state === 'attacking') {
             if (this.facing === -1) {
                 this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, scale);
             } else {
                 this.attackRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, scale);
             }
         } else {
-            // Use walk animation for moving and jumping states
-            if (this.state === `chasing` || this.state === `moving` || this.jumpPhase === `jumping`) {
+            if (this.state === 'chasing' || this.state === 'moving' || this.jumpPhase === 'jumping') {
                 if (this.facing === -1) {
                     this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, scale);
                 } else {
                     this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, scale);
                 }
-            } else { // idle state
+            } else {
                 if (this.facing === -1) {
                     this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, scale);
                 } else {
@@ -290,8 +281,8 @@ class Boss {
             }
         }
         
-        // Debugging tool
-        ctx.strokeStyle = `red`;
+        // Debug bounding box
+        ctx.strokeStyle = 'red';
         ctx.lineWidth = 2;
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
 

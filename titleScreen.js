@@ -46,7 +46,7 @@ class SelectPlayerScreen {
             y: (gameWorld.height/8)*6
         };
         this.player2 = {
-            idle: new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 5, .35),
+            idle: new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimIdleR.png`), 0, 16, 42, 32, 5, 0.2),
             x: (gameWorld.width/5)*2,
             y: (gameWorld.height/8)*6
         };
@@ -61,27 +61,51 @@ class SelectPlayerScreen {
             y: (gameWorld.height/8)*6
         };
         this.removeFromWorld = false;
+        this.hovering2 = false;
         this.hovering4 = false;
     }
+
     update() {
-        if ((this.game.mouseX > this.player4.x) && this.game.mouseX < this.player4.x+32 && this.game.mouseY > this.player4.y && this.game.mouseY < this.player4.y+64) {
-            this.hovering4 = true;
-            if (this.game.closeAttack) { //closeAttack is left click
+        // Check hover for Grim (player2)
+        if ((this.game.mouseX > this.player2.x) && this.game.mouseX < this.player2.x+64 && 
+            this.game.mouseY > this.player2.y && this.game.mouseY < this.player2.y+64) {
+            this.hovering2 = true;
+            if (this.game.closeAttack) {
                 this.removeFromWorld = true;
-                this.game.addEntity(new LevelManager(this.game, `aziel`));
+                this.game.addEntity(new LevelManager(this.game, 'grim'));
+            }
+        } else {
+            this.hovering2 = false;
+        }
+
+        // Check hover for Aziel (player4)
+        if ((this.game.mouseX > this.player4.x) && this.game.mouseX < this.player4.x+32 && 
+            this.game.mouseY > this.player4.y && this.game.mouseY < this.player4.y+64) {
+            this.hovering4 = true;
+            if (this.game.closeAttack) {
+                this.removeFromWorld = true;
+                this.game.addEntity(new LevelManager(this.game, 'aziel'));
             }
         } else {
             this.hovering4 = false;
         }
     }
+
     draw(ctx) {
-        ctx.drawImage(this.spritesheet, 0 , 0, gameWorld.width, gameWorld.height);
-        this.player1.idle.drawFrame(this.game.clockTick, ctx, this.player1.x, this.player1.y);
-        this.player2.idle.drawFrame(this.game.clockTick, ctx, this.player2.x, this.player2.y);
-        this.player3.idle.drawFrame(this.game.clockTick, ctx, this.player3.x, this.player3.y);
-        this.player4.idle.drawFrame(this.game.clockTick, ctx, this.player4.x, this.player4.y);
+        ctx.drawImage(this.spritesheet, 0, 0, gameWorld.width, gameWorld.height);
+        this.player1.idle.drawFrame(this.game.clockTick, ctx, this.player1.x, this.player1.y, 2);
+        this.player2.idle.drawFrame(this.game.clockTick, ctx, this.player2.x, this.player2.y, 2);
+        this.player3.idle.drawFrame(this.game.clockTick, ctx, this.player3.x, this.player3.y, 2);
+        this.player4.idle.drawFrame(this.game.clockTick, ctx, this.player4.x, this.player4.y, 2);
+
+        // Draw selection boxes
+        if (this.hovering2) {
+            ctx.strokeStyle = '#fafad4';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(this.player2.x, this.player2.y, 64, 64);
+        }
         if (this.hovering4) {
-            ctx.strokeStyle = `#fafad4`;
+            ctx.strokeStyle = '#fafad4';
             ctx.lineWidth = 6;
             ctx.strokeRect(this.player4.x, this.player4.y, 32, 64);
         }

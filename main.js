@@ -32,6 +32,12 @@ ASSET_MANAGER.queueDownload(`./sprites/HolyDiverRangeRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/LaserHolyDiverRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/LaserHolyDiverLeft.png`);
 
+//Grim
+
+ASSET_MANAGER.queueDownload(`./sprites/GrimIdleL.png`);
+ASSET_MANAGER.queueDownload(`./sprites/GrimIdleR.png`);
+ASSET_MANAGER.queueDownload(`./sprites/GrimRunningL.png`);
+ASSET_MANAGER.queueDownload(`./sprites/GrimRunningR.png`);
 
 
 //Boss

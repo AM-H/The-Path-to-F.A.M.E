@@ -3,8 +3,10 @@ class LevelManager {
         this.game = game;
         this.whichPlayer = player;
         this.player = null;
-        if (this.whichPlayer === `aziel`) {
+        if (this.whichPlayer === 'aziel') {
             this.player = new AzielSeraph(this.game);
+        } else if (this.whichPlayer === 'grim') {
+            this.player = new Grim(this.game);
         }
         this.loadLevel(levelOne);
     };
@@ -16,7 +18,9 @@ class LevelManager {
         }
         this.game.addEntity(new Boss(this.game));
         this.game.addEntity(this.player);
-        this.game.addEntity(new HolyDiver(this.game, this.player));
+        if (this.whichPlayer === 'aziel') {
+            this.game.addEntity(new HolyDiver(this.game, this.player));
+        }
 
         this.game.addEntity(new Background(this.game, level.background.x, level.background.y, level.background.width, level.background.height, level.background.path));
         for (var i = 0; i < level.platform.length; i++) {
