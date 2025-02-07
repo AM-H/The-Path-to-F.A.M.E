@@ -23,7 +23,7 @@ ASSET_MANAGER.queueDownload(`./sprites/bullet.png`);
 //azielseraph
 
 ASSET_MANAGER.queueDownload(`./sprites/IdleRightAziel.png`);
-ASSET_MANAGER.queueDownload(`./sprites/kanjiAttack.png`);
+ASSET_MANAGER.queueDownload(`./sprites/IdleLeftAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/moveRightAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/moveLeftAziel.png`);
 ASSET_MANAGER.queueDownload(`./sprites/HolyDiverRight.png`);
