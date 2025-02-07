@@ -49,6 +49,13 @@ class Boss {
         // Initialize bounding boxes
         this.updateBoundingBox();
         this.lastBox = this.box;
+
+        //healthbar
+        this.hitpoints = 150;
+        this.maxhitpoints = 150;
+        this.radius = 20;
+        this.healthbar = new HealthBar(this);
+        this.damageCooldown = 0;
     }
 
     updateBoundingBox() {
@@ -59,6 +66,8 @@ class Boss {
             this.boxWidth,
             this.boxHeight
         );
+
+        
     }
 
     updateLastBB() {
@@ -103,9 +112,18 @@ class Boss {
         return Math.abs(this.y + this.boxHeight - platform.y) < 5;
     }
 
+    takeDamage(amount) {
+        if (this.damageCooldown <= 0) { // Only take damage if cooldown is over
+            this.hitpoints = Math.max(0, this.hitpoints - amount);
+            this.damageCooldown = 0.5; // Prevent multiple damage per frame
+            console.log(`Boss takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+        }
+    }
+
     update() {
         const TICK = this.game.clockTick;
         const player = this.game.entities.find(entity => entity instanceof AzielSeraph);
+        const holydiver = this.game.entities.find(entity => entity instanceof HolyDiver);
         
         if (this.jumpCooldown > 0) {
             this.jumpCooldown -= TICK;
@@ -225,6 +243,25 @@ class Boss {
         }
         
         this.updateBoundingBox();
+
+        this.damageCooldown -= TICK;
+
+        if (player && this.box.collide(holydiver.box)) {
+            console.log("Boss collision with player detected!");  // Debugging log
+            if (player.isAttacking) {
+                console.log("Player is attacking!");  // Debugging log
+                this.takeDamage(10);
+                
+            }
+        }
+        
+        console.log(`Player Box: x=${player.box.x}, y=${player.box.y}, w=${player.box.width}, h=${player.box.height}`);
+        console.log(`Boss Box: x=${this.box.x}, y=${this.box.y}, w=${this.box.width}, h=${this.box.height}`);
+        console.log(`Collision detected: ${this.box.collide(player.box)}`);
+
+        this.healthbar.update();
+
+        
     }
 
     draw(ctx) {
@@ -257,5 +294,7 @@ class Boss {
         ctx.strokeStyle = `red`;
         ctx.lineWidth = 2;
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+
+        this.healthbar.draw(ctx);
     }
 }
