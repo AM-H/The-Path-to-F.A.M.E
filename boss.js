@@ -144,11 +144,9 @@ class Boss {
 
     update() {
         const TICK = this.game.clockTick;
-        const player = this.game.entities.find(entity => entity instanceof AzielSeraph);
-        const holydiver = this.game.entities.find(entity => entity instanceof HolyDiver);
+        const player = this.getPlayer();  // Use our getPlayer method instead of hardcoding AzielSeraph
 
         if (this.hitpoints <= 0) {
-            // Remove the boss from the game when dead
             this.removeFromWorld = true;
             this.defeated = true;
             console.log("Boss defeated!");
@@ -262,15 +260,8 @@ class Boss {
         this.updateBoundingBox();
         this.damageCooldown -= TICK;
 
-        if (player.isAttacking && this.box.collide(holydiver.box)) {
-            console.log("Player is attacking!");  // Debugging log
-            this.takeDamage(30);
-            player.isAttacking = false;
-        }
-
-        // console.log(`Player Box: x=${player.box.x}, y=${player.box.y}, w=${player.box.width}, h=${player.box.height}`);
-        // console.log(`Boss Box: x=${this.box.x}, y=${this.box.y}, w=${this.box.width}, h=${this.box.height}`);
-        // console.log(`Collision detected: ${this.box.collide(player.box)}`);
+        // Check for player attacks using our checkPlayerAttack method
+        this.checkPlayerAttack();
 
         this.healthbar.update();
     }

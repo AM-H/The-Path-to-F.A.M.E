@@ -63,7 +63,7 @@ class HolyDiver {
     draw(ctx) {
         if (this.game.closeAttack || this.game.rangeAttack) {
             this.applyRotation(ctx);
-            (this.game.closeAttack ? this.animator : this.laserAnimator).drawFrame(this.game.clockTick, ctx, -32, -32);
+            (this.game.closeAttack ? this.animator : this.laserAnimator).drawFrame(this.game.clockTick, ctx, -32, -32, 2);
             ctx.restore();
         }
 
