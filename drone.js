@@ -26,6 +26,12 @@ class Drone {
         this.attackCooldown = 2;
         this.attackTimer = 0;
 
+        this.hitpoints = 50;
+        this.maxhitpoints = 50;
+        this.radius = 20;
+
+        this.healthbar = new HealthBar(this);
+
         // State
         this.state = 'idle'; // Possible states: 'idle', 'chasing', 'attacking'
         this.removeFromWorld = false;
@@ -51,6 +57,13 @@ class Drone {
             const dx = player.x - this.x;
             const dy = player.y - this.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
+
+
+            if (this.hitpoints <= 0) {
+                console.log("Drone Destroyed!");
+                this.removeFromWorld = true;
+                player.isAttacking = false;
+            }
 
             // Determine state
             if (distance < this.attackRange) {
@@ -78,22 +91,27 @@ class Drone {
                 this.attackTimer -= TICK;
             }
 
+            // Take Damage when hit by player attack
+            if (player.isAttacking && this.box.collide(holydiver.box)) {
+                this.hitpoints -= 25;
+                console.log(`Drone hit! HP remaining: ${this.hitpoints}`);
+                player.isAttacking = false;
+
+            }
+
 
             // Attack cooldown countdown
             if (this.attackTimer > 0) {
                 this.attackTimer -= TICK;
             }
-
-            // **Check if hit by player attack**
-            if (player.isAttacking && this.box.collide(holydiver.box)) {
-                console.log("Drone Destroyed!");
-                this.removeFromWorld = true; // Mark drone for removal
-                player.isAttacking = false;
-            }
         }
 
         // Update bounding box after movement
+        this.healthbar.update();
+
         this.updateBoundingBox();
+
+
     }
 
     shoot(player) {
@@ -109,9 +127,10 @@ class Drone {
 
     draw(ctx) {
         this.droneImg.drawFrame(this.game.clockTick, ctx, this.x, this.y, this.spriteScale);
-
         ctx.strokeStyle = 'red';
         ctx.lineWidth = 2;
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+
+        this.healthbar.draw(ctx);
     }
 }

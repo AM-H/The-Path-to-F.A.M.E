@@ -56,6 +56,9 @@ class Boss {
         this.radius = 20;
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
+
+        this.removeFromWorld = false;
+        this.defeated = false;
     }
 
     updateBoundingBox() {
@@ -124,6 +127,14 @@ class Boss {
         const TICK = this.game.clockTick;
         const player = this.game.entities.find(entity => entity instanceof AzielSeraph);
         const holydiver = this.game.entities.find(entity => entity instanceof HolyDiver);
+
+        if (this.hitpoints <= 0) {
+            // Remove the boss from the game when dead
+            this.removeFromWorld = true;
+            this.defeated = true;
+            console.log("Boss defeated!");
+            return;
+        }
         
         if (this.jumpCooldown > 0) {
             this.jumpCooldown -= TICK;
@@ -246,18 +257,15 @@ class Boss {
 
         this.damageCooldown -= TICK;
 
-        if (player && this.box.collide(holydiver.box)) {
-            console.log("Boss collision with player detected!");  // Debugging log
-            if (player.isAttacking) {
-                console.log("Player is attacking!");  // Debugging log
-                this.takeDamage(10);
-                
-            }
+        if (player.isAttacking && this.box.collide(holydiver.box)) {
+            console.log("Player is attacking!");  // Debugging log
+            this.takeDamage(30);
+            player.isAttacking = false;
         }
-        
-        console.log(`Player Box: x=${player.box.x}, y=${player.box.y}, w=${player.box.width}, h=${player.box.height}`);
-        console.log(`Boss Box: x=${this.box.x}, y=${this.box.y}, w=${this.box.width}, h=${this.box.height}`);
-        console.log(`Collision detected: ${this.box.collide(player.box)}`);
+
+        // console.log(`Player Box: x=${player.box.x}, y=${player.box.y}, w=${player.box.width}, h=${player.box.height}`);
+        // console.log(`Boss Box: x=${this.box.x}, y=${this.box.y}, w=${this.box.width}, h=${this.box.height}`);
+        // console.log(`Collision detected: ${this.box.collide(player.box)}`);
 
         this.healthbar.update();
 
@@ -294,6 +302,8 @@ class Boss {
         ctx.strokeStyle = `red`;
         ctx.lineWidth = 2;
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+
+
 
         this.healthbar.draw(ctx);
     }

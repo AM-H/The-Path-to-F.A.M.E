@@ -8,7 +8,7 @@ class HealthBar {
     };
 
     draw(ctx) {
-            var ratio = this.agent.hitpoints / this.agent.maxhitpoints;
+            let ratio = this.agent.hitpoints / this.agent.maxhitpoints;
             ctx.strokeStyle = "Black";
             ctx.fillStyle = ratio < 0.2 ? "Red" : ratio < 0.5 ? "Yellow" : "Green";
             const healthBarX = this.agent.x - this.agent.radius + 27;
@@ -18,4 +18,4 @@ class HealthBar {
             ctx.strokeRect(healthBarX, healthBarY, this.agent.radius * 2, 4);
 
     };
-};
+}

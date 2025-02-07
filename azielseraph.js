@@ -43,7 +43,8 @@ class AzielSeraph {
     }    
     update () {
         const TICK = this.game.clockTick;
-        
+
+
         //left control
         if (this.game.left) {
             this.x -= 4;
@@ -135,6 +136,8 @@ class AzielSeraph {
             this.isAttacking = true;
             this.attackCooldown = 0.5; // 0.5s cooldown
             console.log("Player is Attacking!");
+        }else{
+            this.isAttacking = false;
         }
 
         // Check for boss collision & apply damage
