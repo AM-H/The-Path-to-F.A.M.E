@@ -67,15 +67,6 @@ ASSET_MANAGER.downloadAll(() => {
 	const ctx = canvas.getContext("2d");
 	// const aziel = new AzielSeraph(gameEngine);
 	// gameEngine.addEntity(aziel);
-<<<<<<< HEAD
-	// gameEngine.addEntity(new HolyDiver(gameEngine, aziel))
-	gameEngine.addEntity(new Grim(gameEngine));
-	gameEngine.addEntity(new Boss(gameEngine));
-	gameEngine.addEntity(new FirstLevelGround(gameEngine));
-	//gameEngine.addEntity(new FirstLevelPlatform1(gameEngine));
-	//gameEngine.addEntity(new FirstLevelPlatform2(gameEngine));
-	gameEngine.addEntity(new Spaceship(gameEngine));
-=======
 	// gameEngine.addEntity(new HolyDiver(gameEngine, aziel));
 	// //gameEngine.addEntity(new KyraBlade(gameEngine));
 
@@ -101,7 +92,6 @@ ASSET_MANAGER.downloadAll(() => {
 	// gameEngine.addEntity(new Platform(gameEngine, gameWorld.width/2-(gameWorld.width/8), gameWorld.height/2, gameWorld.width/4, 30));
 	// gameEngine.addEntity(new Background(gameEngine, 0, 0, gameWorld.width, gameWorld.height, `./levelBackgrounds/level1_background.png`));
 	gameEngine.addEntity(new TitleScreen(gameEngine));
->>>>>>> faisal01-code
 	gameEngine.init(ctx);
 
 	gameEngine.start();
