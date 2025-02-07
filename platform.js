@@ -1,5 +1,5 @@
 class Platform{
-    constructor(game, x, y, width, height) {
+    constructor(game, x, y, width, height, bColor) {
         this.game = game;
         //this.width = gameWorld.width/4;
         this.width = width;
@@ -9,13 +9,16 @@ class Platform{
         this.x = x;
         //this.y = Math.floor(gameWorld.height/1.3);
         this.y = y;
-        this.box = new BoundingBox(this.x, this.y, this.width, this.height);
+
+        this.bColor = bColor;
+
+        this.box = new BoundingBox(this.x, this.y, this.width, this.height, this.bColor);
     };
     update() {
         
     };
     draw(ctx) {
-        ctx.fillStyle = `#818087`;
+        ctx.fillStyle = this.bColor ||  `#818087`;
         ctx.fillRect(this.x, this.y, this.width, this.height);
 
         // Draw collision box

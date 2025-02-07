@@ -65,7 +65,7 @@ class Grim {
 
         // Jump logic with gravity
         if (this.game.jump && this.landed) {
-            this.velocity.y = -800;
+            this.velocity.y = -800; //change this for jumping height
             this.fallGrav = 1900;
             this.landed = false;
         }
@@ -113,7 +113,7 @@ class Grim {
                         this.x = entity.box.right;
                     }
                 }
-            }
+             }
             this.updateBoundingBox();
         });
     }

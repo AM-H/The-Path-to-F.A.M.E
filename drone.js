@@ -1,14 +1,9 @@
 class Drone {
     constructor(game, x, y, speed) {
         this.game = game;
-
         this.droneImg = new Animator(ASSET_MANAGER.getAsset("./sprites/drone.png"), 0, 0, 48, 50, 4, 0.35);
-
-
         this.x = x;
         this.y = y;
-
-
 
         this.spriteScale = 2;
         this.width = 32 * this.spriteScale;
@@ -33,7 +28,7 @@ class Drone {
         this.healthbar = new HealthBar(this);
 
         // State
-        this.state = 'idle'; // Possible states: 'idle', 'chasing', 'attacking'
+        this.state = 'idle';
         this.removeFromWorld = false;
     }
 
@@ -48,21 +43,44 @@ class Drone {
         );
     }
 
+    getPlayer() {
+        return this.game.entities.find(entity => 
+            entity instanceof AzielSeraph || entity instanceof Grim
+        );
+    }
+
+    checkPlayerAttack() {
+        const player = this.getPlayer();
+        if (!player) return false;
+
+        if (this.box.collide(player.box)) {
+            if (player instanceof AzielSeraph) {
+                const holyDiver = this.game.entities.find(entity => entity instanceof HolyDiver);
+                if (holyDiver && this.box.collide(holyDiver.box) && player.game.closeAttack) {
+                    return true;
+                }
+            } else if (player instanceof Grim) {
+                if (player.game.closeAttack) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     update() {
         const TICK = this.game.clockTick;
-        const player = this.game.entities.find(entity => entity instanceof AzielSeraph);
-        const holydiver = this.game.entities.find(entity => entity instanceof HolyDiver);
+        const player = this.getPlayer();
 
         if (player) {
             const dx = player.x - this.x;
             const dy = player.y - this.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-
             if (this.hitpoints <= 0) {
                 console.log("Drone Destroyed!");
                 this.removeFromWorld = true;
-                player.isAttacking = false;
+                return;
             }
 
             // Determine state
@@ -92,37 +110,22 @@ class Drone {
             }
 
             // Take Damage when hit by player attack
-            if (player.isAttacking && this.box.collide(holydiver.box)) {
+            if (this.checkPlayerAttack()) {
                 this.hitpoints -= 25;
                 console.log(`Drone hit! HP remaining: ${this.hitpoints}`);
-                player.isAttacking = false;
-
-            }
-
-
-            // Attack cooldown countdown
-            if (this.attackTimer > 0) {
-                this.attackTimer -= TICK;
             }
         }
 
-        // Update bounding box after movement
         this.healthbar.update();
-
         this.updateBoundingBox();
-
-
     }
 
     shoot(player) {
-        // Calculate direction to the player
         const dx = (player.box.x + player.box.width/2) - this.x;
         const dy = (player.box.y + player.box.height/2) - this.y;
         const angle = Math.atan2(dy, dx);
-
-        // Create a bullet in the direction of the player
         const bullet = new Bullet(this.game, this.x, this.y, angle);
-        this.game.addEntity(bullet);  // Add the bullet to the game entities
+        this.game.addEntity(bullet);
     }
 
     draw(ctx) {

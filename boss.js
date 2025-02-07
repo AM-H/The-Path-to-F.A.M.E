@@ -38,14 +38,8 @@ class Boss {
         this.attackRange = 50;
         this.chaseRange = 400;
         this.minDistance = 100;
+        this.jumpThreshold = 100; // Distance at which boss decides to jump to player's platform
 
-        // Canvas middle point
-        this.canvasMiddle = gameWorld.width / 2;
-        
-        // Platform jumping
-        this.jumpCooldown = 0;
-        this.jumpCooldownTime = 1.5;
-        
         // Initialize bounding boxes
         this.updateBoundingBox();
         this.lastBox = this.box;
@@ -53,7 +47,6 @@ class Boss {
         // Healthbar
         this.hitpoints = 150;
         this.maxhitpoints = 150;
-        this.radius = 20;
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
 
@@ -75,13 +68,6 @@ class Boss {
         this.lastBox = this.box;
     }
 
-    isPlayerOnPlatform(player, platform) {
-        if (!platform) return false;
-        return player.y + player.box.height <= platform.y + 5 &&
-               player.x + player.box.width > platform.x &&
-               player.x < platform.x + platform.width;
-    }
-
     calculateJumpVelocity(targetX, targetY) {
         const jumpTime = 1.0;
         const dx = targetX - this.x;
@@ -91,19 +77,47 @@ class Boss {
         return { x: vx, y: vy };
     }
 
-    moveToMiddle() {
-        const distanceToMiddle = Math.abs(this.x - this.canvasMiddle);
-        if (distanceToMiddle > this.moveSpeed) {
-            this.x += this.moveSpeed * (this.x < this.canvasMiddle ? 1 : -1);
-            this.facing = this.x < this.canvasMiddle ? 1 : -1;
-            return false;
-        }
-        return true;
+    
+    getCurrentPlatform() {
+        let currentPlatform = null;
+        this.game.entities.forEach(entity => {
+            if (entity instanceof Platform) {
+                if (this.y + this.boxHeight >= entity.y && 
+                    this.y + this.boxHeight <= entity.y + 5 &&
+                    this.x + this.boxWidth > entity.x &&
+                    this.x < entity.x + entity.width) {
+                    currentPlatform = entity;
+                }
+            }
+        });
+        return currentPlatform;
     }
 
-    isOnSamePlatformLevel(platform) {
-        if (!platform) return false;
-        return Math.abs(this.y + this.boxHeight - platform.y) < 5;
+    getPlayerPlatform(player) {
+        let playerPlatform = null;
+        this.game.entities.forEach(entity => {
+            if (entity instanceof Platform) {
+                if (player.y + player.box.height >= entity.y &&
+                    player.y + player.box.height <= entity.y + 5 &&
+                    player.x + player.box.width > entity.x &&
+                    player.x < entity.x + entity.width) {
+                    playerPlatform = entity;
+                }
+            }
+        });
+        return playerPlatform;
+    }
+
+    shouldJump(player) {
+        if (!this.landed) return false;
+        
+        const playerPlatform = this.getPlayerPlatform(player);
+        const currentPlatform = this.getCurrentPlatform();
+        
+        if (!playerPlatform || !currentPlatform) return false;
+        
+        return playerPlatform.y < currentPlatform.y && 
+               Math.abs(this.x - player.x) < this.chaseRange;
     }
 
     takeDamage(amount) {
@@ -144,7 +158,7 @@ class Boss {
 
     update() {
         const TICK = this.game.clockTick;
-        const player = this.getPlayer();  // Use our getPlayer method instead of hardcoding AzielSeraph
+        const player = this.getPlayer();
 
         if (this.hitpoints <= 0) {
             this.removeFromWorld = true;
@@ -152,117 +166,75 @@ class Boss {
             console.log("Boss defeated!");
             return;
         }
-        
-        if (this.jumpCooldown > 0) {
-            this.jumpCooldown -= TICK;
+
+        if (!player) return;
+
+        // Handle jumping
+        if (this.shouldJump(player)) {
+            const playerPlatform = this.getPlayerPlatform(player);
+            const targetX = playerPlatform.x + playerPlatform.width/2;
+            const targetY = playerPlatform.y - this.boxHeight;
+            this.velocity = this.calculateJumpVelocity(targetX, targetY);
+            this.landed = false;
         }
 
-        if (player) {
-            let playerIsOnPlatform = false;
-            let currentPlatform = null;
+        // Normal movement
+        const distToPlayer = Math.abs(this.x + this.width/2 - (player.x + player.box.width/2));
+        const moveDir = player.x > this.x ? 1 : -1;
 
-            // Check if player is on any platform
-            this.game.entities.forEach(entity => {
-                if ((entity instanceof Platform)) {
-                    if (this.isPlayerOnPlatform(player, entity)) {
-                        playerIsOnPlatform = true;
-                        currentPlatform = entity;
-                    }
-                    if (this.isOnSamePlatformLevel(entity)) {
-                        this.isOnPlatform = true;
-                    }
-                }
-            });
-
-            if (!playerIsOnPlatform && this.jumpPhase !== 'none') {
-                this.jumpPhase = 'none';
-                this.targetPlatform = null;
+        if (this.landed) {  // Only move horizontally when landed
+            if (distToPlayer < this.attackRange) {
+                this.state = 'attacking';
+            } else if (distToPlayer < this.chaseRange) {
                 this.state = 'chasing';
-                this.velocity = { x: 0, y: 0 };
-            }
-
-            if (playerIsOnPlatform && currentPlatform && !this.isOnPlatform && 
-                this.jumpPhase === 'none' && this.landed) {
-                this.targetPlatform = currentPlatform;
-                this.jumpPhase = 'moving_to_middle';
-                this.state = 'moving';
-            } else if (this.isOnPlatform || this.jumpPhase === 'none') {
-                const distToPlayer = Math.abs(this.x + this.width/2 - (player.x + player.box.width/2));
-                const moveDir = player.x > this.x ? 1 : -1;
-                
-                if (distToPlayer < this.attackRange) {
-                    this.state = 'attacking';
-                } else if (distToPlayer < this.chaseRange) {
-                    this.state = 'chasing';
-                    this.x += this.moveSpeed * moveDir;
-                    this.facing = moveDir;
-                } else {
-                    this.state = 'idle';
-                }
-            }
-
-            if (this.jumpPhase === 'moving_to_middle') {
-                if (this.moveToMiddle()) {
-                    const targetX = currentPlatform.x + (currentPlatform.width / 2);
-                    const targetY = currentPlatform.y - this.boxHeight;
-                    const jumpVel = this.calculateJumpVelocity(targetX, targetY);
-                    
-                    this.velocity = jumpVel;
-                    this.jumpPhase = 'jumping';
-                    this.landed = false;
-                    this.jumpCooldown = this.jumpCooldownTime;
-                    this.facing = this.velocity.x > 0 ? 1 : -1;
-                }
+                this.x += this.moveSpeed * moveDir;
+                this.facing = moveDir;
+            } else {
+                this.state = 'idle';
             }
         }
 
-        if (this.jumpPhase === 'jumping') {
-            this.x += this.velocity.x * TICK;
-        }
-
+        // Apply gravity and movement
         this.velocity.y += this.fallGrav * TICK;
         this.y += this.velocity.y * TICK;
+        this.x += this.velocity.x * TICK;
         
         this.updateLastBB();
         this.updateBoundingBox();
         
-        this.isOnPlatform = false;
-        
         // Platform and ground collisions
+        let isOnGround = false;
         this.game.entities.forEach(entity => {
-            if ((entity instanceof Platform) && 
-                this.box.collide(entity.box)) {
-                
-                if (this.velocity.y > 0 && this.lastBox.bottom <= entity.box.top) {
-                    this.velocity.y = 0;
-                    this.y = entity.box.top - this.boxHeight;
-                    this.landed = true;
-                    
-                    if (entity instanceof Platform) {
-                        this.isOnPlatform = true;
-                    }
-                    
-                    if (this.jumpPhase === 'jumping') {
-                        this.jumpPhase = 'none';
-                        this.targetPlatform = null;
-                        this.velocity.x = 0;
+            if (entity instanceof Platform) {
+                if (this.box.collide(entity.box)) {
+                    // Only check vertical collisions - no left/right checks
+                    if (this.velocity.y > 0 && this.lastBox.bottom <= entity.box.top) {
+                        this.velocity.y = 0;
+                        this.y = entity.box.top - this.boxHeight;
+                        this.landed = true;
+                        isOnGround = true;
                     }
                 }
             }
         });
-        
+
+        // If not on any platform, check if we've fallen below ground level
+        const groundLevel = gameWorld.height - 70;  // Adjust this value based on your ground height
+        if (!isOnGround && this.y + this.boxHeight > groundLevel) {
+            this.y = groundLevel - this.boxHeight;
+            this.velocity.y = 0;
+            this.velocity.x = 0;
+            this.landed = true;
+        }
+
         // Screen boundaries
         if (this.x < 0) this.x = 0;
         if (this.x > gameWorld.width - this.width) {
             this.x = gameWorld.width - this.width;
         }
-        
-        this.updateBoundingBox();
+
         this.damageCooldown -= TICK;
-
-        // Check for player attacks using our checkPlayerAttack method
         this.checkPlayerAttack();
-
         this.healthbar.update();
     }
 
@@ -271,22 +243,22 @@ class Boss {
         
         if (this.state === 'attacking') {
             if (this.facing === -1) {
-                this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, scale);
+                this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
             } else {
-                this.attackRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, scale);
+                this.attackRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
             }
         } else {
             if (this.state === 'chasing' || this.state === 'moving' || this.jumpPhase === 'jumping') {
                 if (this.facing === -1) {
-                    this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, scale);
+                    this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
                 } else {
-                    this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, scale);
+                    this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
                 }
             } else {
                 if (this.facing === -1) {
-                    this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, scale);
+                    this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
                 } else {
-                    this.idleRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, scale);
+                    this.idleRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
                 }
             }
         }
