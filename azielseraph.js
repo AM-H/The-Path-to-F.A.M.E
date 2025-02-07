@@ -8,11 +8,30 @@ class AzielSeraph {
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
         this.facing = "right";
+
+        this.hitpoints = 100;
+        this.maxhitpoints = 100;
+        this.radius = 20;
+        this.lastDamageTime = 0;
+        this.isAttacking = false;
+        this.attackCooldown = 0;
+
+        this.healthbar = new HealthBar(this);
+
+        
+
         this.animationMap = new Map();
+<<<<<<< HEAD
         this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/moveRightAziel.png'), 2, 0, 32, 32, 6, 0.2));
         this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/moveLeftAziel.png'), 2, 0, 32, 32, 6, 0.2));
         this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/IdleRightAziel.png'), 13, 0, 32, 32, 4, 0.2));
         this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/IdleLeftAziel.png'), 13, 0, 32, 32, 4, 0.2));
+=======
+        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/moveRightAziel.png`), 2, 0, 32, 32, 6, 0.2));
+        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/moveLeftAziel.png`), 2, 0, 32, 32, 6, 0.2));
+        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 4, 0.2));
+        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleLeftAziel.png`), 13, 0, 32, 32, 4, 0.2));
+>>>>>>> faisal01-code
         this.animationMap.set(`attack`, new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiver.png`), 0, 0, 32, 32, 8, 0.1));
         this.box = new BoundingBox(this.x, this.y, 32, 64);
         this.updateBoundingBox();
@@ -25,9 +44,14 @@ class AzielSeraph {
     updateLastBB() {
         this.lastBox = this.box;
     };
+    takeDamage(amount) {
+        this.hitpoints -= amount;
+        if (this.hitpoints < 0) this.hitpoints = 0; // Prevent negative HP
+    }    
     update () {
         const TICK = this.game.clockTick;
-        
+
+
         //left control
         if (this.game.left) {
             this.x -= 4;
@@ -81,17 +105,17 @@ class AzielSeraph {
         this.game.entities.forEach(entity => {
             if (entity.box && this.box.collide(entity.box)) {
                 if (this.velocity.y > 0) {
-                    if ((entity instanceof FirstLevelGround || entity instanceof FirstLevelPlatform1 || entity instanceof FirstLevelPlatform2) && (this.lastBox.bottom) <= entity.box.top) {
+                    if ((entity instanceof Platform) && (this.lastBox.bottom) <= entity.box.top) {
                         this.velocity.y = 0;
                         this.y = entity.box.top-64;
                         this.landed = true;
                         //console.log(`bottom collision`);
                     }
                 } else if (this.velocity.y < 0) {
-                    if ((entity instanceof FirstLevelPlatform1 || entity instanceof FirstLevelPlatform2) && (this.lastBox.top) >= entity.box.bottom) {
+                    if ((entity instanceof Platform) && (this.lastBox.top) >= entity.box.bottom) {
                         this.velocity.y = 300;
                         this.y = entity.box.bottom;
-                        console.log('top collision');
+                        console.log(`top collision`);
                     }
                 } else {
                     this.landed = false;
@@ -107,13 +131,39 @@ class AzielSeraph {
                 }
             }
             this.updateBoundingBox();
+
+           
         });
+        
+
+        this.attackCooldown -= TICK;
+
+        // Handle player attack
+        if (this.game.closeAttack && this.attackCooldown <= 0) {
+            this.isAttacking = true;
+            this.attackCooldown = 0.5; // 0.5s cooldown
+            console.log("Player is Attacking!");
+        }else{
+            this.isAttacking = false;
+        }
+
+        // Check for boss collision & apply damage
+        this.game.entities.forEach(entity => {
+            if (entity instanceof Boss && this.box.collide(entity.box) && this.isAttacking) {
+                entity.takeDamage(10); // Deal 10 damage to boss
+                this.isAttacking = false; // Reset attack flag to prevent repeated hits
+                console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
+            }
+        });
+
+        this.healthbar.update();
         
     };
     draw(ctx) {
-        this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y);
+        this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
         ctx.lineWidth = 2;
         ctx.strokeStyle = "red";
         ctx.strokeRect(this.box.x,this.box.y, this.box.width, this.box.height);
+        this.healthbar.draw(ctx);
     };
 };

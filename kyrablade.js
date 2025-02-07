@@ -14,14 +14,14 @@ class KyraBlade {
         
         // Set up animations
         this.animationMap = new Map();
-        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/runRight.png'), 0, 0, 50, 50, 6, 0.2));
-        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/runLeft.png'), 0, 0, 50, 50, 6, 0.2));
-        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleRight.png'), 0, 0, 48, 50, 4, .2));
-        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/idleLeft.png'), 0, 0, 48, 50, 4, 0.2));
-        this.animationMap.set(`attackRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/attack1Right.png'), 0, 0, 48, 50, 8, 0.1));
-        this.animationMap.set(`attackLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/attack1Left.png'), 0, 0, 48, 50, 8, 0.1));
-        this.animationMap.set(`longRangeRight`, new Animator(ASSET_MANAGER.getAsset('./sprites/attack2Right.png'), 0, 0, 48, 50, 8, 0.1));
-        this.animationMap.set(`longRangeLeft`, new Animator(ASSET_MANAGER.getAsset('./sprites/attack2Left.png'), 0, 0, 48, 50, 8, 0.1));
+        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/runRight.png`), 0, 0, 50, 50, 6, 0.2));
+        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/runLeft.png`), 0, 0, 50, 50, 6, 0.2));
+        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/idleRight.png`), 0, 0, 48, 50, 4, .2));
+        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/idleLeft.png`), 0, 0, 48, 50, 4, 0.2));
+        this.animationMap.set(`attackRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/attack1Right.png`), 0, 0, 48, 50, 8, 0.1));
+        this.animationMap.set(`attackLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/attack1Left.png`), 0, 0, 48, 50, 8, 0.1));
+        this.animationMap.set(`longRangeRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/attack2Right.png`), 0, 0, 48, 50, 8, 0.1));
+        this.animationMap.set(`longRangeLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/attack2Left.png`), 0, 0, 48, 50, 8, 0.1));
         
         // Collision box dimensions
         this.boxWidth = 32;
@@ -142,16 +142,16 @@ class KyraBlade {
         if (this.game.closeRange && !this.attacking) {
             this.attacking = true;
             if (this.facing === 'right') {
-                this.animator = this.animationMap.get('attackRight');
+                this.animator = this.animationMap.get(`attackRight`);
             } else {
-                this.animator = this.animationMap.get('attackLeft');
+                this.animator = this.animationMap.get(`attackLeft`);
             }
         } else if (this.game.longRange && !this.attacking) {
             this.attacking = true;
             if (this.facing === 'right') {
-                this.animator = this.animationMap.get('longRangeRight');
+                this.animator = this.animationMap.get(`longRangeRight`);
             } else {
-                this.animator = this.animationMap.get('longRangeLeft');
+                this.animator = this.animationMap.get(`longRangeLeft`);
             }
 
             // Spawn bullet
@@ -173,12 +173,12 @@ class KyraBlade {
         this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
         
         // Draw collision box for debugging
-        ctx.strokeStyle = 'blue';
+        ctx.strokeStyle = `blue`;
         ctx.lineWidth = 2;
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         
         // Draw center point
-        ctx.fillStyle = 'red';
+        ctx.fillStyle = `red`;
         ctx.beginPath();
         ctx.arc(this.x + this.boxWidth/2, this.y + this.boxHeight/2, 3, 0, Math.PI * 2);
         ctx.fill();
