@@ -49,7 +49,7 @@ var levelTwo = {
         },
         // Right elevated platform (moved more right)
         {
-            x: gameWorld.width - (gameWorld.width/10) - gameWorld.width/4,  // Adjusted to move it more right
+            x: gameWorld.width - (gameWorld.width/10) - gameWorld.width/4,  // Adjusting to move it more right
             y: gameWorld.height/1.96,
             width: gameWorld.width/4,
             height: 30,
