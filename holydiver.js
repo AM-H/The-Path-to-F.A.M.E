@@ -1,5 +1,6 @@
 class HolyDiver {
     constructor(game, aziel) {
+        this.removeFromWorld = false;
         this.aziel = aziel;
         this.game = game;
         this.animationMap = new Map([
@@ -49,7 +50,16 @@ class HolyDiver {
         const facingLeft = this.game.mouseX < this.azielCenterX;
         this.animator = this.animationMap.get(facingLeft ? "left" : "right");
         this.laserAnimator = this.animationMap.get(facingLeft ? "leftRanged" : "rightRanged");
-        //Check for boss collision & apply damage
+        // Check for laser collision
+        this.laserBoxes.forEach(laserBox => {
+            this.game.entities.forEach(entity => {
+                if ((entity instanceof Boss || entity instanceof Drone) && laserBox.collide(entity.box) && this.aziel.isRangeAttacking) {
+                    entity.takeDamage(100);
+                    console.log(`${entity.constructor.name} takes damage! HP: ${entity.hitpoints}`);
+                }
+            });
+        });
+        //Check for boss collision & apply damage close range
         this.game.entities.forEach(entity => {
             if (entity instanceof Boss && this.box.collide(entity.box) && this.game.closeAttack) {
                 entity.takeDamage(10); // Deal 10 damage to boss

@@ -11,6 +11,7 @@ class Platform{
         this.y = y;
 
         this.bColor = bColor;
+        this.removeFromWorld = false;
 
         this.box = new BoundingBox(this.x, this.y, this.width, this.height, this.bColor);
     };

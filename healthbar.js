@@ -1,6 +1,7 @@
 class HealthBar {
     constructor(agent) {
         Object.assign(this, { agent });
+        this.removeFromWorld= false;
     };
 
     update() {
