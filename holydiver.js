@@ -49,6 +49,16 @@ class HolyDiver {
         const facingLeft = this.game.mouseX < this.azielCenterX;
         this.animator = this.animationMap.get(facingLeft ? "left" : "right");
         this.laserAnimator = this.animationMap.get(facingLeft ? "leftRanged" : "rightRanged");
+        //Check for boss collision & apply damage
+        this.game.entities.forEach(entity => {
+            if (entity instanceof Boss && this.box.collide(entity.box) && this.game.closeAttack) {
+                entity.takeDamage(10); // Deal 10 damage to boss
+                console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
+            } else if (entity instanceof Drone && this.box.collide(entity.box) && this.game.closeAttack) {
+                entity.takeDamage(10);
+                console.log(`Drone takes damage! HP: ${entity.hitpoints}`);
+            }
+        });
 
         this.updateBoundingBox();
     }
@@ -61,12 +71,17 @@ class HolyDiver {
     }
 
     draw(ctx) {
-        if (this.game.closeAttack || this.game.rangeAttack) {
+        if (this.aziel.isRangeAttacking) {
             this.applyRotation(ctx);
-            (this.game.closeAttack ? this.animator : this.laserAnimator).drawFrame(this.game.clockTick, ctx, -32, -32, 2);
+            this.laserAnimator.drawFrame(this.game.clockTick, ctx, -32, -32, 2);
+            ctx.restore();
+        } else if (this.game.closeAttack) {
+            this.applyRotation(ctx);
+            this.animator.drawFrame(this.game.clockTick, ctx, -32, -32, 2);
             ctx.restore();
         }
 
+        // Debugging: Draw the hitboxes for visual reference
         ctx.strokeStyle = "red";
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         this.laserBoxes.forEach(box => ctx.strokeRect(box.x, box.y, box.width, box.height));

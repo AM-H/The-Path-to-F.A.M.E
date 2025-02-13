@@ -16,7 +16,7 @@ class TitleScreen {
             this.playButton.x = (gameWorld.width/2) - 120;
             this.playButton.y = 460;
             this.playButton.width = 220;
-            this.playButton.height = 120
+            this.playButton.height = 120;
             if (this.game.closeAttack) {
                 this.removeFromWorld = true;
                 this.loadSelectPlayerScreen();
@@ -29,6 +29,7 @@ class TitleScreen {
         }
     }
     loadSelectPlayerScreen() {
+        ASSET_MANAGER.playAsset(`./audio/YouSeeBIGGIRLT_T.mp3`);
         this.game.addEntity(new SelectPlayerScreen(this.game));
     }
     draw(ctx) {

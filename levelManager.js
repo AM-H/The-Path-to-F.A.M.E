@@ -13,11 +13,12 @@ class LevelManager {
     loadLevel(level) {
         //redundant drone call and boss call needs to be put into levels.js
         if(level == levelOne) {
-        for (var i = 0; i < level.drones.length; i++) {
-            let drone = level.drones[i];
-            this.game.addEntity(new Drone(this.game, drone.x, drone.y, drone.speed));
+            ASSET_MANAGER.pauseBackgroundMusic();
+            for (var i = 0; i < level.drones.length; i++) {
+                let drone = level.drones[i];
+                this.game.addEntity(new Drone(this.game, drone.x, drone.y, drone.speed));
+            }
         }
-    }
         this.game.addEntity(new Boss(this.game));
         this.game.addEntity(this.player);
         if (this.whichPlayer === 'aziel') {
