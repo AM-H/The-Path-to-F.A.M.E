@@ -40,6 +40,8 @@ ASSET_MANAGER.queueDownload(`./sprites/GrimIdleL.png`);
 ASSET_MANAGER.queueDownload(`./sprites/GrimIdleR.png`);
 ASSET_MANAGER.queueDownload(`./sprites/GrimRunningL.png`);
 ASSET_MANAGER.queueDownload(`./sprites/GrimRunningR.png`);
+ASSET_MANAGER.queueDownload(`./sprites/GrimAttackL.png`);
+ASSET_MANAGER.queueDownload(`./sprites/GrimAttackL.png`);
 
 
 //Boss

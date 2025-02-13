@@ -8,7 +8,7 @@ class LevelManager {
         } else if (this.whichPlayer === 'grim') {
             this.player = new Grim(this.game);
         }
-        this.loadLevel(levelOne);
+        this.loadLevel(levelTwo);
     };
     loadLevel(level) {
         //redundant drone call and boss call needs to be put into levels.js
