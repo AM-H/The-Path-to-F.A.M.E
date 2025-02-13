@@ -7,18 +7,31 @@ class Kanji {
         this.fallGrav = 2000;
         this.facing = "right";
 
-        // Create animation map for Grim's animations - updated filenames to match loaded assets
+
+        this.canAttack = false;
+        setTimeout(() => {
+            this.canAttack = true;
+        }, 100); // Small delay to ensure proper initialization
+
+        // Create animation map for animations
         this.animationMap = new Map();
-        this.animationMap.set('runRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/runRight.png`), 0, 0, 32, 32, 6, 0.1));
-        this.animationMap.set('runLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/runLeft.png`), 0, 0, 32, 32, 6, 0.1));
+        this.animationMap.set('runRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/runRight.png`), 0, 0, 32, 32, 6, 0.2));
+        this.animationMap.set('runLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/runLeft.png`), 0, 0, 32, 32, 6, 0.2));
         this.animationMap.set('idleRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/IdleRight.png`), 0, 0, 32, 32, 9, 0.2));
         this.animationMap.set('idleLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/IdleLeft.png`), 0, 0, 32, 32, 9, 0.2));
+        this.animationMap.set('attackRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackRight.png`), 24, 48, 96, 48, 7, 0.089));
+        this.animationMap.set('attackLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackLeft.png`), 0, 48, 96, 48, 7, 0.089));
+        this.animationMap.set('runAttackRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackRight.png`), 24, 48, 96, 48, 7, 0.089));
+        this.animationMap.set('runAttackLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackLeft.png`), 0, 48, 96, 48, 7, 0.089));
 
         // Set default animation
         this.animator = this.animationMap.get('idleRight');
 
-        // Set up bounding box for collisions - using sprite dimensions
-        this.box = new BoundingBox(this.x, this.y, 64, 64); // Height is doubled for proper collision
+        this.attacking = false;
+        this.isMoving = false;
+
+        // Set up bounding box for collisions
+        this.box = new BoundingBox(this.x, this.y, 64, 64);
         this.updateBoundingBox();
         this.landed = false;
     }
@@ -35,10 +48,13 @@ class Kanji {
         const TICK = this.game.clockTick;
 
         // Left movement
+        this.isMoving = this.game.left || this.game.right;
+
+        // Left movement
         if (this.game.left) {
             this.x -= 4;
-            if (this.facing !== "left") {
-                this.facing = "left";
+            this.facing = "left";
+            if (!this.attacking) {
                 this.animator = this.animationMap.get('runLeft');
             }
         }
@@ -46,22 +62,50 @@ class Kanji {
         // Right movement
         if (this.game.right) {
             this.x += 4;
-            if (this.facing !== "right") {
-                this.facing = "right";
+            this.facing = "right";
+            if (!this.attacking) {
                 this.animator = this.animationMap.get('runRight');
             }
         }
 
         // Idle state
-        if (!this.game.left && !this.game.right) {
-            if (this.facing === "left" && this.facing !== "idle") {
-                this.facing = "idle";
+        if (!this.game.left && !this.game.right && !this.attacking) {
+            if (this.facing === "left") {
                 this.animator = this.animationMap.get('idleLeft');
-            } else if (this.facing === "right" && this.facing !== "idle") {
-                this.facing = "idle";
+            } else if (this.facing === "right") {
                 this.animator = this.animationMap.get('idleRight');
             }
         }
+
+        // Attack logic with running attack animations
+        if (this.game.closeAttack && !this.attacking && this.canAttack) {
+            this.attacking = true;
+            this.canAttack = false;
+            console.log("Attacking");
+
+            // Choose animation based on movement state
+            if (this.facing === "right") {
+                this.animator = this.animationMap.get(this.isMoving ? 'runAttackRight' : 'attackRight');
+            } else {
+                this.animator = this.animationMap.get(this.isMoving ? 'runAttackLeft' : 'attackLeft');
+            }
+
+            // Reset attack state after animation finishes
+            const currentAnimator = this.animator;
+            setTimeout(() => {
+                this.attacking = false;
+                this.canAttack = true;
+                // Return to appropriate animation based on movement state
+                if (this.game.left) {
+                    this.animator = this.animationMap.get('runLeft');
+                } else if (this.game.right) {
+                    this.animator = this.animationMap.get('runRight');
+                } else {
+                    this.animator = this.animationMap.get(this.facing === "right" ? 'idleRight' : 'idleLeft');
+                }
+            }, currentAnimator.frameCount * currentAnimator.frameDuration * 1000);
+        }
+
 
         // Jump logic with gravity
         if (this.game.jump && this.landed) {
@@ -120,7 +164,6 @@ class Kanji {
 
     draw(ctx) {
         if(this.facing === "left"){
-            console.log("left")
             this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, true);
         }else{
             this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
