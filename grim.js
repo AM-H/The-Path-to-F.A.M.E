@@ -6,6 +6,14 @@ class Grim {
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
         this.facing = "right";
+
+        this.canAttack = false;
+
+        this.canAttack = false;
+        setTimeout(() => {
+            this.canAttack = true;
+        }, 100); // Small delay to ensure proper initialization
+        
         
         // Create animation map for Grim's animations
         this.animationMap = new Map();
@@ -13,23 +21,16 @@ class Grim {
         this.animationMap.set('runLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimRunningL.png`), 3.01, 16, 48, 32, 6, 0.2));
         this.animationMap.set('idleRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimIdleR.png`), 0, 16, 42, 32, 5, 0.2));
         this.animationMap.set('idleLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimIdleL.png`), 5, 16, 48, 32, 5, 0.2));
-        // Add new attack animations
-        this.animationMap.set('attackRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimAttackR.png`), 0, 0, 48, 32, 10, 0.1));
-        this.animationMap.set('attackLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimAttackL.png`), 0, 0, 48, 32, 10, 0.1));
+        this.animationMap.set('attackRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimAttackR.png`), 1.45, 16, 48, 48, 10, 0.06));
+        this.animationMap.set('attackLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimAttackL.png`), 1.45, 16, 48, 48, 10, 0.06));
         
         // Set default animation
         this.animator = this.animationMap.get('idleRight');
         
-        // Set up bounding box for collisions
         this.box = new BoundingBox(this.x, this.y, 64, 64);
         this.updateBoundingBox();
         this.landed = false;
-
-        // Attack properties
-        this.isAttacking = false;
-        this.attackCooldown = 0;
-        this.attackDuration = 0.6; // Duration of attack animation in seconds
-        this.attackTimer = 0;
+        this.attacking = false;
     }
 
     updateBoundingBox() {
@@ -42,51 +43,58 @@ class Grim {
 
     update() {
         const TICK = this.game.clockTick;
-
-        // Attack state handling
-        if (this.game.closeAttack && this.attackCooldown <= 0 && !this.isAttacking) {
-            this.isAttacking = true;
-            this.attackTimer = this.attackDuration;
-            this.animator = this.animationMap.get(this.facing === 'right' ? 'attackRight' : 'attackLeft');
+        
+        // Left movement
+        if (this.game.left) {
+            this.x -= 4;
+            if (this.facing !== "left") {
+                this.facing = "left";
+                this.animator = this.animationMap.get('runLeft');
+            }
+        }
+        
+        // Right movement
+        if (this.game.right) {
+            this.x += 4;
+            if (this.facing !== "right") {
+                this.facing = "right";
+                this.animator = this.animationMap.get('runRight');
+            }
+        }
+        
+        // Idle state
+        if (!this.game.left && !this.game.right && !this.attacking) {
+            if (this.facing === "left") {
+                this.animator = this.animationMap.get('idleLeft');
+            } else if (this.facing === "right") {
+                this.animator = this.animationMap.get('idleRight');
+            }
         }
 
-        if (this.isAttacking) {
-            this.attackTimer -= TICK;
-            if (this.attackTimer <= 0) {
-                this.isAttacking = false;
-                this.attackCooldown = 0.2; // Add a small cooldown between attacks
+         
+        
+        // Modified attack logic to check for canAttack
+        if (this.game.closeAttack && !this.attacking && this.canAttack) {
+            this.attacking = true;
+            console.log("Attacking"); // Debugging log
+
+            // Use the current facing direction to determine attack animation
+            if (this.facing === "right") {
+                this.animator = this.animationMap.get('attackRight');
+            } else if (this.facing === "left") {
+                this.animator = this.animationMap.get('attackLeft');
             }
-        } else {
-            // Only allow movement if not attacking
-            if (this.game.left) {
-                this.x -= 4;
-                if (this.facing !== "left") {
-                    this.facing = "left";
-                    this.animator = this.animationMap.get('runLeft');
-                }
-            }
-            
-            if (this.game.right) {
-                this.x += 4;
-                if (this.facing !== "right") {
-                    this.facing = "right";
-                    this.animator = this.animationMap.get('runRight');
-                }
-            }
-            
-            // Idle state
-            if (!this.game.left && !this.game.right) {
-                if (this.facing === "left") {
-                    this.animator = this.animationMap.get('idleLeft');
-                } else if (this.facing === "right") {
+
+            // Reset attack state after animation finishes
+            setTimeout(() => {
+                this.attacking = false;
+                // Return to idle animation based on the current facing direction
+                if (this.facing === "right") {
                     this.animator = this.animationMap.get('idleRight');
+                } else {
+                    this.animator = this.animationMap.get('idleLeft');
                 }
-            }
-        }
-
-        // Update attack cooldown
-        if (this.attackCooldown > 0) {
-            this.attackCooldown -= TICK;
+            }, this.animator.frameCount * this.animator.frameDuration * 1000);
         }
 
         // Jump logic with gravity
@@ -145,7 +153,11 @@ class Grim {
     }
 
     draw(ctx) {
-        this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+        if(this.facing === "left"){
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, true);
+        }else{
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+        }
         
         // Draw bounding box (for debugging)
         ctx.lineWidth = 2;
