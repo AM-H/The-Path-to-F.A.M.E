@@ -1,91 +1,135 @@
 class Kanji {
     constructor(game) {
         this.game = game;
-        this.x = 400;
-        this.y = 300;
+        this.x = 0;
+        this.y = 500;
         this.velocity = { x: 0, y: 0 };
-        this.speed = 200;
-        this.facing = `Right`;
-        this.isJumping = false;
+        this.fallGrav = 2000;
+        this.facing = "right";
 
-        this.animationMap = {
-            IdleLeft: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/idleLeft.png`), 0, 0, 200, 205, 8, 0.20),
-            IdleRight: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/idleRight.png`), 0, 0, 200, 205, 8, 0.33),
-            RunLeft: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/runLeft.png`), 0, 0, 200, 205, 8, 0.33),
-            RunRight: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/runRight.png`), 0, 0, 200, 205, 8, 0.33),
-            JumpLeft: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/jumpLeft.png`), 0, 0, 200, 205, 8, 0.33),
-            JumpRight: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/jumpRight.png`), 0, 0, 200, 205, 8, 0.33),
-        };
+        // Create animation map for Grim's animations - updated filenames to match loaded assets
+        this.animationMap = new Map();
+        this.animationMap.set('runRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackRight.png`), 24, 48, 96, 48, 7, 0.2));
+        this.animationMap.set('runLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackLeft.png`), 0, 48, 96, 48, 7, 0.2));
+        this.animationMap.set('idleRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/IdleRight.png`), 0, 0, 32, 32, 9, 0.2));
+        this.animationMap.set('idleLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/IdleLeft.png`), 0, 0, 32, 32, 9, 0.2));
 
+        // Set default animation
+        this.animator = this.animationMap.get('idleRight');
 
-        this.animator = this.animationMap.IdleRight;
+        // Set up bounding box for collisions - using sprite dimensions
+        this.box = new BoundingBox(this.x, this.y, 64, 64); // Height is doubled for proper collision
+        this.updateBoundingBox();
+        this.landed = false;
     }
+
+    updateBoundingBox() {
+        this.box = new BoundingBox(this.x, this.y, 64, 64);
+    }
+
+    updateLastBB() {
+        this.lastBox = this.box;
+    }
+
     update() {
-        this.velocity.x = 0;
+        const TICK = this.game.clockTick;
 
-
+        // Left movement
         if (this.game.left) {
-            this.velocity.x = -this.speed;
-            if (this.facing !== "Left" || this.animator !== this.animationMap.RunLeft) {
-                this.facing = "Left";
-                this.animator = this.animationMap.RunLeft;
+            this.x -= 4;
+            if (this.facing !== "left") {
+                this.facing = "left";
+                this.animator = this.animationMap.get('runLeft');
             }
         }
 
+        // Right movement
         if (this.game.right) {
-            this.velocity.x = this.speed;
-            if (this.facing !== "Right" || this.animator !== this.animationMap.RunRight) {
-                this.facing = "Right";
-
-                this.animator = this.animationMap.RunRight;
-
+            this.x += 4;
+            if (this.facing !== "right") {
+                this.facing = "right";
+                this.animator = this.animationMap.get('runRight');
             }
         }
 
-
-        if (this.game.jump && !this.isJumping && this.y === 300) {
-            this.isJumping = true;
-            this.velocity.y = 600;
-
-        }
-
-
-        if (this.isJumping) {
-            this.velocity.y -= 1024* this.game.clockTick;
-        }
-
-
-        this.x += this.velocity.x * this.game.clockTick;
-        this.y -= this.velocity.y * this.game.clockTick;
-
-
-        if (this.y >= 300) {
-            this.y = 300;
-            this.velocity.y = 0;
-            if (this.isJumping) {
-                this.isJumping = false;
-            }
-        }
-
-
+        // Idle state
         if (!this.game.left && !this.game.right) {
-            if (this.facing === "Left" && this.animator !== this.animationMap.IdleLeft) {
-                this.animator = this.animationMap.IdleLeft;
-            } else if (this.facing === "Right" && this.animator !== this.animationMap.IdleRight) {
-                this.animator = this.animationMap.IdleRight;
+            if (this.facing === "left" && this.facing !== "idle") {
+                this.facing = "idle";
+                this.animator = this.animationMap.get('idleLeft');
+            } else if (this.facing === "right" && this.facing !== "idle") {
+                this.facing = "idle";
+                this.animator = this.animationMap.get('idleRight');
             }
         }
 
-        const spriteWidth = 250;
-        if (this.x + spriteWidth < 0) this.x = -spriteWidth;
-        if (this.x +  (this.animator.width * 3 - spriteWidth) > this.game.ctx.canvas.width) {
-            this.x = this.game.ctx.canvas.width - (this.animator.width * 3 - spriteWidth);
+        // Jump logic with gravity
+        if (this.game.jump && this.landed) {
+            this.velocity.y = -800; //change this for jumping height
+            this.fallGrav = 1900;
+            this.landed = false;
         }
+
+        // World boundaries
+        if (this.x < 0) {
+            this.x = 0;
+        }
+        if (this.x > gameWorld.width - 48) { // Updated to match sprite width
+            this.x = gameWorld.width - 48;
+        }
+
+        // Gravity and vertical movement
+        this.velocity.y += this.fallGrav * TICK;
+        this.y += this.velocity.y * TICK;
+
+        this.updateLastBB();
+        this.updateBoundingBox();
+
+        // Collision detection
+        this.game.entities.forEach(entity => {
+            if (entity.box && this.box.collide(entity.box)) {
+                if (this.velocity.y > 0) {
+                    if ((entity instanceof Platform)
+                        && (this.lastBox.bottom) <= entity.box.top) {
+                        this.velocity.y = 0;
+                        this.y = entity.box.top - 64; // Updated to match sprite height
+                        this.landed = true;
+                    }
+                } else if (this.velocity.y < 0) {
+                    if ((entity instanceof Platform)
+                        && (this.lastBox.top) >= entity.box.bottom) {
+                        this.velocity.y = 300;
+                        this.y = entity.box.bottom;
+                    }
+                } else {
+                    this.landed = false;
+                }
+
+                // Horizontal collision
+                if (this.game.right || this.game.left) {
+                    if (this.lastBox.right <= entity.box.left) {
+                        this.x = entity.box.left - this.box.width;
+                    } else if (this.lastBox.left >= entity.box.right) {
+                        this.x = entity.box.right;
+                    }
+                }
+            }
+            this.updateBoundingBox();
+        });
     }
 
+    draw(ctx) {
+        if(this.facing === "left"){
+            console.log("left")
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, true);
+        }else{
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+        }
 
-    draw(ctx){
-        
-        this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y);
+
+        // Draw bounding box (for debugging)
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "red";
+        ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
     }
 }

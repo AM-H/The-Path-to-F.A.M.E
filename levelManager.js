@@ -7,8 +7,10 @@ class LevelManager {
             this.player = new AzielSeraph(this.game);
         } else if (this.whichPlayer === 'grim') {
             this.player = new Grim(this.game);
+        }else if(this.whichPlayer === 'kanji'){
+            this.player = new Kanji(this.game);
         }
-        this.loadLevel(levelOne);
+        this.loadLevel(levelThree);
     };
     loadLevel(level) {
         //redundant drone call and boss call needs to be put into levels.js

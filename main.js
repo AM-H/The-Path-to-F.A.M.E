@@ -8,6 +8,7 @@ ASSET_MANAGER.queueDownload(`./levelBackgrounds/SelectPlayerScreen.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level1_background.png`);
 
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level2_background.png`);
+ASSET_MANAGER.queueDownload(`./levelBackgrounds/level3_background.png`)
 // ASSET_MANAGER.queueDownload('./sprites/idleLeft.png');
 // ASSET_MANAGER.queueDownload('./sprites/idleRight.png');
 // ASSET_MANAGER.queueDownload('./sprites/runLeft.png');
@@ -40,6 +41,13 @@ ASSET_MANAGER.queueDownload(`./sprites/GrimIdleL.png`);
 ASSET_MANAGER.queueDownload(`./sprites/GrimIdleR.png`);
 ASSET_MANAGER.queueDownload(`./sprites/GrimRunningL.png`);
 ASSET_MANAGER.queueDownload(`./sprites/GrimRunningR.png`);
+
+
+//Kanji
+ASSET_MANAGER.queueDownload(`./sprites/kanji/attackRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/attackLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/IdleLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/IdleRight.png`);
 
 
 //Boss

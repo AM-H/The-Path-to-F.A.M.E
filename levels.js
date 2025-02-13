@@ -56,6 +56,51 @@ var levelTwo = {
             bColor: '#37446e'
         }
     ]
-    
 };
+
+var levelThree = {
+    background: {
+        x: 0,
+        y: 0,
+        width: gameWorld.width,
+        height: gameWorld.height,
+        path: `./levelBackgrounds/level3_background.png`
+    },
+    platform: [
+        // Ground platform
+        {
+            x: 0,
+            y: gameWorld.height - 140,
+            width: gameWorld.width,
+            height: 140,
+            bColor: 'rgba(3,51,60,0)'
+        },
+        // Left elevated platform (moved more left)
+        {
+            x: gameWorld.width/10,  // Changed from width/6 to width/12 to move it more left
+            y: gameWorld.height/1.50,
+            width: gameWorld.width/4,
+            height: 30,
+            bColor: '#37446e'
+        },
+        // Middle platform
+        {
+            x: gameWorld.width/2 - gameWorld.width/8,
+            y: gameWorld.height/1.96,
+            width: gameWorld.width/4,
+            height: 30,
+            bColor: '#37446e'
+        },
+        // Right elevated platform (moved more right)
+        {
+            x: gameWorld.width - (gameWorld.width/10) - gameWorld.width/4,  // Adjusted to move it more right
+            y: gameWorld.height/2.50,
+            width: gameWorld.width/4,
+            height: 30,
+            bColor: '#37446e'
+        }
+    ]
+};
+
+
 
