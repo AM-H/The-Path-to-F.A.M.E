@@ -48,6 +48,8 @@ ASSET_MANAGER.queueDownload(`./sprites/kanji/attackRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kanji/attackLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kanji/IdleLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kanji/IdleRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/runRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/runLeft.png`);
 
 
 //Boss

@@ -22,7 +22,7 @@ class Platform{
         ctx.fillRect(this.x, this.y, this.width, this.height);
 
         // Draw collision box
-        ctx.strokeStyle = `green`;
+        ctx.strokeStyle = '#03333c';
         ctx.lineWidth = 2;
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
     };
