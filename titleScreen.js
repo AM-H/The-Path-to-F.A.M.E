@@ -42,7 +42,7 @@ class SelectPlayerScreen {
         ASSET_MANAGER.playAsset(`./audio/YouSeeBIGGIRLT_T.mp3`);
         this.spritesheet = ASSET_MANAGER.getAsset(`./levelBackgrounds/SelectPlayerScreen.png`);
         this.player1 = {
-            idle: new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 5, .35),
+            idle: new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleRightKyra.png`), 0, 0, 96, 40, 5, 0.35),
             x: (gameWorld.width/5),
             y: (gameWorld.height/8)*6
         };

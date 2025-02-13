@@ -6,17 +6,10 @@ ASSET_MANAGER.queueDownload(`./levelBackgrounds/TitleScreen.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/PLAYbutton.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/SelectPlayerScreen.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level1_background.png`);
+ASSET_MANAGER.queueDownload(`./levelBackgrounds/youdied.png`);
+ASSET_MANAGER.queueDownload(`./levelBackgrounds/playagainbutton.png`);
 
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level2_background.png`);
-// ASSET_MANAGER.queueDownload(`./sprites/idleLeft.png`);
-// ASSET_MANAGER.queueDownload(`./sprites/idleRight.png`);
-// ASSET_MANAGER.queueDownload(`./sprites/runLeft.png`);
-// ASSET_MANAGER.queueDownload(`./sprites/runRight.png`);
-// ASSET_MANAGER.queueDownload(`./sprites/attack1Right.png`);
-// ASSET_MANAGER.queueDownload(`./sprites/attack1Left.png`);
-// ASSET_MANAGER.queueDownload(`./sprites/attack2Right.png`);
-// ASSET_MANAGER.queueDownload(`./sprites/attack2Left.png`);
-// ASSET_MANAGER.queueDownload(`./sprites/bullet.png`);
 ASSET_MANAGER.queueDownload(`./sprites/drone.png`);
 ASSET_MANAGER.queueDownload(`./sprites/bullet.png`);
 
@@ -61,6 +54,9 @@ ASSET_MANAGER.queueDownload(`./sprites/GrimIdleR.png`);
 
 ASSET_MANAGER.queueDownload(`./audio/YouSeeBIGGIRLT_T.mp3`);
 ASSET_MANAGER.queueDownload(`./audio/HolyDiverPunch.mp3`);
+
+//KyraBlade
+ASSET_MANAGER.queueDownload(`./sprites/kyrablade/IdleRightKyra.png`);
 
 
 

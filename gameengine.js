@@ -22,6 +22,8 @@ class GameEngine {
         this.closeAttack = false;
         this.rangeAttack = false;
 
+        this.isGameOver = false;
+
 
         // Options and the Details
         this.options = options || {
@@ -180,9 +182,11 @@ class GameEngine {
     };
 
     loop() {
-        this.clockTick = this.timer.tick();
-        this.update();
-        this.draw();
+        if (!this.isGameOver) {
+            this.clockTick = this.timer.tick();
+            this.update();
+            this.draw();
+        }
     };
 
 };

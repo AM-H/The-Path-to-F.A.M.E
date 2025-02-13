@@ -43,6 +43,13 @@ class AzielSeraph {
         const TICK = this.game.clockTick;
         const currentTime = this.game.timer.gameTime;
 
+        if (this.hitpoints <= 0) {
+            this.hitpoints = 0;
+            this.game.isGameOver = true;
+            this.game.addEntity(new GameOver(this.game));
+            return;
+        }
+
         //left control
         if (this.game.left) {
             this.x -= 4;
