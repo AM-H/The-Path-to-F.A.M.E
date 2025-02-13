@@ -19,16 +19,16 @@ class Kanji {
         this.animationMap.set('runLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/runLeft.png`), 0, 0, 32, 32, 6, 0.2));
         this.animationMap.set('idleRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/IdleRight.png`), 0, 0, 32, 32, 9, 0.2));
         this.animationMap.set('idleLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/IdleLeft.png`), 0, 0, 32, 32, 9, 0.2));
-        this.animationMap.set('attackRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackRight.png`), 24, 48, 96, 48, 7, 0.089));
-        this.animationMap.set('attackLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackLeft.png`), 0, 48, 96, 48, 7, 0.089));
-        this.animationMap.set('runAttackRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackRight.png`), 24, 48, 96, 48, 7, 0.089));
-        this.animationMap.set('runAttackLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackLeft.png`), 0, 48, 96, 48, 7, 0.089));
+        this.animationMap.set('attackRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackRight.png`), 33.9, 48, 96, 48, 7, 0.07));
+        this.animationMap.set('attackLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackLeft.png`), -3, 48, 96, 48, 7, 0.07));
+        //this.animationMap.set('runAttackRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackRight.png`), 24, 48, 96, 48, 7, 0.089));
+       // this.animationMap.set('runAttackLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackLeft.png`), -3, 48, 96, 48, 7, 0.089));
 
         // Set default animation
         this.animator = this.animationMap.get('idleRight');
 
         this.attacking = false;
-        this.isMoving = false;
+        //this.isMoving = false;
 
         // Set up bounding box for collisions
         this.box = new BoundingBox(this.x, this.y, 64, 64);
@@ -85,9 +85,9 @@ class Kanji {
 
             // Choose animation based on movement state
             if (this.facing === "right") {
-                this.animator = this.animationMap.get(this.isMoving ? 'runAttackRight' : 'attackRight');
+                this.animator = this.animationMap.get( 'attackRight');
             } else {
-                this.animator = this.animationMap.get(this.isMoving ? 'runAttackLeft' : 'attackLeft');
+                this.animator = this.animationMap.get('attackLeft');
             }
 
             // Reset attack state after animation finishes
