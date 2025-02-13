@@ -31,6 +31,7 @@ class Grim {
         this.updateBoundingBox();
         this.landed = false;
         this.attacking = false;
+        this.canShoot = true;
     }
 
     updateBoundingBox() {
@@ -46,7 +47,7 @@ class Grim {
         
         // Left movement
         if (this.game.left) {
-            this.x -= 4;
+            this.x -= 250 * TICK; // Changed from fixed value 4 to speed * TICK
             if (this.facing !== "left") {
                 this.facing = "left";
                 this.animator = this.animationMap.get('runLeft');
@@ -55,7 +56,7 @@ class Grim {
         
         // Right movement
         if (this.game.right) {
-            this.x += 4;
+            this.x += 250 * TICK; // Changed from fixed value 4 to speed * TICK
             if (this.facing !== "right") {
                 this.facing = "right";
                 this.animator = this.animationMap.get('runRight');
@@ -96,6 +97,30 @@ class Grim {
                 }
             }, this.animator.frameCount * this.animator.frameDuration * 1000);
         }
+
+        //long range attack 
+        if (this.game.rangeAttack && this.canShoot) {
+            console.log("long range attack");
+            const direction = {
+                x: (this.game.mouseX - this.x) / Math.sqrt((this.game.mouseX - this.x) ** 2 + (this.game.mouseY - this.y) ** 2),
+                y: (this.game.mouseY - this.y) / Math.sqrt((this.game.mouseX - this.x) ** 2 + (this.game.mouseY - this.y) ** 2)
+            };
+        
+            // Calculate center position of Grim
+            const centerX = this.x + (this.box.width / 2) - 32;  
+            const centerY = this.y + (this.box.height / 2) - 32; 
+        
+            const projectile = new SkullProjectile(this.game, centerX, centerY, direction);
+            this.game.addEntity(projectile);
+            
+            this.canShoot = false;
+        }
+        
+        // Add this condition to reset shooting capability when right click is released
+        if (!this.game.rangeAttack) {
+            this.canShoot = true;
+        }
+
 
         // Jump logic with gravity
         if (this.game.jump && this.landed) {
