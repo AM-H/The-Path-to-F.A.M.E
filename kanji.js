@@ -7,6 +7,8 @@ class Kanji {
         this.fallGrav = 2000;
         this.facing = "right";
 
+        this.attackDirection = null;
+
 
         this.canAttack = false;
         setTimeout(() => {
@@ -20,9 +22,8 @@ class Kanji {
         this.animationMap.set('idleRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/IdleRight.png`), 0, 0, 32, 32, 9, 0.2));
         this.animationMap.set('idleLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/IdleLeft.png`), 0, 0, 32, 32, 9, 0.2));
         this.animationMap.set('attackRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackRight.png`), 33.9, 48, 96, 48, 7, 0.07));
-        this.animationMap.set('attackLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackLeft.png`), -3, 48, 96, 48, 7, 0.07));
-        //this.animationMap.set('runAttackRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackRight.png`), 24, 48, 96, 48, 7, 0.089));
-       // this.animationMap.set('runAttackLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackLeft.png`), -3, 48, 96, 48, 7, 0.089));
+        this.animationMap.set('attackLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackLeft1.png`), 0, 0, 58, 34, 7, 0.07));
+
 
         // Set default animation
         this.animator = this.animationMap.get('idleRight');
@@ -37,64 +38,40 @@ class Kanji {
     }
 
     updateBoundingBox() {
-        this.box = new BoundingBox(this.x, this.y, 64, 64);
+
+            this.box = new BoundingBox(this.x, this.y, 64, 64);
+
     }
 
     updateLastBB() {
         this.lastBox = this.box;
     }
 
+
+
     update() {
         const TICK = this.game.clockTick;
+        const moveSpeed = this.attacking ? 2 : 4;
 
-        // Left movement
-        this.isMoving = this.game.left || this.game.right;
-
-        // Left movement
-        if (this.game.left) {
-            this.x -= 4;
-            this.facing = "left";
-            if (!this.attacking) {
-                this.animator = this.animationMap.get('runLeft');
-            }
-        }
-
-        // Right movement
-        if (this.game.right) {
-            this.x += 4;
-            this.facing = "right";
-            if (!this.attacking) {
-                this.animator = this.animationMap.get('runRight');
-            }
-        }
-
-        // Idle state
-        if (!this.game.left && !this.game.right && !this.attacking) {
-            if (this.facing === "left") {
-                this.animator = this.animationMap.get('idleLeft');
-            } else if (this.facing === "right") {
-                this.animator = this.animationMap.get('idleRight');
-            }
-        }
-
-        // Attack logic with running attack animations
+        // Store the attack direction when starting an attack
         if (this.game.closeAttack && !this.attacking && this.canAttack) {
             this.attacking = true;
             this.canAttack = false;
+            this.attackDirection = this.facing;
             console.log("Attacking");
 
-            // Choose animation based on movement state
-            if (this.facing === "right") {
-                this.animator = this.animationMap.get( 'attackRight');
+            // Choose animation based on attack direction (not current facing)
+            if (this.attackDirection === "right") {
+                this.animator = this.animationMap.get('attackRight');
             } else {
                 this.animator = this.animationMap.get('attackLeft');
             }
 
-            // Reset attack state after animation finishes
             const currentAnimator = this.animator;
             setTimeout(() => {
                 this.attacking = false;
                 this.canAttack = true;
+                this.attackDirection = null;
                 // Return to appropriate animation based on movement state
                 if (this.game.left) {
                     this.animator = this.animationMap.get('runLeft');
@@ -106,10 +83,37 @@ class Kanji {
             }, currentAnimator.frameCount * currentAnimator.frameDuration * 1000);
         }
 
+        // Update facing direction
+        if (!this.attacking) {
+            if (this.game.left) {
+                this.facing = "left";
+            } else if (this.game.right) {
+                this.facing = "right";
+            }
+        }
+
+        // Handle movement
+        if (this.game.left) {
+            this.x -= moveSpeed;
+        }
+        if (this.game.right) {
+            this.x += moveSpeed;
+        }
+
+        // Update animations when not attacking
+        if (!this.attacking) {
+            if (this.game.left || this.game.right) {
+                // Running animations
+                this.animator = this.animationMap.get(this.facing === "left" ? 'runLeft' : 'runRight');
+            } else {
+                // Idle animations
+                this.animator = this.animationMap.get(this.facing === "left" ? 'idleLeft' : 'idleRight');
+            }
+        }
 
         // Jump logic with gravity
         if (this.game.jump && this.landed) {
-            this.velocity.y = -800; //change this for jumping height
+            this.velocity.y = -800;
             this.fallGrav = 1900;
             this.landed = false;
         }
@@ -118,7 +122,7 @@ class Kanji {
         if (this.x < 0) {
             this.x = 0;
         }
-        if (this.x > gameWorld.width - 48) { // Updated to match sprite width
+        if (this.x > gameWorld.width - 48) {
             this.x = gameWorld.width - 48;
         }
 
@@ -136,7 +140,7 @@ class Kanji {
                     if ((entity instanceof Platform)
                         && (this.lastBox.bottom) <= entity.box.top) {
                         this.velocity.y = 0;
-                        this.y = entity.box.top - 64; // Updated to match sprite height
+                        this.y = entity.box.top - 64;
                         this.landed = true;
                     }
                 } else if (this.velocity.y < 0) {
@@ -163,14 +167,16 @@ class Kanji {
     }
 
     draw(ctx) {
-        if(this.facing === "left"){
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, true);
-        }else{
+        // Use attackDirection instead of facing for offset calculations
+        if (this.attacking && this.attackDirection === "left") {
+            const offsetX = -38;
+            const offsetY = -4;
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x + offsetX, this.y + offsetY, 2);
+        } else {
             this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
         }
 
-
-        // Draw bounding box (for debugging)
+        // Draw bounding box
         ctx.lineWidth = 2;
         ctx.strokeStyle = "red";
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);

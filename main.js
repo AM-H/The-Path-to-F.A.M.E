@@ -45,7 +45,7 @@ ASSET_MANAGER.queueDownload(`./sprites/GrimRunningR.png`);
 
 //Kanji
 ASSET_MANAGER.queueDownload(`./sprites/kanji/attackRight.png`);
-ASSET_MANAGER.queueDownload(`./sprites/kanji/attackLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/attackLeft1.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kanji/IdleLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kanji/IdleRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kanji/runRight.png`);
