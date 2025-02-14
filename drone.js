@@ -28,7 +28,7 @@ class Drone {
         this.healthbar = new HealthBar(this);
 
         // State
-        this.state = 'idle';
+        this.state = `idle`;
         this.removeFromWorld = false;
     }
 
@@ -88,19 +88,19 @@ class Drone {
 
             // Determine state
             if (distance < this.attackRange) {
-                this.state = 'attacking';
+                this.state = `attacking`;
             } else if (distance < this.followRange) {
-                this.state = 'chasing';
+                this.state = `chasing`;
             } else {
-                this.state = 'idle';
+                this.state = `idle`;
             }
 
             // Behavior
-            if (this.state === 'chasing') {
+            if (this.state === `chasing`) {
                 const angle = Math.atan2(dy, dx);
                 this.x += Math.cos(angle) * this.moveSpeed * TICK;
                 this.y += Math.sin(angle) * this.moveSpeed * TICK;
-            } else if (this.state === 'attacking') {
+            } else if (this.state === `attacking`) {
                 if (this.attackTimer <= 0) {
                     this.attackTimer = this.attackCooldown;
                     this.shoot(player);
@@ -133,7 +133,7 @@ class Drone {
 
     draw(ctx) {
         this.droneImg.drawFrame(this.game.clockTick, ctx, this.x, this.y, this.spriteScale);
-        ctx.strokeStyle = 'red';
+        ctx.strokeStyle = `red`;
         ctx.lineWidth = 2;
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
 

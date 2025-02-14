@@ -75,7 +75,7 @@ class SelectPlayerScreen {
             this.hovering2 = true;
             if (this.game.closeAttack) {
                 this.removeFromWorld = true;
-                this.game.addEntity(new LevelManager(this.game, 'grim'));
+                this.game.addEntity(new LevelManager(this.game, `grim`));
             }
         } else {
             this.hovering2 = false;
@@ -87,7 +87,7 @@ class SelectPlayerScreen {
             this.hovering3 = true;
             if (this.game.closeAttack) {
                 this.removeFromWorld = true;
-                this.game.addEntity(new LevelManager(this.game, 'kanji'));
+                this.game.addEntity(new LevelManager(this.game, `kanji`));
             }
         } else {
             this.hovering3 = false;
@@ -99,7 +99,7 @@ class SelectPlayerScreen {
             this.hovering4 = true;
             if (this.game.closeAttack) {
                 this.removeFromWorld = true;
-                this.game.addEntity(new LevelManager(this.game, 'aziel'));
+                this.game.addEntity(new LevelManager(this.game, `aziel`));
             }
         } else {
             this.hovering4 = false;
@@ -115,18 +115,18 @@ class SelectPlayerScreen {
 
         // Draw selection boxes
         if (this.hovering2) {
-            ctx.strokeStyle = '#fafad4';
+            ctx.strokeStyle = `#fafad4`;
             ctx.lineWidth = 6;
             ctx.strokeRect(this.player2.x, this.player2.y, 64, 64);
         }
 
         if (this.hovering3) {
-            ctx.strokeStyle = '#fafad4';
+            ctx.strokeStyle = `#fafad4`;
             ctx.lineWidth = 6;
             ctx.strokeRect(this.player3.x + 10, this.player3.y, 48, 64);
         }
         if (this.hovering4) {
-            ctx.strokeStyle = '#fafad4';
+            ctx.strokeStyle = `#fafad4`;
             ctx.lineWidth = 6;
             ctx.strokeRect(this.player4.x, this.player4.y, 32, 64);
         }

@@ -11,12 +11,12 @@ class LevelManager {
             this.game.addEntity(aziel);
             this.game.addEntity(new HolyDiver(this.game, aziel));
         }
-        if(this.whichPlayer === 'kanji'){
+        if(this.whichPlayer === `kanji`){
             const kanji = new Kanji(this.game);
             this.game.addEntity(kanji);
         }
 
-        if(this.whichPlayer == 'grim'){
+        if(this.whichPlayer == `grim`){
             const grim = new Grim(this.game);
             this.game.addEntity(grim);
             this.game.addEntity(new GrimAxe(this.game, grim));
@@ -46,7 +46,7 @@ class LevelManager {
             });
             this.loadLevel(levelTwo);
         }
-        if (this.character === 'grim' && this.game.rangeAttack) {
+        if (this.character === `grim` && this.game.rangeAttack) {
             const direction = {
                 x: (this.game.mouseX - this.player.x) / Math.sqrt((this.game.mouseX - this.player.x) ** 2 + (this.game.mouseY - this.player.y) ** 2),
                 y: (this.game.mouseY - this.player.y) / Math.sqrt((this.game.mouseX - this.player.x) ** 2 + (this.game.mouseY - this.player.y) ** 2)

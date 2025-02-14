@@ -1,4 +1,4 @@
-// This game shell was happily modified from Googler Seth Ladd's "Bad Aliens" game and his Google IO talk in 2011
+// This game shell was happily modified from Googler Seth Ladd`s "Bad Aliens" game and his Google IO talk in 2011
 
 class GameEngine {
     constructor(options) {
@@ -164,7 +164,7 @@ class GameEngine {
         // Draw custom crosshair
     if (this.mouseX && this.mouseY) {
         this.ctx.beginPath();
-        this.ctx.strokeStyle = 'white';  // Outer white line
+        this.ctx.strokeStyle = `white`;  // Outer white line
         this.ctx.lineWidth = 3;
         
         // Horizontal line
@@ -183,7 +183,7 @@ class GameEngine {
 
         // Draw inner black outline
         this.ctx.beginPath();
-        this.ctx.strokeStyle = 'black';
+        this.ctx.strokeStyle = `black`;
         this.ctx.lineWidth = 1;
         
         // Redraw the same lines slightly smaller
@@ -201,7 +201,7 @@ class GameEngine {
 
         // Draw center dot dont like
         // this.ctx.beginPath();
-        // this.ctx.fillStyle = 'red';
+        // this.ctx.fillStyle = `red`;
         // this.ctx.arc(this.mouseX, this.mouseY, 2, 0, Math.PI * 2);
         // this.ctx.fill();
     }

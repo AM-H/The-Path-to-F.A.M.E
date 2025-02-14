@@ -5,13 +5,13 @@ class GrimAxe {
         
         // Create animation map for both directions
         this.animationMap = new Map([
-            ['right', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimAxeR.png`), 0, 0, 48, 48, 8, 0.09)],
-            ['left', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimAxeL.png`), 0, 0, 48, 48, 8, 0.09)]
+            [`right`, new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimAxeR.png`), 0, 0, 48, 48, 8, 0.09)],
+            [`left`, new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimAxeL.png`), 0, 0, 48, 48, 8, 0.09)]
         ]);
         
         // Default to right-facing animation
-        this.animator = this.animationMap.get('right');
-        this.facing = 'right';
+        this.animator = this.animationMap.get(`right`);
+        this.facing = `right`;
         
         this.box = new BoundingBox(0, 0, 48, 48);
         this.rotation = 0;
@@ -50,7 +50,7 @@ class GrimAxe {
         this.rotation = Math.atan2(dy, dx);
 
         // Update facing direction based on mouse position
-        const newFacing = this.game.mouseX < this.grimCenterX ? 'left' : 'right';
+        const newFacing = this.game.mouseX < this.grimCenterX ? `left` : `right`;
         if (this.facing !== newFacing) {
             this.facing = newFacing;
             this.animator = this.animationMap.get(this.facing);

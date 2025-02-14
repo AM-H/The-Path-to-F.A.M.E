@@ -29,16 +29,16 @@ class Boss {
         
         // State
         this.facing = -1;
-        this.state = 'idle';
+        this.state = `idle`;
         this.targetPlatform = null;
-        this.jumpPhase = 'none';
+        this.jumpPhase = `none`;
         this.isOnPlatform = false;  
         
         // Combat ranges
         this.attackRange = 50;
         this.chaseRange = 400;
         this.minDistance = 100;
-        this.jumpThreshold = 100; // Distance at which boss decides to jump to player's platform
+        this.jumpThreshold = 100; // Distance at which boss decides to jump to player`s platform
 
         // Initialize bounding boxes
         this.updateBoundingBox();
@@ -129,7 +129,7 @@ class Boss {
     }
 
     getPlayer() {
-        // Find any entity that's a player (AzielSeraph or Grim)
+        // Find any entity that`s a player (AzielSeraph or Grim)
         return this.game.entities.find(entity => 
             entity instanceof AzielSeraph || entity instanceof HolyDiver || entity instanceof Grim || entity instanceof Kanji
         );
@@ -148,7 +148,7 @@ class Boss {
                     this.takeDamage(10);
                 }
             } else if (player instanceof Grim) {
-                // Handle Grim's attack
+                // Handle Grim`s attack
                 if (player.game.closeAttack) {
                     this.takeDamage(10);
                 }
@@ -184,13 +184,13 @@ class Boss {
 
         if (this.landed) {  // Only move horizontally when landed
             if (distToPlayer < this.attackRange) {
-                this.state = 'attacking';
+                this.state = `attacking`;
             } else if (distToPlayer < this.chaseRange) {
-                this.state = 'chasing';
+                this.state = `chasing`;
                 this.x += this.moveSpeed * moveDir;
                 this.facing = moveDir;
             } else {
-                this.state = 'idle';
+                this.state = `idle`;
             }
         }
 
@@ -225,7 +225,7 @@ class Boss {
             }
         });
 
-        // If not on any platform, check if we've fallen below ground level
+        // If not on any platform, check if we`ve fallen below ground level
         const groundLevel = gameWorld.height - 70;  // Adjust this value based on your ground height
         if (!isOnGround && this.y + this.boxHeight > groundLevel) {
             this.y = groundLevel - this.boxHeight;
@@ -248,14 +248,14 @@ class Boss {
     draw(ctx) {
         const scale = this.spriteScale;
         
-        if (this.state === 'attacking') {
+        if (this.state === `attacking`) {
             if (this.facing === -1) {
                 this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
             } else {
                 this.attackRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
             }
         } else {
-            if (this.state === 'chasing' || this.state === 'moving' || this.jumpPhase === 'jumping') {
+            if (this.state === `chasing` || this.state === `moving` || this.jumpPhase === `jumping`) {
                 if (this.facing === -1) {
                     this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
                 } else {
@@ -271,7 +271,7 @@ class Boss {
         }
         
         // Debug bounding box
-        ctx.strokeStyle = 'red';
+        ctx.strokeStyle = `red`;
         ctx.lineWidth = 2;
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
 

@@ -14,16 +14,16 @@ class Grim {
         }, 100); // Small delay to ensure proper initialization
         
         
-        // Create animation map for Grim's animations
+        // Create animation map for Grim`s animations
         this.animationMap = new Map();
-        this.animationMap.set('runRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimRunningR.png`), 13, 16, 48, 32, 6, 0.2));
-        this.animationMap.set('runLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimRunningL.png`), 3.01, 16, 48, 32, 6, 0.2));
-        this.animationMap.set('idleRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimIdleR.png`), 0, 16, 42, 32, 5, 0.2));
-        this.animationMap.set('idleLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimIdleL.png`), 5, 16, 48, 32, 5, 0.2));
+        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimRunningR.png`), 13, 16, 48, 32, 6, 0.2));
+        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimRunningL.png`), 3.01, 16, 48, 32, 6, 0.2));
+        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimIdleR.png`), 0, 16, 42, 32, 5, 0.2));
+        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimIdleL.png`), 5, 16, 48, 32, 5, 0.2));
         
         
         // Set default animation
-        this.animator = this.animationMap.get('idleRight');
+        this.animator = this.animationMap.get(`idleRight`);
         
         this.box = new BoundingBox(this.x, this.y, 64, 64);
         this.updateBoundingBox();
@@ -48,7 +48,7 @@ class Grim {
             this.x -= 250 * TICK; // Changed from fixed value 4 to speed * TICK
             if (this.facing !== "left") {
                 this.facing = "left";
-                this.animator = this.animationMap.get('runLeft');
+                this.animator = this.animationMap.get(`runLeft`);
             }
         }
         
@@ -57,16 +57,16 @@ class Grim {
             this.x += 250 * TICK; // Changed from fixed value 4 to speed * TICK
             if (this.facing !== "right") {
                 this.facing = "right";
-                this.animator = this.animationMap.get('runRight');
+                this.animator = this.animationMap.get(`runRight`);
             }
         }
         
         // Idle state
         if (!this.game.left && !this.game.right && !this.attacking) {
             if (this.facing === "left") {
-                this.animator = this.animationMap.get('idleLeft');
+                this.animator = this.animationMap.get(`idleLeft`);
             } else if (this.facing === "right") {
-                this.animator = this.animationMap.get('idleRight');
+                this.animator = this.animationMap.get(`idleRight`);
             }
         }
 
@@ -74,7 +74,7 @@ class Grim {
         if (this.game.rangeAttack && this.canShoot) {
             console.log("long range attack");
             
-            // Calculate the center of the character's position
+            // Calculate the center of the character`s position
             const centerX = this.x + (this.box.width / 2);
             const centerY = this.y + (this.box.height / 2);
 

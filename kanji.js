@@ -19,18 +19,18 @@ class Kanji {
 
         // Create animation map for animations
         this.animationMap = new Map();
-        this.animationMap.set('runRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/runRight.png`), 0, 0, 32, 32, 6, 0.2));
-        this.animationMap.set('runLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/runLeft.png`), 0, 0, 32, 32, 6, 0.2));
-        this.animationMap.set('idleRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/IdleRight.png`), 0, 0, 32, 32, 9, 0.2));
-        this.animationMap.set('idleLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/IdleLeft.png`), 0, 0, 32, 32, 9, 0.2));
-        this.animationMap.set('attackRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackRight.png`), 33.9, 48, 96, 48, 7, 0.07));
-        this.animationMap.set('attackLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackLeft1.png`), 0, 0, 58, 34, 7, 0.07));
-        this.animationMap.set('jumpLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/jumpLeft.png`), 0, 0, 32, 32, 2, 0.5));
-        this.animationMap.set('jumpRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/jumpRight.png`), 0, 0, 32, 32, 2, 0.5));
+        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/runRight.png`), 0, 0, 32, 32, 6, 0.2));
+        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/runLeft.png`), 0, 0, 32, 32, 6, 0.2));
+        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/IdleRight.png`), 0, 0, 32, 32, 9, 0.2));
+        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/IdleLeft.png`), 0, 0, 32, 32, 9, 0.2));
+        this.animationMap.set(`attackRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackRight.png`), 33.9, 48, 96, 48, 7, 0.07));
+        this.animationMap.set(`attackLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackLeft1.png`), 0, 0, 58, 34, 7, 0.07));
+        this.animationMap.set(`jumpLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/jumpLeft.png`), 0, 0, 32, 32, 2, 0.5));
+        this.animationMap.set(`jumpRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/jumpRight.png`), 0, 0, 32, 32, 2, 0.5));
 
 
         // Set default animation
-        this.animator = this.animationMap.get('idleRight');
+        this.animator = this.animationMap.get(`idleRight`);
 
         this.attacking = false;
         //this.isMoving = false;
@@ -66,9 +66,9 @@ class Kanji {
 
             // Choose animation based on attack direction (not current facing)
             if (this.attackDirection === "right") {
-                this.animator = this.animationMap.get('attackRight');
+                this.animator = this.animationMap.get(`attackRight`);
             } else {
-                this.animator = this.animationMap.get('attackLeft');
+                this.animator = this.animationMap.get(`attackLeft`);
             }
 
             const currentAnimator = this.animator;
@@ -78,11 +78,11 @@ class Kanji {
                 this.attackDirection = null;
                 // Return to appropriate animation based on movement state
                 if (this.game.left) {
-                    this.animator = this.animationMap.get('runLeft');
+                    this.animator = this.animationMap.get(`runLeft`);
                 } else if (this.game.right) {
-                    this.animator = this.animationMap.get('runRight');
+                    this.animator = this.animationMap.get(`runRight`);
                 } else {
-                    this.animator = this.animationMap.get(this.facing === "right" ? 'idleRight' : 'idleLeft');
+                    this.animator = this.animationMap.get(this.facing === "right" ? `idleRight` : `idleLeft`);
                 }
             }, currentAnimator.frameCount * currentAnimator.frameDuration * 1000);
         }
@@ -109,11 +109,11 @@ class Kanji {
         // Update animations when not attacking
         if (!this.attacking) {
             if (!this.landed) {
-                this.animator = this.animationMap.get(this.facing === "left" ? 'jumpLeft' : 'jumpRight');
+                this.animator = this.animationMap.get(this.facing === "left" ? `jumpLeft` : `jumpRight`);
             } else if (this.game.left || this.game.right) {
-                this.animator = this.animationMap.get(this.facing === "left" ? 'runLeft' : 'runRight');
+                this.animator = this.animationMap.get(this.facing === "left" ? `runLeft` : `runRight`);
             } else {
-                this.animator = this.animationMap.get(this.facing === "left" ? 'idleLeft' : 'idleRight');
+                this.animator = this.animationMap.get(this.facing === "left" ? `idleLeft` : `idleRight`);
             }
         }
 
