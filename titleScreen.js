@@ -28,7 +28,7 @@ class TitleScreen {
             this.playButton.height = 100;
         }
         updateVolume();
-        
+
     }
     loadSelectPlayerScreen() {
         this.game.addEntity(new SelectPlayerScreen(this.game));
@@ -54,7 +54,7 @@ class SelectPlayerScreen {
             y: (gameWorld.height/8)*6
         };
         this.player3 = {
-            idle: new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 5, .35),
+            idle: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/IdleRight.png`), 0, 0, 32, 32, 9, .20),
             x: (gameWorld.width/5)*3,
             y: (gameWorld.height/8)*6
         };
@@ -81,6 +81,18 @@ class SelectPlayerScreen {
             this.hovering2 = false;
         }
 
+        // Check hover for Kanji (player3)
+        if ((this.game.mouseX > this.player3.x) && this.game.mouseX < this.player3.x+32 &&
+            this.game.mouseY > this.player3.y && this.game.mouseY < this.player3.y+64) {
+            this.hovering3 = true;
+            if (this.game.closeAttack) {
+                this.removeFromWorld = true;
+                this.game.addEntity(new LevelManager(this.game, 'kanji'));
+            }
+        } else {
+            this.hovering3 = false;
+        }
+
         // Check hover for Aziel (player4)
         if ((this.game.mouseX > this.player4.x) && this.game.mouseX < this.player4.x+32 && 
             this.game.mouseY > this.player4.y && this.game.mouseY < this.player4.y+64) {
@@ -93,6 +105,7 @@ class SelectPlayerScreen {
             this.hovering4 = false;
         }
     }
+
     draw(ctx) {
         ctx.drawImage(this.spritesheet, 0, 0, gameWorld.width, gameWorld.height);
         this.player1.idle.drawFrame(this.game.clockTick, ctx, this.player1.x, this.player1.y, 2);
@@ -105,6 +118,12 @@ class SelectPlayerScreen {
             ctx.strokeStyle = '#fafad4';
             ctx.lineWidth = 6;
             ctx.strokeRect(this.player2.x, this.player2.y, 64, 64);
+        }
+
+        if (this.hovering3) {
+            ctx.strokeStyle = '#fafad4';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(this.player3.x + 10, this.player3.y, 48, 64);
         }
         if (this.hovering4) {
             ctx.strokeStyle = '#fafad4';

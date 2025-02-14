@@ -3,14 +3,17 @@ class LevelManager {
         this.game = game;
         this.whichPlayer = player;
         this.boss = null;
-        
         this.loadLevel(levelOne);
     };
     loadLevel(level) {
-        if (this.whichPlayer == 'aziel') {
+        if (this.whichPlayer == `aziel`) {
             const aziel = new AzielSeraph(this.game);
             this.game.addEntity(aziel);
             this.game.addEntity(new HolyDiver(this.game, aziel));
+        }
+        if(this.whichPlayer === 'kanji'){
+            const kanji = new Kanji(this.game);
+            this.game.addEntity(kanji);
         }
 
         if(this.whichPlayer == 'grim'){
@@ -36,8 +39,6 @@ class LevelManager {
             this.game.addEntity(new Platform(this.game, platform.x, platform.y, platform.width, platform.height, platform.bColor));
         }
     };
-
-
     update() {
         if (this.boss.defeated) {
             this.game.entities.forEach(element => {
@@ -54,11 +55,8 @@ class LevelManager {
             const projectile = new SkullProjectile(this.game, this.player.x + this.player.box.width / 2, this.player.y + this.player.box.height / 2, direction);
             this.game.addEntity(projectile);  // Add the projectile to the game entities
         }
-    
+
     };
-
-
-
     draw(ctx) {
         
     };
