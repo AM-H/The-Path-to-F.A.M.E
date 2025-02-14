@@ -4,6 +4,13 @@ class LevelManager {
         this.whichPlayer = player;
         this.boss = null;
         this.loadLevel(levelOne);
+        this.player = null;
+        if (this.whichPlayer === 'aziel') {
+            this.player = new AzielSeraph(this.game);
+        } else if (this.whichPlayer === 'grim') {
+            this.player = new Grim(this.game);
+        }
+        this.loadLevel(levelTwo);
     };
     loadLevel(level) {
         if (this.whichPlayer == `aziel`) {
@@ -21,6 +28,16 @@ class LevelManager {
         } else if (level == levelTwo) {
             this.boss = new Boss(this.game);
             // add minions and boss level two
+    }
+        this.game.addEntity(new Boss(this.game));
+        this.game.addEntity(this.player);
+        
+        if (this.whichPlayer === 'aziel') {
+            this.game.addEntity(new HolyDiver(this.game, this.player));
+        }
+
+        if (this.whichPlayer === 'grim') {
+            this.game.addEntity(new GrimAxe(this.game, this.player));
         }
 
         this.game.addEntity(new Background(this.game, level.background.x, level.background.y, level.background.width, level.background.height, level.background.path));
@@ -36,8 +53,20 @@ class LevelManager {
             });
             this.loadLevel(levelTwo);
         }
+        if (this.character === 'grim' && this.game.rangeAttack) {
+            const direction = {
+                x: (this.game.mouseX - this.player.x) / Math.sqrt((this.game.mouseX - this.player.x) ** 2 + (this.game.mouseY - this.player.y) ** 2),
+                y: (this.game.mouseY - this.player.y) / Math.sqrt((this.game.mouseX - this.player.x) ** 2 + (this.game.mouseY - this.player.y) ** 2)
+            };
 
+            const projectile = new SkullProjectile(this.game, this.player.x + this.player.box.width / 2, this.player.y + this.player.box.height / 2, direction);
+            this.game.addEntity(projectile);  // Add the projectile to the game entities
+        }
+    
     };
+
+
+
     draw(ctx) {
         
     };

@@ -52,7 +52,7 @@ class AzielSeraph {
 
         //left control
         if (this.game.left) {
-            this.x -= 4;
+            this.x -= 250 * TICK;
             if (this.facing !== "left") {
                 this.facing = "left";
                 this.animator = this.animationMap.get(`runLeft`);
@@ -60,7 +60,7 @@ class AzielSeraph {
         }
         //right control
         if (this.game.right) {
-            this.x += 4;
+            this.x += 250 * TICK;
             if (this.facing !== "right") {
                 this.facing = "right";
                 this.animator = this.animationMap.get(`runRight`)
