@@ -67,6 +67,9 @@ class Drone {
         }
         return false;
     }
+    takeDamage(amount) {
+        this.hitpoints = Math.max(0, this.hitpoints - amount);
+    }
 
     update() {
         const TICK = this.game.clockTick;
@@ -110,10 +113,10 @@ class Drone {
             }
 
             // Take Damage when hit by player attack
-            if (this.checkPlayerAttack()) {
-                this.hitpoints -= 25;
-                console.log(`Drone hit! HP remaining: ${this.hitpoints}`);
-            }
+            // if (this.checkPlayerAttack()) {
+            //     this.hitpoints -= 25;
+            //     console.log(`Drone hit! HP remaining: ${this.hitpoints}`);
+            // }
         }
 
         this.healthbar.update();

@@ -131,20 +131,20 @@ class Boss {
     getPlayer() {
         // Find any entity that's a player (AzielSeraph or Grim)
         return this.game.entities.find(entity => 
-            entity instanceof AzielSeraph || entity instanceof Grim
+            entity instanceof AzielSeraph || entity instanceof HolyDiver || entity instanceof Grim
         );
     }
 
     checkPlayerAttack() {
         const player = this.getPlayer();
         if (!player) return;
-
         // Check for close attack collision
-        if (this.box.collide(player.box)) {
-            if (player instanceof AzielSeraph) {
+        if (player.box && this.box.collide(player.box)) {
+            console.log(`HERE`);
+            if (player instanceof AzielSeraph || player instanceof HolyDiver) {
                 // Check for HolyDiver attack
-                const holyDiver = this.game.entities.find(entity => entity instanceof HolyDiver);
-                if (holyDiver && this.box.collide(holyDiver.box) && player.game.closeAttack) {
+                //const holyDiver = this.game.entities.find(entity => entity instanceof HolyDiver);
+                if (player.box && this.box.collide(player.box) && this.game.closeAttack) {
                     this.takeDamage(10);
                 }
             } else if (player instanceof Grim) {
@@ -217,6 +217,13 @@ class Boss {
                 }
             }
         });
+        //damage to aziel
+        this.game.entities.forEach(entity => {
+            if (entity instanceof AzielSeraph && this.box.collide(entity.box) && this.state == `attacking`) {
+                entity.takeDamage(10); // Deal 10 damage to boss
+                console.log(`Aziel takes damage! HP: ${entity.hitpoints}`);
+            }
+        });
 
         // If not on any platform, check if we've fallen below ground level
         const groundLevel = gameWorld.height - 70;  // Adjust this value based on your ground height
@@ -234,7 +241,7 @@ class Boss {
         }
 
         this.damageCooldown -= TICK;
-        this.checkPlayerAttack();
+        //this.checkPlayerAttack();
         this.healthbar.update();
     }
 

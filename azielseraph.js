@@ -1,31 +1,29 @@
 class AzielSeraph {
     constructor(game) {
         this.game = game;
+        this.removeFromWorld = false;
         this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 5, .35,);
-        this.attackAnimator = new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiver.png`), 0, 0, 32, 32, 8, 0.1);
+        this.rangeAttackCooldown = 10;  //Cooldown in seconds
+        this.rangeAttackDuration = 0.8; //Duration of the long-range attack in seconds
+        this.rangeAttackStartTime = 0;  //Time when the current range attack started
+        this.lastRangeAttackTime = -this.rangeAttackCooldown;  // Instant availability at the start
+        this.isRangeAttacking = false;  //Flag to track if the range attack is active
         this.x = 0;
         this.y = 500;
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
         this.facing = "right";
-
         this.hitpoints = 100;
         this.maxhitpoints = 100;
         this.radius = 20;
         this.lastDamageTime = 0;
         this.isAttacking = false;
-        this.attackCooldown = 0;
-
         this.healthbar = new HealthBar(this);
-
-        
-
         this.animationMap = new Map();
         this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/moveRightAziel.png`), 2, 0, 32, 32, 6, 0.2));
         this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/moveLeftAziel.png`), 2, 0, 32, 32, 6, 0.2));
         this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 4, 0.2));
         this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleLeftAziel.png`), 13, 0, 32, 32, 4, 0.2));
-        this.animationMap.set(`attack`, new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiver.png`), 0, 0, 32, 32, 8, 0.1));
         this.box = new BoundingBox(this.x, this.y, 32, 64);
         this.updateBoundingBox();
         this.landed = false;
@@ -43,7 +41,7 @@ class AzielSeraph {
     }    
     update () {
         const TICK = this.game.clockTick;
-
+        const currentTime = this.game.timer.gameTime;
 
         //left control
         if (this.game.left) {
@@ -73,7 +71,7 @@ class AzielSeraph {
         }
         //jump logic with gravity
         if (this.game.jump && this.landed) { // jump
-            this.velocity.y = -800;
+            this.velocity.y = -825;
             this.fallGrav = 1900;
             this.landed = false;
         } 
@@ -83,17 +81,30 @@ class AzielSeraph {
         if (this.x > gameWorld.width-16) {
             this.x = gameWorld.width-16;
         }
+
+        if (this.game.rangeAttack) {
+            if (!this.isRangeAttacking && currentTime - this.lastRangeAttackTime >= this.rangeAttackCooldown) {
+                console.log("Starting long-range attack!");
+                this.isRangeAttacking = true;
+                this.rangeAttackStartTime = currentTime;
+                this.lastRangeAttackTime = currentTime; // Start cooldown immediately
+            } else if (!this.isRangeAttacking) {
+                const timeLeft = Math.ceil(this.rangeAttackCooldown - (currentTime - this.lastRangeAttackTime));
+                console.log(`Long-range attack on cooldown. ${timeLeft}s left.`);
+            }
+        }
+        // Handle the long-range attack duration
+        if (this.isRangeAttacking) {
+            if (currentTime - this.rangeAttackStartTime >= this.rangeAttackDuration) {
+                console.log("Long-range attack ended.");
+                this.isRangeAttacking = false; // Stop the attack after 2 seconds
+            }
+        }
         this.velocity.y += this.fallGrav * TICK;
         this.y += this.velocity.y * TICK;
         this.updateLastBB();
         this.updateBoundingBox();
-
-        if (this.game.closeAttack) {
-            console.log(`close attack`);
-            this.attackAnimator = this.animationMap.get(`attack`);
-        } else if (this.game.rangeAttack) {
-            console.log(`range attack`);
-        }
+        
         //collision with floor and platforms:
         this.game.entities.forEach(entity => {
             if (entity.box && this.box.collide(entity.box)) {
@@ -124,31 +135,7 @@ class AzielSeraph {
                 }
             }
             this.updateBoundingBox();
-
-           
         });
-        
-
-        this.attackCooldown -= TICK;
-
-        // Handle player attack
-        if (this.game.closeAttack && this.attackCooldown <= 0) {
-            this.isAttacking = true;
-            this.attackCooldown = 0.5; // 0.5s cooldown
-            console.log("Player is Attacking!");
-        }else{
-            this.isAttacking = false;
-        }
-
-        // Check for boss collision & apply damage
-        this.game.entities.forEach(entity => {
-            if (entity instanceof Boss && this.box.collide(entity.box) && this.isAttacking) {
-                entity.takeDamage(10); // Deal 10 damage to boss
-                this.isAttacking = false; // Reset attack flag to prevent repeated hits
-                console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
-            }
-        });
-
         this.healthbar.update();
         
     };
