@@ -74,7 +74,7 @@ class Grim {
 
          
         
-        // Modified attack logic to check for canAttack
+        // attack logic to check for canAttack
         if (this.game.closeAttack && !this.attacking && this.canAttack) {
             this.attacking = true;
             console.log("Attacking"); // Debugging log
@@ -98,25 +98,44 @@ class Grim {
             }, this.animator.frameCount * this.animator.frameDuration * 1000);
         }
 
-        //long range attack 
+        //long range attack
         if (this.game.rangeAttack && this.canShoot) {
             console.log("long range attack");
+            
+            // Calculate the center of the character's position
+            const centerX = this.x + (this.box.width / 2);
+            const centerY = this.y + (this.box.height / 2);
+
+            // Calculate the center position for the projectile
+            const projectileCenterX = centerX - 16;  // Half of projectile width (32/2)
+            const projectileCenterY = centerY - 16;  // Half of projectile height (32/2)
+
+            // Calculate direction from character center to mouse position
+            const deltaX = this.game.mouseX - centerX;
+            const deltaY = this.game.mouseY - centerY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+            // Normalize the direction vector
             const direction = {
-                x: (this.game.mouseX - this.x) / Math.sqrt((this.game.mouseX - this.x) ** 2 + (this.game.mouseY - this.y) ** 2),
-                y: (this.game.mouseY - this.y) / Math.sqrt((this.game.mouseX - this.x) ** 2 + (this.game.mouseY - this.y) ** 2)
+                x: deltaX / distance,
+                y: deltaY / distance
             };
-        
-            // Calculate center position of Grim
-            const centerX = this.x + (this.box.width / 2) - 32;  
-            const centerY = this.y + (this.box.height / 2) - 32; 
-        
-            const projectile = new SkullProjectile(this.game, centerX, centerY, direction);
+
+            const projectile = new SkullProjectile(
+                this.game, 
+                projectileCenterX, 
+                projectileCenterY, 
+                direction,
+                { x: this.velocity.x, y: this.velocity.y }
+            );
             this.game.addEntity(projectile);
             
             this.canShoot = false;
         }
-        
-        // Add this condition to reset shooting capability when right click is released
+
+
+
+        // Add reset shooting capability when right click is released
         if (!this.game.rangeAttack) {
             this.canShoot = true;
         }

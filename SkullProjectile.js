@@ -1,39 +1,37 @@
 class SkullProjectile {
-    constructor(game, x, y, direction) {
+    constructor(game, x, y, direction, playerVelocity = { x: 0, y: 0 }) {
         this.game = game;
         this.x = x;
         this.y = y;
         this.direction = direction;
-        this.speed = 5;
+        this.speed = 350; 
+        
+        this.velocityX = this.direction.x * this.speed;
+        this.velocityY = this.direction.y * this.speed;
         this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/LongRangeGrim.png`), 9, 8, 32, 32, 4, 0.1);
         this.width = 32;
         this.height = 32;
         this.box = new BoundingBox(this.x, this.y, this.width, this.height);
-        this.lastBox = this.box; // Add this for collision checking
     }
 
     update() {
-        // Update last bounding box
         this.lastBox = this.box;
 
-        // Update position
-        this.x += this.direction.x * this.speed * this.game.clockTick * 60;
-        this.y += this.direction.y * this.speed * this.game.clockTick * 60;
+        // Update position using delta time
+        this.x += this.velocityX * this.game.clockTick;
+        this.y += this.velocityY * this.game.clockTick;
 
-        // Update current bounding box
         this.box = new BoundingBox(this.x, this.y, this.width, this.height);
 
-        // Check collisions with all entities
+        // Collision checks remain the same
         this.game.entities.forEach(entity => {
             if (entity !== this && entity.box && this.box.collide(entity.box)) {
-                // Check if entity is a Platform, Boss, or other enemy type
-                if (entity instanceof Platform || entity instanceof Boss) { // add all the boss and minions here
-                    this.removeFromWorld = true; // Remove projectile on collision
+                if (entity instanceof Platform || entity instanceof Boss || entity instanceof Drone) {
+                    this.removeFromWorld = true;
                 }
             }
         });
 
-        // Remove if out of bounds (keep this existing check)
         if (this.x < 0 || this.x > gameWorld.width || this.y < 0 || this.y > gameWorld.height) {
             this.removeFromWorld = true;
         }
