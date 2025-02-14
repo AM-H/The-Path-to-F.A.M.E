@@ -20,8 +20,13 @@ class LevelManager {
     }
         this.game.addEntity(new Boss(this.game));
         this.game.addEntity(this.player);
+        
         if (this.whichPlayer === 'aziel') {
             this.game.addEntity(new HolyDiver(this.game, this.player));
+        }
+
+        if (this.whichPlayer === 'grim') {
+            this.game.addEntity(new GrimAxe(this.game, this.player));
         }
 
         this.game.addEntity(new Background(this.game, level.background.x, level.background.y, level.background.width, level.background.height, level.background.path));

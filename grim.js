@@ -7,7 +7,6 @@ class Grim {
         this.fallGrav = 2000;
         this.facing = "right";
 
-        this.canAttack = false;
 
         this.canAttack = false;
         setTimeout(() => {
@@ -21,8 +20,7 @@ class Grim {
         this.animationMap.set('runLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimRunningL.png`), 3.01, 16, 48, 32, 6, 0.2));
         this.animationMap.set('idleRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimIdleR.png`), 0, 16, 42, 32, 5, 0.2));
         this.animationMap.set('idleLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimIdleL.png`), 5, 16, 48, 32, 5, 0.2));
-        this.animationMap.set('attackRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimAttackR.png`), 1.45, 16, 48, 48, 10, 0.06));
-        this.animationMap.set('attackLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimAttackL.png`), 1.45, 16, 48, 48, 10, 0.06));
+        
         
         // Set default animation
         this.animator = this.animationMap.get('idleRight');
@@ -70,32 +68,6 @@ class Grim {
             } else if (this.facing === "right") {
                 this.animator = this.animationMap.get('idleRight');
             }
-        }
-
-         
-        
-        // attack logic to check for canAttack
-        if (this.game.closeAttack && !this.attacking && this.canAttack) {
-            this.attacking = true;
-            console.log("Attacking"); // Debugging log
-
-            // Use the current facing direction to determine attack animation
-            if (this.facing === "right") {
-                this.animator = this.animationMap.get('attackRight');
-            } else if (this.facing === "left") {
-                this.animator = this.animationMap.get('attackLeft');
-            }
-
-            // Reset attack state after animation finishes
-            setTimeout(() => {
-                this.attacking = false;
-                // Return to idle animation based on the current facing direction
-                if (this.facing === "right") {
-                    this.animator = this.animationMap.get('idleRight');
-                } else {
-                    this.animator = this.animationMap.get('idleLeft');
-                }
-            }, this.animator.frameCount * this.animator.frameDuration * 1000);
         }
 
         //long range attack
