@@ -27,6 +27,7 @@ class TitleScreen {
             this.playButton.width = 200;
             this.playButton.height = 100;
         }
+        updateVolume();
     }
     loadSelectPlayerScreen() {
         this.game.addEntity(new SelectPlayerScreen(this.game));
@@ -91,7 +92,6 @@ class SelectPlayerScreen {
             this.hovering4 = false;
         }
     }
-
     draw(ctx) {
         ctx.drawImage(this.spritesheet, 0, 0, gameWorld.width, gameWorld.height);
         this.player1.idle.drawFrame(this.game.clockTick, ctx, this.player1.x, this.player1.y, 2);

@@ -57,3 +57,11 @@ window.requestAnimFrame = (() => {
 const getDistance = (p1, p2) => {
     return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 };
+
+const updateVolume = () => {
+    let slider = document.getElementById("myVolume");
+    // Update the current slider value (each time you drag the slider handle)
+    slider.oninput = function() {
+        ASSET_MANAGER.adjustVolume(slider.value/100);
+    }
+}
