@@ -4,7 +4,7 @@ class SkullProjectile {
         this.x = x;
         this.y = y;
         this.direction = direction;
-        this.speed = 350; 
+        this.speed = 450; 
         
         this.velocityX = this.direction.x * this.speed;
         this.velocityY = this.direction.y * this.speed;
