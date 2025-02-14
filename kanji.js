@@ -23,6 +23,8 @@ class Kanji {
         this.animationMap.set('idleLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/IdleLeft.png`), 0, 0, 32, 32, 9, 0.2));
         this.animationMap.set('attackRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackRight.png`), 33.9, 48, 96, 48, 7, 0.07));
         this.animationMap.set('attackLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/attackLeft1.png`), 0, 0, 58, 34, 7, 0.07));
+        this.animationMap.set('jumpLeft', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/jumpLeft.png`), 0, 0, 32, 32, 2, 0.5));
+        this.animationMap.set('jumpRight', new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/jumpRight.png`), 0, 0, 32, 32, 2, 0.5));
 
 
         // Set default animation
@@ -100,13 +102,15 @@ class Kanji {
             this.x += moveSpeed;
         }
 
+
+
         // Update animations when not attacking
         if (!this.attacking) {
-            if (this.game.left || this.game.right) {
-                // Running animations
+            if (!this.landed) {
+                this.animator = this.animationMap.get(this.facing === "left" ? 'jumpLeft' : 'jumpRight');
+            } else if (this.game.left || this.game.right) {
                 this.animator = this.animationMap.get(this.facing === "left" ? 'runLeft' : 'runRight');
             } else {
-                // Idle animations
                 this.animator = this.animationMap.get(this.facing === "left" ? 'idleLeft' : 'idleRight');
             }
         }
