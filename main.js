@@ -94,6 +94,7 @@ ASSET_MANAGER.downloadAll(() => {
 	// gameEngine.addEntity(new Platform(gameEngine, gameWorld.width/2-(gameWorld.width/8), gameWorld.height/2, gameWorld.width/4, 30));
 	// gameEngine.addEntity(new Background(gameEngine, 0, 0, gameWorld.width, gameWorld.height, `./levelBackgrounds/level1_background.png`));
 	gameEngine.addEntity(new TitleScreen(gameEngine));
+	ASSET_MANAGER.adjustVolume(document.getElementById("myVolume").value/100);
 	gameEngine.init(ctx);
 
 	gameEngine.start();
