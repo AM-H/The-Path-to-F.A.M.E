@@ -9,6 +9,8 @@ class Kanji {
 
         this.attackDirection = null;
 
+        this.removeFromWorld = false;
+
 
         this.canAttack = false;
         setTimeout(() => {

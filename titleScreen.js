@@ -27,6 +27,8 @@ class TitleScreen {
             this.playButton.width = 200;
             this.playButton.height = 100;
         }
+
+        updateVolume();
     }
     loadSelectPlayerScreen() {
         this.game.addEntity(new SelectPlayerScreen(this.game));

@@ -11,6 +11,10 @@ class LevelManager {
             this.game.addEntity(aziel);
             this.game.addEntity(new HolyDiver(this.game, aziel));
         }
+        if(this.whichPlayer === 'kanji'){
+            const kanji = new Kanji(this.game);
+            this.game.addEntity(kanji);
+        }
         if(level == levelOne) {
             this.boss = new Boss(this.game);
             for (var i = 0; i < level.drones.length; i++) {
