@@ -20,8 +20,8 @@ class AzielSeraph {
         this.isAttacking = false;
         this.healthbar = new HealthBar(this);
         this.animationMap = new Map();
-        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/moveRightAziel.png`), 2, 0, 32, 32, 6, 0.2));
-        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/moveLeftAziel.png`), 2, 0, 32, 32, 6, 0.2));
+        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/moveRightAziel.png`), 2, 0, 32, 32, 6, 0.1));
+        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/moveLeftAziel.png`), 2, 0, 32, 32, 6, 0.1));
         this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 4, 0.2));
         this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleLeftAziel.png`), 13, 0, 32, 32, 4, 0.2));
         this.box = new BoundingBox(this.x, this.y, 32, 64);
@@ -52,7 +52,7 @@ class AzielSeraph {
 
         //left control
         if (this.game.left) {
-            this.x -= 250 * TICK;
+            this.x -= 130 * TICK;
             if (this.facing !== "left") {
                 this.facing = "left";
                 this.animator = this.animationMap.get(`runLeft`);
@@ -60,7 +60,7 @@ class AzielSeraph {
         }
         //right control
         if (this.game.right) {
-            this.x += 250 * TICK;
+            this.x += 130 * TICK;
             if (this.facing !== "right") {
                 this.facing = "right";
                 this.animator = this.animationMap.get(`runRight`)

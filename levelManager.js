@@ -28,9 +28,15 @@ class LevelManager {
                 this.game.addEntity(new Drone(this.game, drone.x, drone.y, drone.speed));
             }
             this.game.addEntity(this.boss);
+            ASSET_MANAGER.pauseBackgroundMusic();
+            ASSET_MANAGER.playAsset(`./audio/level1Music.mp4`);
+            ASSET_MANAGER.autoRepeat(`./audio/level1Music.mp4`);
         } else if (level == levelTwo) {
             this.boss = new Boss(this.game);
             // add minions and boss level two
+            ASSET_MANAGER.pauseBackgroundMusic();
+            ASSET_MANAGER.playAsset(`./audio/level2Music.mp4`);
+            ASSET_MANAGER.autoRepeat(`./audio/level2Music.mp4`);
         }
 
         this.game.addEntity(new Background(this.game, level.background.x, level.background.y, level.background.width, level.background.height, level.background.path));
@@ -55,6 +61,7 @@ class LevelManager {
             const projectile = new SkullProjectile(this.game, this.player.x + this.player.box.width / 2, this.player.y + this.player.box.height / 2, direction);
             this.game.addEntity(projectile);  // Add the projectile to the game entities
         }
+        updateVolume();
 
     };
     draw(ctx) {
