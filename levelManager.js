@@ -29,14 +29,14 @@ class LevelManager {
             }
             this.game.addEntity(this.boss);
             ASSET_MANAGER.pauseBackgroundMusic();
-            ASSET_MANAGER.playAsset(`./audio/level1Music.mp4`);
-            ASSET_MANAGER.autoRepeat(`./audio/level1Music.mp4`);
+            ASSET_MANAGER.playAsset(`./audio/level1Music.mp3`);
+            ASSET_MANAGER.autoRepeat(`./audio/level1Music.mp3`);
         } else if (level == levelTwo) {
             this.boss = new Boss(this.game);
             // add minions and boss level two
             ASSET_MANAGER.pauseBackgroundMusic();
-            ASSET_MANAGER.playAsset(`./audio/level2Music.mp4`);
-            ASSET_MANAGER.autoRepeat(`./audio/level2Music.mp4`);
+            ASSET_MANAGER.playAsset(`./audio/level2Music.mp3`);
+            ASSET_MANAGER.autoRepeat(`./audio/level2Music.mp3`);
         }
 
         this.game.addEntity(new Background(this.game, level.background.x, level.background.y, level.background.width, level.background.height, level.background.path));

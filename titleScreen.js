@@ -41,8 +41,8 @@ class TitleScreen {
 class SelectPlayerScreen {
     constructor(game) {
         this.game = game;
-        ASSET_MANAGER.playAsset(`./audio/YouSeeBIGGIRLT_T.mp4`);
-        ASSET_MANAGER.autoRepeat(`./audio/YouSeeBIGGIRLT_T.mp4`);
+        ASSET_MANAGER.playAsset(`./audio/YouSeeBIGGIRLT_T.mp3`);
+        ASSET_MANAGER.autoRepeat(`./audio/YouSeeBIGGIRLT_T.mp3`);
         this.spritesheet = ASSET_MANAGER.getAsset(`./levelBackgrounds/SelectPlayerScreen.png`);
         this.player1 = {
             idle: new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleRightKyra.png`), 0, 0, 96, 40, 5, 0.35),
