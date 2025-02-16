@@ -15,6 +15,10 @@ class LevelManager {
             const kanji = new Kanji(this.game);
             this.game.addEntity(kanji);
         }
+        if(this.whichPlayer === 'grim'){
+            const grim = new Grim(this.game);
+            this.game.addEntity(grim);
+        }
         if(level === levelOne) {
             this.boss = new Boss(this.game);
             for (var i = 0; i < level.drones.length; i++) {
