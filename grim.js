@@ -166,6 +166,16 @@ class Grim {
             }
             this.updateBoundingBox();
         });
+
+        if (this.character === `grim` && this.game.rangeAttack) {
+            const direction = {
+                x: (this.game.mouseX - this.player.x) / Math.sqrt((this.game.mouseX - this.player.x) ** 2 + (this.game.mouseY - this.player.y) ** 2),
+                y: (this.game.mouseY - this.player.y) / Math.sqrt((this.game.mouseX - this.player.x) ** 2 + (this.game.mouseY - this.player.y) ** 2)
+            };
+
+            const projectile = new SkullProjectile(this.game, this.player.x + this.player.box.width / 2, this.player.y + this.player.box.height / 2, direction);
+            this.game.addEntity(projectile);  // Add the projectile to the game entities
+        }
     }
 
     draw(ctx) {
