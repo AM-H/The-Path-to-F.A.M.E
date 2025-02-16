@@ -3,7 +3,7 @@ class LevelManager {
         this.game = game;
         this.whichPlayer = player;
         this.boss = null;
-        this.loadLevel(levelThree);
+        this.loadLevel(levelOne);
     };
     loadLevel(level) {
         if (this.whichPlayer == `aziel`) {
@@ -11,24 +11,32 @@ class LevelManager {
             this.game.addEntity(aziel);
             this.game.addEntity(new HolyDiver(this.game, aziel));
         }
-        if(this.whichPlayer === 'kanji'){
+        if(this.whichPlayer === `kanji`){
             const kanji = new Kanji(this.game);
             this.game.addEntity(kanji);
         }
-        if(this.whichPlayer === 'grim'){
+
+        if(this.whichPlayer === `grim`){
             const grim = new Grim(this.game);
             this.game.addEntity(grim);
+            this.game.addEntity(new GrimAxe(this.game, grim));
         }
-        if(level === levelOne) {
+        if(level == levelOne) {
             this.boss = new Boss(this.game);
             for (var i = 0; i < level.drones.length; i++) {
                 let drone = level.drones[i];
                 this.game.addEntity(new Drone(this.game, drone.x, drone.y, drone.speed));
             }
             this.game.addEntity(this.boss);
-        } else if (level === levelTwo) {
+            ASSET_MANAGER.pauseBackgroundMusic();
+            ASSET_MANAGER.playAsset(`./audio/level1Music.mp3`);
+            ASSET_MANAGER.autoRepeat(`./audio/level1Music.mp3`);
+        } else if (level == levelTwo) {
             this.boss = new Boss(this.game);
             // add minions and boss level two
+            ASSET_MANAGER.pauseBackgroundMusic();
+            ASSET_MANAGER.playAsset(`./audio/level2Music.mp3`);
+            ASSET_MANAGER.autoRepeat(`./audio/level2Music.mp3`);
         }else if(level === levelThree){
             this.boss = new Shizoku(this.game);
             this.game.addEntity(this.boss);
@@ -49,10 +57,20 @@ class LevelManager {
             });
             this.loadLevel(levelTwo);
         }
+        if (this.character === `grim` && this.game.rangeAttack) {
+            const direction = {
+                x: (this.game.mouseX - this.player.x) / Math.sqrt((this.game.mouseX - this.player.x) ** 2 + (this.game.mouseY - this.player.y) ** 2),
+                y: (this.game.mouseY - this.player.y) / Math.sqrt((this.game.mouseX - this.player.x) ** 2 + (this.game.mouseY - this.player.y) ** 2)
+            };
+
+            const projectile = new SkullProjectile(this.game, this.player.x + this.player.box.width / 2, this.player.y + this.player.box.height / 2, direction);
+            this.game.addEntity(projectile);  // Add the projectile to the game entities
+        }
+        updateVolume();
 
     };
     draw(ctx) {
-
+        
     };
-
+    
 };

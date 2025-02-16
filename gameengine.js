@@ -1,4 +1,4 @@
-// This game shell was happily modified from Googler Seth Ladd's "Bad Aliens" game and his Google IO talk in 2011
+// This game shell was happily modified from Googler Seth Ladd`s "Bad Aliens" game and his Google IO talk in 2011
 
 class GameEngine {
     constructor(options) {
@@ -21,6 +21,8 @@ class GameEngine {
         this.right = false;
         this.closeAttack = false;
         this.rangeAttack = false;
+
+        this.isGameOver = false;
 
 
         // Options and the Details
@@ -158,6 +160,51 @@ class GameEngine {
                 this.entities[i].draw(this.ctx, this);
             }
         }
+
+        // Draw custom crosshair
+    if (this.mouseX && this.mouseY) {
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = `white`;  // Outer white line
+        this.ctx.lineWidth = 3;
+        
+        // Horizontal line
+        this.ctx.moveTo(this.mouseX - 15, this.mouseY);
+        this.ctx.lineTo(this.mouseX - 5, this.mouseY);
+        this.ctx.moveTo(this.mouseX + 5, this.mouseY);
+        this.ctx.lineTo(this.mouseX + 15, this.mouseY);
+        
+        // Vertical line
+        this.ctx.moveTo(this.mouseX, this.mouseY - 15);
+        this.ctx.lineTo(this.mouseX, this.mouseY - 5);
+        this.ctx.moveTo(this.mouseX, this.mouseY + 5);
+        this.ctx.lineTo(this.mouseX, this.mouseY + 15);
+        
+        this.ctx.stroke();
+
+        // Draw inner black outline
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = `black`;
+        this.ctx.lineWidth = 1;
+        
+        // Redraw the same lines slightly smaller
+        this.ctx.moveTo(this.mouseX - 15, this.mouseY);
+        this.ctx.lineTo(this.mouseX - 5, this.mouseY);
+        this.ctx.moveTo(this.mouseX + 5, this.mouseY);
+        this.ctx.lineTo(this.mouseX + 15, this.mouseY);
+        
+        this.ctx.moveTo(this.mouseX, this.mouseY - 15);
+        this.ctx.lineTo(this.mouseX, this.mouseY - 5);
+        this.ctx.moveTo(this.mouseX, this.mouseY + 5);
+        this.ctx.lineTo(this.mouseX, this.mouseY + 15);
+        
+        this.ctx.stroke();
+
+        // Draw center dot dont like
+        // this.ctx.beginPath();
+        // this.ctx.fillStyle = `red`;
+        // this.ctx.arc(this.mouseX, this.mouseY, 2, 0, Math.PI * 2);
+        // this.ctx.fill();
+    }
     };
 
 
@@ -180,9 +227,11 @@ class GameEngine {
     };
 
     loop() {
-        this.clockTick = this.timer.tick();
-        this.update();
-        this.draw();
+        if (!this.isGameOver) {
+            this.clockTick = this.timer.tick();
+            this.update();
+            this.draw();
+        }
     };
 
 };

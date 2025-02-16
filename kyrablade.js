@@ -141,14 +141,14 @@ class KyraBlade {
         // Attack logic
         if (this.game.closeRange && !this.attacking) {
             this.attacking = true;
-            if (this.facing === 'right') {
+            if (this.facing === `right`) {
                 this.animator = this.animationMap.get(`attackRight`);
             } else {
                 this.animator = this.animationMap.get(`attackLeft`);
             }
         } else if (this.game.longRange && !this.attacking) {
             this.attacking = true;
-            if (this.facing === 'right') {
+            if (this.facing === `right`) {
                 this.animator = this.animationMap.get(`longRangeRight`);
             } else {
                 this.animator = this.animationMap.get(`longRangeLeft`);

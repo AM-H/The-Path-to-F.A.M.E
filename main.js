@@ -6,20 +6,22 @@ ASSET_MANAGER.queueDownload(`./levelBackgrounds/TitleScreen.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/PLAYbutton.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/SelectPlayerScreen.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level1_background.png`);
+ASSET_MANAGER.queueDownload(`./levelBackgrounds/youdied.png`);
+ASSET_MANAGER.queueDownload(`./levelBackgrounds/playagainbutton.png`);
 
 ASSET_MANAGER.queueDownload(`./audio/YouSeeBIGGIRLT_T.mp3`);
 
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level2_background.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level3_background.png`)
-// ASSET_MANAGER.queueDownload('./sprites/idleLeft.png');
-// ASSET_MANAGER.queueDownload('./sprites/idleRight.png');
-// ASSET_MANAGER.queueDownload('./sprites/runLeft.png');
-// ASSET_MANAGER.queueDownload('./sprites/runRight.png');
-// ASSET_MANAGER.queueDownload('./sprites/attack1Right.png');
-// ASSET_MANAGER.queueDownload('./sprites/attack1Left.png');
-// ASSET_MANAGER.queueDownload('./sprites/attack2Right.png');
-// ASSET_MANAGER.queueDownload('./sprites/attack2Left.png');
-// ASSET_MANAGER.queueDownload('./sprites/bullet.png');
+// ASSET_MANAGER.queueDownload(`./sprites/idleLeft.png`);
+// ASSET_MANAGER.queueDownload(`./sprites/idleRight.png`);
+// ASSET_MANAGER.queueDownload(`./sprites/runLeft.png`);
+// ASSET_MANAGER.queueDownload(`./sprites/runRight.png`);
+// ASSET_MANAGER.queueDownload(`./sprites/attack1Right.png`);
+// ASSET_MANAGER.queueDownload(`./sprites/attack1Left.png`);
+// ASSET_MANAGER.queueDownload(`./sprites/attack2Right.png`);
+// ASSET_MANAGER.queueDownload(`./sprites/attack2Left.png`);
+// ASSET_MANAGER.queueDownload(`./sprites/bullet.png`);
 ASSET_MANAGER.queueDownload(`./sprites/drone.png`);
 ASSET_MANAGER.queueDownload(`./sprites/bullet.png`);
 
@@ -43,6 +45,10 @@ ASSET_MANAGER.queueDownload(`./sprites/GrimIdleL.png`);
 ASSET_MANAGER.queueDownload(`./sprites/GrimIdleR.png`);
 ASSET_MANAGER.queueDownload(`./sprites/GrimRunningL.png`);
 ASSET_MANAGER.queueDownload(`./sprites/GrimRunningR.png`);
+ASSET_MANAGER.queueDownload(`./sprites/LongRangeGrim.png`);
+ASSET_MANAGER.queueDownload(`./sprites/GrimAxeR.png`);
+ASSET_MANAGER.queueDownload(`./sprites/GrimAxeL.png`);
+
 
 
 //Kanji
@@ -75,6 +81,20 @@ ASSET_MANAGER.queueDownload(`./sprites/Shizoku/runLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/Shizoku/attackRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/Shizoku/attackLeft.png`);
 
+
+
+//Grim
+ASSET_MANAGER.queueDownload(`./sprites/GrimRunningL.png`);
+ASSET_MANAGER.queueDownload(`./sprites/GrimRunningR.png`);
+ASSET_MANAGER.queueDownload(`./sprites/GrimIdleL.png`);
+ASSET_MANAGER.queueDownload(`./sprites/GrimIdleR.png`);
+
+ASSET_MANAGER.queueDownload(`./audio/YouSeeBIGGIRLT_T.mp3`);
+ASSET_MANAGER.queueDownload(`./audio/level1Music.mp3`);
+ASSET_MANAGER.queueDownload(`./audio/level2Music.mp3`);
+
+//KyraBlade
+ASSET_MANAGER.queueDownload(`./sprites/kyrablade/IdleRightKyra.png`);
 
 
 ASSET_MANAGER.downloadAll(() => {

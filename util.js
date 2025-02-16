@@ -61,7 +61,7 @@ const getDistance = (p1, p2) => {
 const updateVolume = () => {
     let slider = document.getElementById("myVolume");
     // Update the current slider value (each time you drag the slider handle)
-    slider.oninput = function () {
-        ASSET_MANAGER.adjustVolume(slider.value / 100);
+    slider.oninput = function() {
+        ASSET_MANAGER.adjustVolume(slider.value/100);
     }
 }

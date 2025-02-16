@@ -29,7 +29,7 @@ var levelTwo = {
             y: gameWorld.height - 70,
             width: gameWorld.width,
             height: 70,
-            bColor: '#37446e'
+            bColor: `#37446e`
         },
           // Left elevated platform (moved more left)
           {
@@ -37,7 +37,7 @@ var levelTwo = {
             y: gameWorld.height/1.96,
             width: gameWorld.width/4,
             height: 30,
-            bColor: '#37446e'
+            bColor: `#37446e`
         },
         // Middle platform
         {
@@ -45,7 +45,7 @@ var levelTwo = {
             y: gameWorld.height/1.38,
             width: gameWorld.width/4,
             height: 30,
-            bColor: '#37446e'
+            bColor: `#37446e`
         },
         // Right elevated platform (moved more right)
         {
@@ -53,7 +53,7 @@ var levelTwo = {
             y: gameWorld.height/1.96,
             width: gameWorld.width/4,
             height: 30,
-            bColor: '#37446e'
+            bColor: `#37446e`
         }
     ]
 };
@@ -73,7 +73,7 @@ var levelThree = {
             y: gameWorld.height - 140,
             width: gameWorld.width,
             height: 140,
-            bColor: 'rgba(3,51,60,0)'
+            bColor: `rgba(3,51,60,0)`
         },
         // Left elevated platform (moved more left)
         {
@@ -81,7 +81,7 @@ var levelThree = {
             y: gameWorld.height/1.50,
             width: gameWorld.width/4,
             height: 30,
-            bColor: '#37446e'
+            bColor: `#37446e`
         },
         // Middle platform
         {
@@ -89,7 +89,7 @@ var levelThree = {
             y: gameWorld.height/1.96,
             width: gameWorld.width/4,
             height: 30,
-            bColor: '#37446e'
+            bColor: `#37446e`
         },
         // Right elevated platform (moved more right)
         {
@@ -97,7 +97,7 @@ var levelThree = {
             y: gameWorld.height/2.50,
             width: gameWorld.width/4,
             height: 30,
-            bColor: '#37446e'
+            bColor: `#37446e`
         }
     ]
 };
