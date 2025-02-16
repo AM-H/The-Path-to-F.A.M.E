@@ -13,8 +13,8 @@ ASSET_MANAGER.queueDownload(`./audio/YouSeeBIGGIRLT_T.mp3`);
 
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level2_background.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level3_background.png`)
-// ASSET_MANAGER.queueDownload(`./sprites/idleLeft.png`);
-// ASSET_MANAGER.queueDownload(`./sprites/idleRight.png`);
+// ASSET_MANAGER.queueDownload(`./sprites/IdleLeft.png`);
+// ASSET_MANAGER.queueDownload(`./sprites/IdleRight.png`);
 // ASSET_MANAGER.queueDownload(`./sprites/runLeft.png`);
 // ASSET_MANAGER.queueDownload(`./sprites/runRight.png`);
 // ASSET_MANAGER.queueDownload(`./sprites/attack1Right.png`);
@@ -25,6 +25,21 @@ ASSET_MANAGER.queueDownload(`./levelBackgrounds/level3_background.png`)
 ASSET_MANAGER.queueDownload(`./sprites/drone.png`);
 ASSET_MANAGER.queueDownload(`./sprites/bullet.png`);
 
+//storm spirits
+ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/IdleRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/IdleLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/runRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/runLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/attackRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/attackLeft.png`);
+
+// fire phoenixes
+ASSET_MANAGER.queueDownload(`./sprites/phoenixes/IdleRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/phoenixes/IdleLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/phoenixes/runRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/phoenixes/runLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/phoenixes/attackRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/phoenixes/attackLeft.png`);
 
 
 //azielseraph
@@ -81,6 +96,14 @@ ASSET_MANAGER.queueDownload(`./sprites/Shizoku/runLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/Shizoku/attackRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/Shizoku/attackLeft.png`);
 
+
+//inferno
+ASSET_MANAGER.queueDownload(`./sprites/inferno/IdleRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/inferno/IdleLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/inferno/runRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/inferno/runLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/inferno/attackRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/inferno/attackLeft.png`);
 
 
 //Grim
