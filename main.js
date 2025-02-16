@@ -67,6 +67,16 @@ ASSET_MANAGER.queueDownload(`./sprites/BossAttackL.png`);
 ASSET_MANAGER.queueDownload(`./sprites/BossAttackR.png`);
 
 
+//Shizoku
+ASSET_MANAGER.queueDownload(`./sprites/Shizoku/IdleRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/Shizoku/IdleLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/Shizoku/runRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/Shizoku/runLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/Shizoku/attackRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/Shizoku/attackLeft.png`);
+
+
+
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");
 	const ctx = canvas.getContext("2d");

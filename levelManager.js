@@ -3,7 +3,7 @@ class LevelManager {
         this.game = game;
         this.whichPlayer = player;
         this.boss = null;
-        this.loadLevel(levelOne);
+        this.loadLevel(levelThree);
     };
     loadLevel(level) {
         if (this.whichPlayer == `aziel`) {
@@ -15,17 +15,22 @@ class LevelManager {
             const kanji = new Kanji(this.game);
             this.game.addEntity(kanji);
         }
-        if(level == levelOne) {
+        if(level === levelOne) {
             this.boss = new Boss(this.game);
             for (var i = 0; i < level.drones.length; i++) {
                 let drone = level.drones[i];
                 this.game.addEntity(new Drone(this.game, drone.x, drone.y, drone.speed));
             }
             this.game.addEntity(this.boss);
-        } else if (level == levelTwo) {
+        } else if (level === levelTwo) {
             this.boss = new Boss(this.game);
             // add minions and boss level two
+        }else if(level === levelThree){
+            this.boss = new Shizoku(this.game);
+            this.game.addEntity(this.boss);
         }
+
+
 
         this.game.addEntity(new Background(this.game, level.background.x, level.background.y, level.background.width, level.background.height, level.background.path));
         for (var i = 0; i < level.platform.length; i++) {
@@ -43,7 +48,7 @@ class LevelManager {
 
     };
     draw(ctx) {
-        
+
     };
-    
+
 };

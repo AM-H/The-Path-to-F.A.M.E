@@ -1,41 +1,39 @@
-class Boss {
+class Shizoku {
     constructor(game) {
         this.game = game;
-      
+
         // Load animations
-        this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossIdleR.png`), 0, 0, 32, 32, 4, 0.35);
-        this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossIdleL.png`), 0, 0, 32, 32, 4, 0.35);
-        this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossWalkR.png`), 0, 0, 32, 32, 6, 0.35);
-        this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossWalkL.png`), 0, 0, 32, 32, 6, 0.35);
-        this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossAttackR.png`), 0, 0, 32, 32, 8, 0.25);
-        this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossAttackL.png`), 0, 0, 32, 32, 8, 0.25);
+        this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/Shizoku/IdleRight.png`), 0, -11, 80, 64, 9, 0.3);
+        this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/Shizoku/IdleLeft.png`), 0, -11, 80, 64, 9, 0.3);
+        this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/Shizoku/runRight.png`), 0, -11, 80, 64, 6, 0.35);
+        this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/Shizoku/runLeft.png`), 0, -11, 80, 64, 6, 0.35);
+        this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/Shizoku/attackRight.png`), 0, 0, 80, 64, 12, 0.06);
+        this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/Shizoku/attackLeft.png`), 0, 0, 80, 64, 12, 0.06);
 
-
-        
         // Position setup
-        this.x = 600;
+        this.x = 500;
         const groundHeight = gameWorld.height - 70;
-        this.y = groundHeight - 64;
-        
+        this.y = groundHeight - 300;
+
         // Basic properties
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
         this.moveSpeed = 3;
         this.landed = true;
-        
+
         this.spriteScale = 2;
-        this.width = 32 * this.spriteScale;    
-        this.height = 32 * this.spriteScale;   
+        this.width = 32 * this.spriteScale;
+        this.height = 32 * this.spriteScale;
         this.boxWidth = 32;
-        this.boxHeight = 64;  
-        
+        this.boxHeight = 64;
+
         // State
         this.facing = -1;
         this.state = 'idle';
         this.targetPlatform = null;
         this.jumpPhase = 'none';
-        this.isOnPlatform = false;  
-        
+        this.isOnPlatform = false;
+
         // Combat ranges
         this.attackRange = 50;
         this.chaseRange = 400;
@@ -59,10 +57,10 @@ class Boss {
     updateBoundingBox() {
         const xOffset = (this.width - this.boxWidth) / 2;
         this.box = new BoundingBox(
-            this.x + xOffset,
-            this.y,
-            this.boxWidth,
-            this.boxHeight
+            this.x + xOffset + 30,
+            this.y + 40,
+            this.boxWidth * 2,
+            this.boxHeight * 1.2
         );
     }
 
@@ -79,12 +77,12 @@ class Boss {
         return { x: vx, y: vy };
     }
 
-    
+
     getCurrentPlatform() {
         let currentPlatform = null;
         this.game.entities.forEach(entity => {
             if (entity instanceof Platform) {
-                if (this.y + this.boxHeight >= entity.y && 
+                if (this.y + this.boxHeight >= entity.y &&
                     this.y + this.boxHeight <= entity.y + 5 &&
                     this.x + this.boxWidth > entity.x &&
                     this.x < entity.x + entity.width) {
@@ -112,14 +110,14 @@ class Boss {
 
     shouldJump(player) {
         if (!this.landed) return false;
-        
+
         const playerPlatform = this.getPlayerPlatform(player);
         const currentPlatform = this.getCurrentPlatform();
-        
+
         if (!playerPlatform || !currentPlatform) return false;
-        
-        return playerPlatform.y < currentPlatform.y && 
-               Math.abs(this.x - player.x) < this.chaseRange;
+
+        return playerPlatform.y < currentPlatform.y &&
+            Math.abs(this.x - player.x) < this.chaseRange;
     }
 
     takeDamage(amount) {
@@ -132,7 +130,7 @@ class Boss {
 
     getPlayer() {
         // Find any entity that's a player (AzielSeraph or Grim)
-        return this.game.entities.find(entity => 
+        return this.game.entities.find(entity =>
             entity instanceof AzielSeraph || entity instanceof HolyDiver || entity instanceof Grim || entity instanceof Kanji
         );
     }
@@ -200,10 +198,10 @@ class Boss {
         this.velocity.y += this.fallGrav * TICK;
         this.y += this.velocity.y * TICK;
         this.x += this.velocity.x * TICK;
-        
+
         this.updateLastBB();
         this.updateBoundingBox();
-        
+
         // Platform and ground collisions
         let isOnGround = false;
         this.game.entities.forEach(entity => {
@@ -221,14 +219,14 @@ class Boss {
         });
         //damage to aziel
         this.game.entities.forEach(entity => {
-            if (entity instanceof AzielSeraph && this.box.collide(entity.box) && this.state == `attacking`) {
-                entity.takeDamage(10); // Deal 10 damage to boss
+            if ((entity instanceof  Kanji || entity instanceof AzielSeraph) && this.box.collide(entity.box) && this.state == `attacking`) {
+                //entity.takeDamage(10); // Deal 10 damage to boss
                 console.log(`Aziel takes damage! HP: ${entity.hitpoints}`);
             }
         });
 
         // If not on any platform, check if we've fallen below ground level
-        const groundLevel = gameWorld.height - 70;  // Adjust this value based on your ground height
+        const groundLevel = gameWorld.height - 190;  // Adjust this value based on your ground height
         if (!isOnGround && this.y + this.boxHeight > groundLevel) {
             this.y = groundLevel - this.boxHeight;
             this.velocity.y = 0;
@@ -249,29 +247,29 @@ class Boss {
 
     draw(ctx) {
         const scale = this.spriteScale;
-        
+
         if (this.state === 'attacking') {
             if (this.facing === -1) {
-                this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+                this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, true);
             } else {
                 this.attackRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
             }
         } else {
             if (this.state === 'chasing' || this.state === 'moving' || this.jumpPhase === 'jumping') {
                 if (this.facing === -1) {
-                    this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+                    this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, true);
                 } else {
                     this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
                 }
             } else {
                 if (this.facing === -1) {
-                    this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+                    this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, true);
                 } else {
                     this.idleRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
                 }
             }
         }
-        
+
         // Debug bounding box
         ctx.strokeStyle = 'red';
         ctx.lineWidth = 2;
