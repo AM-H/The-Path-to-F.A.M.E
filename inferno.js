@@ -163,9 +163,14 @@ class inferno {
         const player = this.getPlayer();
 
         if (this.hitpoints <= 0) {
-            this.removeFromWorld = true;
             this.defeated = true;
-            console.log("Boss defeated!");
+            this.removeFromWorld = true;
+            console.log("Inferno Boss defeated! Final state:", {
+                hitpoints: this.hitpoints,
+                defeated: this.defeated,
+                removeFromWorld: this.removeFromWorld,
+                state: this.state
+            });
             return;
         }
 
