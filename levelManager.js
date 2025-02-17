@@ -80,7 +80,7 @@ class LevelManager {
 
             if (this.currentLevel === 1) {
                 console.log("Transitioning to level 2");
-                this.loadLevel(levelTwo);
+                this.loadLevel(levelThree);
             } else if (this.currentLevel === 2) {
                 console.log("Transitioning to level 3");
                 this.loadLevel(levelThree);
