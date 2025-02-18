@@ -5,6 +5,7 @@ const ASSET_MANAGER = new AssetManager();
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/TitleScreen.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/PLAYbutton.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/SelectPlayerScreen.png`);
+ASSET_MANAGER.queueDownload(`./levelBackgrounds/transitionScreen.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level1_background.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/youdied.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/playagainbutton.png`);

@@ -3,8 +3,16 @@ class LevelManager {
         this.game = game;
         this.whichPlayer = player;
         this.boss = null;
-        this.loadLevel(levelOne);
+        this.startLevelTransition(levelOne);
     };
+    startLevelTransition(level) {
+        const transition = new LevelTransition(this.game);
+        this.game.addEntity(transition);
+
+        setTimeout(() => {
+            this.loadLevel(level);
+        }, 4000); // Wait 4 seconds before loading the level
+    }
     loadLevel(level) {
         if (this.whichPlayer == `aziel`) {
             const aziel = new AzielSeraph(this.game);
@@ -46,11 +54,14 @@ class LevelManager {
         }
     };
     update() {
-        if (this.boss.defeated) {
+        if (this.boss != null) {
+            
+        }
+        if (this.boss && this.boss.defeated) {
             this.game.entities.forEach(element => {
                 element.removeFromWorld = true;
             });
-            this.loadLevel(levelTwo);
+            this.startLevelTransition(levelTwo);
         }
         if (this.character === `grim` && this.game.rangeAttack) {
             const direction = {
