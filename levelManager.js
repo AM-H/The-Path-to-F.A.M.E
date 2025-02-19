@@ -30,7 +30,7 @@ class LevelManager {
             this.game.addEntity(new GrimAxe(this.game, grim));
         }
         if(level == levelOne) {
-            this.boss = new Boss(this.game);
+            this.boss = new Eclipser(this.game);
             for (var i = 0; i < level.drones.length; i++) {
                 let drone = level.drones[i];
                 this.game.addEntity(new Drone(this.game, drone.x, drone.y, drone.speed));

@@ -87,6 +87,12 @@ ASSET_MANAGER.queueDownload(`./audio/level2Music.mp3`);
 //KyraBlade
 ASSET_MANAGER.queueDownload(`./sprites/kyrablade/IdleRightKyra.png`);
 
+//Eclipser
+ASSET_MANAGER.queueDownload(`./sprites/eclipser/idleR.png`);
+ASSET_MANAGER.queueDownload(`./sprites/eclipser/idleL.png`);
+ASSET_MANAGER.queueDownload(`./sprites/eclipser/walkR.png`);
+ASSET_MANAGER.queueDownload(`./sprites/eclipser/walkL.png`);
+ASSET_MANAGER.queueDownload(`./sprites/eclipser/laser.png`);
 
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");
