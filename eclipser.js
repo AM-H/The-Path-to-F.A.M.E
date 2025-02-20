@@ -38,7 +38,7 @@ class Eclipser {
         this.laserState = 'inactive';
         this.laserChargeTime = 0.5;
         this.laserFireTime = 0.5;
-        this.laserDamage = 35;
+        this.laserDamage = 30;
         this.laserDamageCooldown = 1; // Increased cooldown between damage ticks
         this.currentLaserDamageCooldown = 0;
         
@@ -47,8 +47,8 @@ class Eclipser {
         this.minDistance = 150;
 
         // Health system
-        this.hitpoints = 1000;
-        this.maxhitpoints = 1000;
+        this.hitpoints = 750;
+        this.maxhitpoints = 750;
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
         this.invincibilityTime = 0.5; // Time of invincibility after taking damage

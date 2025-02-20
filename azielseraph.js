@@ -13,8 +13,8 @@ class AzielSeraph {
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
         this.facing = "right";
-        this.hitpoints = 150;
-        this.maxhitpoints = 150;
+        this.hitpoints = 100;
+        this.maxhitpoints = 100;
         this.radius = 20;
         this.lastDamageTime = 0;
         this.isAttacking = false;
@@ -29,19 +29,23 @@ class AzielSeraph {
         this.landed = false;
 
     };
+
     updateBoundingBox() {
         this.box = new BoundingBox(this.x, this.y, 32, 64);
     };
+
     updateLastBB() {
         this.lastBox = this.box;
     };
+
     takeDamage(amount) {
         this.hitpoints -= amount;
         if (this.hitpoints < 0) this.hitpoints = 0; // Prevent negative HP
         this.healthbar.update()
         console.log("getting hit")
         console.log(amount)
-    }    
+    } 
+       
     update () {
         const TICK = this.game.clockTick;
         const currentTime = this.game.timer.gameTime;
