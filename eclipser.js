@@ -47,8 +47,8 @@ class Eclipser {
         this.minDistance = 150;
 
         // Health system
-        this.hitpoints = 750;
-        this.maxhitpoints = 750;
+        this.hitpoints = 400;
+        this.maxhitpoints = 400;
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
         this.invincibilityTime = 0.5; // Time of invincibility after taking damage
@@ -57,6 +57,23 @@ class Eclipser {
         this.isPhasing = false;
         this.phaseSpeed = 300;
 
+
+
+        
+        // Add minion spawn properties
+        this.lowHealthThreshold = 0.3; // 30% health threshold
+        this.hasSpawnedMinions = false;
+        this.spawnedMinions = [];
+        
+        // Define minion spawn points (similar to levelOne.drones)
+        this.minionSpawnPoints = [
+            { x: 221, y: 500, speed: 220 },
+            { x: 43, y: 74, speed: 230 },
+            { x: 20, y: 300, speed: 275 },
+            { x: 222, y: 200, speed: 300 },
+            { x: 500, y: 111, speed: 201 }
+        ];
+
         // Initialize bounding box
         this.updateBoundingBox();
         this.lastBox = this.box;
@@ -64,6 +81,24 @@ class Eclipser {
         this.removeFromWorld = false;
         this.defeated = false;
     }
+
+     // Add new method to spawn minions
+     spawnMinions() {
+        console.log("Spawning minions!");
+        this.minionSpawnPoints.forEach(point => {
+            const drone = new Drone(this.game, point.x, point.y, point.speed);
+            this.game.addEntity(drone);
+            this.spawnedMinions.push(drone);
+        });
+        this.hasSpawnedMinions = true;
+    }
+
+    // Add method to check if minions are alive
+    areMinionsDead() {
+        this.spawnedMinions = this.spawnedMinions.filter(minion => !minion.removeFromWorld);
+        return this.spawnedMinions.length === 0;
+    }
+
 
     updateBoundingBox() {
         const xOffset = (this.width - this.boxWidth) / 2;
@@ -243,6 +278,17 @@ class Eclipser {
             }
             return;
         }
+
+         // Check if health is low and should spawn minions
+         const healthRatio = this.hitpoints / this.maxhitpoints;
+         if (healthRatio <= this.lowHealthThreshold && !this.hasSpawnedMinions) {
+             this.spawnMinions();
+         }
+ 
+         // Check if minions are dead and can spawn again
+         if (this.hasSpawnedMinions && this.areMinionsDead()) {
+             this.hasSpawnedMinions = false;  // Allow spawning again
+         }
 
         // Update timers
         if (this.laserTimer > 0) this.laserTimer -= TICK;
