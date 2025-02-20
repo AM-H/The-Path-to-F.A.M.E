@@ -15,8 +15,8 @@ class stormSpirit{
 
         // Position setup
         this.x = x;
-        const groundHeight = gameWorld.height - 70;
-        this.y = groundHeight - 64;
+        const groundHeight = gameWorld.height;
+        this.y = groundHeight + 70;
 
         // Basic properties
         this.velocity = { x: 0, y: 0 };
@@ -61,7 +61,7 @@ class stormSpirit{
         const xOffset = (this.width - this.boxWidth) / 2;
         this.box = new BoundingBox(
             this.x + xOffset,
-            this.y,
+            this.y - 66,
             this.boxWidth,
             this.boxHeight
         );

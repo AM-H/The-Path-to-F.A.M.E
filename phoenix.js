@@ -15,7 +15,6 @@ class Phoenix {
 
         // Position setup
         this.x = x;
-        const groundHeight = gameWorld.height - 70;
         this.y = y;
 
         // Basic properties
