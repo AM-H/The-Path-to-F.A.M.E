@@ -21,8 +21,8 @@ class Drone {
         this.attackCooldown = 2;
         this.attackTimer = 0;
 
-        this.hitpoints = 50;
-        this.maxhitpoints = 50;
+        this.hitpoints = 300;
+        this.maxhitpoints = 300;
         this.radius = 20;
 
         this.healthbar = new HealthBar(this);

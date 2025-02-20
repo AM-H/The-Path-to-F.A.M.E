@@ -13,8 +13,8 @@ class AzielSeraph {
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
         this.facing = "right";
-        this.hitpoints = 100;
-        this.maxhitpoints = 100;
+        this.hitpoints = 150;
+        this.maxhitpoints = 150;
         this.radius = 20;
         this.lastDamageTime = 0;
         this.isAttacking = false;

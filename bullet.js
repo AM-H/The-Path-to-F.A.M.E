@@ -33,7 +33,7 @@ class Bullet {
 
         let player = this.game.entities.find(e => e instanceof AzielSeraph);
         if (player && this.box.collide(player.box)) {
-            player.takeDamage(5);
+            player.takeDamage(10);
             this.removeFromWorld = true;
         }
 

@@ -10,7 +10,7 @@ class Eclipser {
         this.laserImage = ASSET_MANAGER.getAsset(`./sprites/eclipser/laser.png`);
 
         // Position and movement properties
-        this.x = 600;
+        this.x = 900;
         const groundHeight = gameWorld.height - 70;
         this.y = groundHeight - 64;
         
@@ -53,6 +53,10 @@ class Eclipser {
         this.damageCooldown = 0;
         this.invincibilityTime = 0.5; // Time of invincibility after taking damage
 
+        //phasing through platforms
+        this.isPhasing = false;
+        this.phaseSpeed = 300;
+
         // Initialize bounding box
         this.updateBoundingBox();
         this.lastBox = this.box;
@@ -84,6 +88,57 @@ class Eclipser {
         return { x: vx, y: vy };
     }
 
+    getCurrentPlatformY() {
+        const tolerance = 5;
+        const feetPosition = this.y + this.boxHeight;
+        
+        // Check each platform height
+        if (Math.abs(feetPosition - 384) <= tolerance) return 384;  // High platform
+        if (Math.abs(feetPosition - 480) <= tolerance) return 480;  // Middle platform
+        if (Math.abs(feetPosition - 590) <= tolerance) return 590;  // Low platform
+        if (Math.abs(feetPosition - 698) <= tolerance) return 698;  // Ground
+        
+        return null;
+    }
+
+    getPlayerPlatformY(player) {
+        const tolerance = 5;
+        const playerFeet = player.y + player.box.height;
+        
+        // Check each platform height
+        if (Math.abs(playerFeet - 384) <= tolerance) return 384;  // High platform
+        if (Math.abs(playerFeet - 480) <= tolerance) return 480;  // Middle platform
+        if (Math.abs(playerFeet - 590) <= tolerance) return 590;  // Low platform
+        if (Math.abs(playerFeet - 698) <= tolerance) return 698;  // Ground
+        
+        return null;
+    }
+
+    shouldPhase(player) {
+        const currentY = this.getCurrentPlatformY();
+        const playerY = this.getPlayerPlatformY(player);
+        
+        if (currentY && playerY) {
+            return playerY < currentY; // Return true if player is higher
+        }
+        return false;
+    }
+
+    phaseTowardsPlayer(player, TICK) {
+        const playerPlatformY = this.getPlayerPlatformY(player);
+        if (!playerPlatformY) return;
+
+        // Calculate target Y position (subtract boxHeight to align feet with platform)
+        const targetY = playerPlatformY - this.boxHeight;
+        
+        // Move vertically at a fixed rate
+        const phaseSpeed = 300; // Adjust this value to change phasing speed
+        
+        if (this.y > targetY) {
+            this.y -= phaseSpeed * TICK;
+            if (this.y < targetY) this.y = targetY;
+        }
+    }
 
     getCurrentPlatform() {
         let currentPlatform = null;
@@ -181,33 +236,48 @@ class Eclipser {
         const TICK = this.game.clockTick;
         const player = this.getPlayer();
 
-        if (this.shouldJump(player)) {
-            console.log("Eclipser should jump!");  // Debugging
-
-            const jumpVelocity = this.calculateJumpVelocity(player.x, player.y);
-
-            this.velocity.x = jumpVelocity.x;
-            this.velocity.y = jumpVelocity.y; // Set upward velocity
-            this.landed = false; // Eclipser is now in the air
-            this.jumpPhase = 'ascending';
-        }
-
-
-        if (this.hitpoints <= 0) {
-            this.removeFromWorld = true;
-            this.defeated = true;
+        if (!player || this.hitpoints <= 0) {
+            if (this.hitpoints <= 0) {
+                this.removeFromWorld = true;
+                this.defeated = true;
+            }
             return;
         }
-    
-        if (!player) return;
-    
+
         // Update timers
         if (this.laserTimer > 0) this.laserTimer -= TICK;
         if (this.damageCooldown > 0) this.damageCooldown -= TICK;
-    
+
         const distToPlayer = Math.abs(this.x + this.width / 2 - (player.x + player.box.width / 2));
         const moveDir = player.x > this.x ? 1 : -1;
-    
+
+        // Check if we should start phasing
+        if (this.shouldPhase(player)) {
+            this.isPhasing = true;
+        }
+
+        // Handle phasing movement
+        if (this.isPhasing) {
+            const playerPlatformY = this.getPlayerPlatformY(player);
+            if (playerPlatformY) {
+                const targetY = playerPlatformY - this.boxHeight;
+                
+                // Move vertically
+                this.y -= this.phaseSpeed * TICK;
+                
+                // Check if we've reached the target platform
+                if (this.y <= targetY) {
+                    this.y = targetY;
+                    this.isPhasing = false;
+                    this.velocity.y = 0;
+                }
+            }
+        } else {
+            // Only apply gravity when not phasing
+            this.velocity.y += this.fallGrav * TICK;
+            this.y += this.velocity.y * TICK;
+        }
+
         // Laser state machine
         switch (this.laserState) {
             case 'inactive':
@@ -227,7 +297,7 @@ class Eclipser {
                     this.facing = moveDir;
                 }
                 break;
-    
+
             case 'charging':
                 this.laserTimer -= TICK;
                 if (this.laserTimer <= 0) {
@@ -236,84 +306,53 @@ class Eclipser {
                     this.currentLaserDamageCooldown = 0;
                 }
                 break;
-    
+
             case 'firing':
                 this.handleLaserDamage(player, TICK);
                 this.laserTimer -= TICK;
-    
+
                 if (this.laserTimer <= 0) {
                     this.laserState = 'inactive';
                     this.laserTimer = this.laserCooldown;
                 }
                 break;
         }
-    
-        // Apply gravity
-        this.velocity.y += this.fallGrav * TICK;
-        this.y += this.velocity.y * TICK;
-    
+
         this.updateLastBB();
         this.updateBoundingBox();
-    
-        // Platform collisions
-        let isOnGround = false;
-        this.game.entities.forEach(entity => {
-            if (entity instanceof Platform && this.box.collide(entity.box)) {
-                if (this.velocity.y > 0 && this.lastBox.bottom <= entity.box.top) {
-                    this.velocity.y = 0;
-                    this.y = entity.box.top - this.boxHeight;
-                    this.landed = true;
-                    isOnGround = true;
+
+        // Only check platform collisions when NOT phasing
+        if (!this.isPhasing) {
+            let isOnGround = false;
+            this.game.entities.forEach(entity => {
+                if (entity instanceof Platform && this.box.collide(entity.box)) {
+                    if (this.velocity.y > 0 && this.lastBox.bottom <= entity.box.top) {
+                        this.velocity.y = 0;
+                        this.y = entity.box.top - this.boxHeight;
+                        this.landed = true;
+                        isOnGround = true;
+                    }
                 }
+            });
+
+            // Ground level check
+            const groundLevel = gameWorld.height - 70;
+            if (!isOnGround && this.y + this.boxHeight > groundLevel) {
+                this.y = groundLevel - this.boxHeight;
+                this.velocity.y = 0;
+                this.landed = true;
             }
-        });
-    
-        // Ground level check
-        const groundLevel = gameWorld.height - 70;
-        if (!isOnGround && this.y + this.boxHeight > groundLevel) {
-            this.y = groundLevel - this.boxHeight;
-            this.velocity.y = 0;
-            this.landed = true;
         }
-    
+
         // Screen boundaries
         if (this.x < 0) this.x = 0;
         if (this.x > gameWorld.width - this.width) {
             this.x = gameWorld.width - this.width;
         }
-    
-       
+
         this.healthbar.update();
     }
 
-    checkPlayerAttack() {
-        const player = this.getPlayer();
-        if (!player) return;
-
-        // Check for Grim's attacks
-        if (player instanceof Grim) {
-            // Check for GrimAxe collision
-            this.game.entities.forEach(entity => {
-                if (entity instanceof GrimAxe) {
-                    if (entity.isAnimating && this.box.collide(entity.box)) {
-                        this.takeDamage(10);
-                    }
-                }
-            });
-
-            // Check for Skull projectile collision
-            this.game.entities.forEach(entity => {
-                if (entity instanceof SkullProjectile) {
-                    if (this.box.collide(entity.box)) {
-                        this.takeDamage(5);
-                        entity.removeFromWorld = true;
-                    }
-                }
-            });
-        }
-
-
-    }
 
     draw(ctx) {
         const scale = this.spriteScale;
@@ -358,7 +397,13 @@ class Eclipser {
             const hitboxX = this.facing === 1 ? this.x + 35 : this.x - 200;
             ctx.strokeRect(hitboxX, this.y - 20, 200, 30);
         }
+
+        if (this.isPhasing) {
+            ctx.globalAlpha = 0.5;  // Make boss semi-transparent while phasing
+        }
     
+
+        ctx.globalAlpha = 1.0;
         // Debug bounding box
         ctx.strokeStyle = 'red';
         ctx.lineWidth = 2;
