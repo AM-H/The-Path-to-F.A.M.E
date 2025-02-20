@@ -3,7 +3,8 @@ class LevelManager {
         this.game = game;
         this.whichPlayer = player;
         this.boss = null;
-        this.startLevelTransition(levelOne);
+        //this.startLevelTransition(levelOne);
+        this.loadLevel(levelOne);
     };
     startLevelTransition(level) {
         const transition = new LevelTransition(this.game);
@@ -11,7 +12,7 @@ class LevelManager {
 
         setTimeout(() => {
             this.loadLevel(level);
-        }, 4000); // Wait 4 seconds before loading the level
+        }, 0); // Wait 4 seconds before loading the level
     }
     loadLevel(level) {
         if (this.whichPlayer == `aziel`) {
@@ -40,7 +41,6 @@ class LevelManager {
             ASSET_MANAGER.playAsset(`./audio/level1Music.mp3`);
             ASSET_MANAGER.autoRepeat(`./audio/level1Music.mp3`);
         } else if (level === levelTwo) {
-            this.currentLevel = 2;
             this.boss = new inferno(this.game);
             this.game.addEntity(this.boss);
             // for (var i = 0; i < level.phoenixes.length; i++) {
@@ -51,7 +51,6 @@ class LevelManager {
             ASSET_MANAGER.playAsset(`./audio/level2Music.mp3`);
             ASSET_MANAGER.autoRepeat(`./audio/level2Music.mp3`);
         } else if(level === levelThree){
-            this.currentLevel = 3;
             this.boss = new Shizoku(this.game);
             this.game.addEntity(this.boss);
             for (var i = 0; i < level.spirits.length; i++) {

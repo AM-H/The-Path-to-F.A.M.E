@@ -61,7 +61,10 @@ class Drone {
                 }
             } else if (player instanceof Grim) {
                 if (player.game.closeAttack) {
-                    return true;
+                    const axe = tthis.game.entities.find(entity => entity instanceof GrimAxe);
+                    if (axe && this.box.collide(axe.box) && player.game.closeAttack){
+                        return true;
+                    }
                 }
             }
         }
