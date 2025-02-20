@@ -47,8 +47,8 @@ class Eclipser {
         this.minDistance = 150;
 
         // Health system
-        this.hitpoints = 400;
-        this.maxhitpoints = 400;
+        this.hitpoints = 350;
+        this.maxhitpoints = 350;
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
         this.invincibilityTime = 0.5; // Time of invincibility after taking damage
