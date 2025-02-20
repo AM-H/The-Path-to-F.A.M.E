@@ -55,7 +55,9 @@ var levelTwo = {
             height: 30,
             bColor: `#37446e`
         }
-    ]
+    ],
+    phoenixes: [{ x: 221, y: 500, speed: 1}, {x: 43, y: 74, speed: 2}, { x: 20, y: 300, speed: 2.4}, { x: 222, y: 200, speed: 3}, { x: 500, y: 111, speed: 1.4}]
+
 };
 
 var levelThree = {
@@ -99,7 +101,8 @@ var levelThree = {
             height: 30,
             bColor: `#37446e`
         }
-    ]
+    ],
+    //spirits: [{ x: 221, speed: 0.5}, {x: 300, speed: 1}, {  x: gameWorld.width - (gameWorld.width/10) - gameWorld.width/4, speed: 1.5}, {x: gameWorld.width/2 - gameWorld.width/8, speed: 2}, { x: 500, speed: 3}]
 };
 
 

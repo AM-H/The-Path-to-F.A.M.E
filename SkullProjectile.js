@@ -26,7 +26,7 @@ class SkullProjectile {
         // Collision checks remain the same
         this.game.entities.forEach(entity => {
             if (entity !== this && entity.box && this.box.collide(entity.box)) {
-                if (entity instanceof Platform || entity instanceof Boss || entity instanceof Drone) {
+                if (entity instanceof Platform || entity instanceof Boss || entity instanceof Drone || entity instanceof stormSpirit || entity instanceof Phoenix) {
                     this.removeFromWorld = true;
                 }
             }

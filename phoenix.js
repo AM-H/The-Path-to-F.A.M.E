@@ -1,41 +1,42 @@
-class Boss {
-    constructor(game) {
+class Phoenix {
+    constructor(game, x, y, speed) {
         this.game = game;
-      
+
         // Load animations
-        this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossIdleR.png`), 0, 0, 32, 32, 4, 0.35);
-        this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossIdleL.png`), 0, 0, 32, 32, 4, 0.35);
-        this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossWalkR.png`), 0, 0, 32, 32, 6, 0.35);
-        this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossWalkL.png`), 0, 0, 32, 32, 6, 0.35);
-        this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossAttackR.png`), 0, 0, 32, 32, 8, 0.25);
-        this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/BossAttackL.png`), 0, 0, 32, 32, 8, 0.25);
+        this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/phoenixes/IdleRight.png`), 0, 0, 128, 128, 6, 0.5);
+        this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/phoenixes/IdleLeft.png`), 0, 0, 128, 128, 6, 0.5);
+        this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/phoenixes/runRight.png`), 0, 0, 128, 128, 6, 0.5);
+        this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/phoenixes/runLeft.png`), 0, 0, 128, 128, 6, 0.5);
+        this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/phoenixes/attackRight.png`), 0, 0, 128, 128, 14, 0.6);
+        this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/phoenixes/attackLeft.png`), 0, 0, 128, 128, 14, 0.6);
 
 
-        
+
+
         // Position setup
-        this.x = 600;
+        this.x = x;
         const groundHeight = gameWorld.height - 70;
-        this.y = groundHeight - 64;
-        
+        this.y = y;
+
         // Basic properties
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
-        this.moveSpeed = 3;
+        this.moveSpeed = speed;
         this.landed = true;
-        
+
         this.spriteScale = 2;
-        this.width = 32 * this.spriteScale;    
-        this.height = 32 * this.spriteScale;   
+        this.width = 32 * this.spriteScale;
+        this.height = 32 * this.spriteScale;
         this.boxWidth = 32;
-        this.boxHeight = 64;  
-        
+        this.boxHeight = 32;
+
         // State
         this.facing = -1;
         this.state = `idle`;
         this.targetPlatform = null;
         this.jumpPhase = `none`;
-        this.isOnPlatform = false;  
-        
+        this.isOnPlatform = false;
+
         // Combat ranges
         this.attackRange = 50;
         this.chaseRange = 400;
@@ -58,14 +59,14 @@ class Boss {
 
     updateBoundingBox() {
         const xOffset = (this.width - this.boxWidth) / 2;
+        const yOffset = (this.height - this.boxHeight) / 2;
         this.box = new BoundingBox(
             this.x + xOffset,
-            this.y,
-            this.boxWidth,
-            this.boxHeight
+            this.y + yOffset,
+            this.boxWidth + 40,
+            this.boxHeight + 20
         );
     }
-
     updateLastBB() {
         this.lastBox = this.box;
     }
@@ -79,12 +80,12 @@ class Boss {
         return { x: vx, y: vy };
     }
 
-    
+
     getCurrentPlatform() {
         let currentPlatform = null;
         this.game.entities.forEach(entity => {
             if (entity instanceof Platform) {
-                if (this.y + this.boxHeight >= entity.y && 
+                if (this.y + this.boxHeight >= entity.y &&
                     this.y + this.boxHeight <= entity.y + 5 &&
                     this.x + this.boxWidth > entity.x &&
                     this.x < entity.x + entity.width) {
@@ -112,14 +113,14 @@ class Boss {
 
     shouldJump(player) {
         if (!this.landed) return false;
-        
+
         const playerPlatform = this.getPlayerPlatform(player);
         const currentPlatform = this.getCurrentPlatform();
-        
+
         if (!playerPlatform || !currentPlatform) return false;
-        
-        return playerPlatform.y < currentPlatform.y && 
-               Math.abs(this.x - player.x) < this.chaseRange;
+
+        return playerPlatform.y < currentPlatform.y &&
+            Math.abs(this.x - player.x) < this.chaseRange;
     }
 
     takeDamage(amount) {
@@ -132,7 +133,7 @@ class Boss {
 
     getPlayer() {
         // Find any entity that`s a player (AzielSeraph or Grim)
-        return this.game.entities.find(entity => 
+        return this.game.entities.find(entity =>
             entity instanceof AzielSeraph || entity instanceof HolyDiver || entity instanceof Grim || entity instanceof Kanji
         );
     }
@@ -149,36 +150,13 @@ class Boss {
                 if (player.box && this.box.collide(player.box) && this.game.closeAttack) {
                     this.takeDamage(10);
                 }
+            } else if (player instanceof Grim) {
+                // Handle Grim`s attack
+                if (player.game.closeAttack) {
+                    this.takeDamage(10);
+                }
             }
         }
-
-        //// Check for Grim's attacks
-        if (player instanceof Grim) {
-        // Check for GrimAxe collision
-        this.game.entities.forEach(entity => {
-            if (entity instanceof GrimAxe) {
-                if (entity.isAnimating && this.box.collide(entity.box)) {
-                    this.takeDamage(10);
-                    console.log(`Boss takes axe damage! HP: ${this.hitpoints}`);
-                }
-            }
-        });
-
-        // Check for Skull projectile collision
-        this.game.entities.forEach(entity => {
-            if (entity instanceof SkullProjectile) {
-                if (this.box.collide(entity.box)) {
-                    this.takeDamage(5);
-                    entity.removeFromWorld = true; // Remove the projectile on hit
-                    console.log(`Boss takes projectile damage! HP: ${this.hitpoints}`);
-                }
-            }
-        });
-    }
-
-
-
-
     }
 
     update() {
@@ -223,10 +201,10 @@ class Boss {
         this.velocity.y += this.fallGrav * TICK;
         this.y += this.velocity.y * TICK;
         this.x += this.velocity.x * TICK;
-        
+
         this.updateLastBB();
         this.updateBoundingBox();
-        
+
         // Platform and ground collisions
         let isOnGround = false;
         this.game.entities.forEach(entity => {
@@ -272,29 +250,29 @@ class Boss {
 
     draw(ctx) {
         const scale = this.spriteScale;
-        
+
         if (this.state === `attacking`) {
             if (this.facing === -1) {
-                this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+                this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, true);
             } else {
                 this.attackRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
             }
         } else {
             if (this.state === `chasing` || this.state === `moving` || this.jumpPhase === `jumping`) {
                 if (this.facing === -1) {
-                    this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+                    this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.5, true);
                 } else {
-                    this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+                    this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.5);
                 }
             } else {
                 if (this.facing === -1) {
-                    this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+                    this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.5, true);
                 } else {
-                    this.idleRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+                    this.idleRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.5);
                 }
             }
         }
-        
+
         // Debug bounding box
         ctx.strokeStyle = `red`;
         ctx.lineWidth = 2;
