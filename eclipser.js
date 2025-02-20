@@ -66,11 +66,8 @@ class Eclipser {
         this.hasSpawnedMinions = false;
         this.spawnedMinions = [];
         
-        // Define minion spawn points (similar to levelOne.drones)
+        // Define minion spawn points
         this.minionSpawnPoints = [
-            { x: 221, y: 500, speed: 220 },
-            { x: 43, y: 74, speed: 230 },
-            { x: 20, y: 300, speed: 275 },
             { x: 222, y: 200, speed: 300 },
             { x: 500, y: 111, speed: 201 }
         ];
@@ -288,7 +285,7 @@ class Eclipser {
  
          // Check if minions are dead and can spawn again
          if (this.hasSpawnedMinions && this.areMinionsDead()) {
-             this.hasSpawnedMinions = false;  // Allow spawning again
+             this.hasSpawnedMinions = true;  // Allow spawning again
          }
 
         // Update timers
