@@ -102,7 +102,7 @@ var levelThree = {
             bColor: `#37446e`
         }
     ],
-    spirits: [{ x: 221, speed: 0.5}, {x: 300, speed: 1}, {  x: gameWorld.width - (gameWorld.width/10) - gameWorld.width/4, speed: 1.5}, {x: gameWorld.width/2 - gameWorld.width/8, speed: 2}, { x: 500, speed: 3}]
+    //spirits: [{ x: 221, speed: 0.5}, {x: 300, speed: 1}, {  x: gameWorld.width - (gameWorld.width/10) - gameWorld.width/4, speed: 1.5}, {x: gameWorld.width/2 - gameWorld.width/8, speed: 2}, { x: 500, speed: 3}]
 };
 
 

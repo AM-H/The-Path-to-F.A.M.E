@@ -149,13 +149,36 @@ class Boss {
                 if (player.box && this.box.collide(player.box) && this.game.closeAttack) {
                     this.takeDamage(10);
                 }
-            } else if (player instanceof Grim) {
-                // Handle Grim`s attack
-                if (player.game.closeAttack) {
-                    this.takeDamage(10);
-                }
             }
         }
+
+        //// Check for Grim's attacks
+        if (player instanceof Grim) {
+        // Check for GrimAxe collision
+        this.game.entities.forEach(entity => {
+            if (entity instanceof GrimAxe) {
+                if (entity.isAnimating && this.box.collide(entity.box)) {
+                    this.takeDamage(10);
+                    console.log(`Boss takes axe damage! HP: ${this.hitpoints}`);
+                }
+            }
+        });
+
+        // Check for Skull projectile collision
+        this.game.entities.forEach(entity => {
+            if (entity instanceof SkullProjectile) {
+                if (this.box.collide(entity.box)) {
+                    this.takeDamage(5);
+                    entity.removeFromWorld = true; // Remove the projectile on hit
+                    console.log(`Boss takes projectile damage! HP: ${this.hitpoints}`);
+                }
+            }
+        });
+    }
+
+
+
+
     }
 
     update() {
