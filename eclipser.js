@@ -84,21 +84,31 @@ class Eclipser {
         return { x: vx, y: vy };
     }
 
-    
+
     getCurrentPlatform() {
         let currentPlatform = null;
+
         this.game.entities.forEach(entity => {
             if (entity instanceof Platform) {
-                if (this.y + this.boxHeight >= entity.y && 
-                    this.y + this.boxHeight <= entity.y + 5 &&
-                    this.x + this.boxWidth > entity.x &&
-                    this.x < entity.x + entity.width) {
+                // Check if Eclipser is standing on a platform
+                if (
+                    this.y + this.boxHeight >= entity.y &&  // Bottom of Eclipser is at or below platform top
+                    this.y + this.boxHeight <= entity.y + Math.abs(this.velocity.y) + 5 && // Small buffer to prevent falling through
+                    this.x + this.boxWidth > entity.x &&   // Eclipser's right side is beyond platform's left side
+                    this.x < entity.x + entity.width       // Eclipser's left side is before platform's right side
+                ) {
                     currentPlatform = entity;
+                    this.landed = true;
+                    this.velocity.y = 0; // Stop falling
+                    this.jumpPhase = 'none';
+                    this.y = entity.y - this.boxHeight; // Snap to platform top
                 }
             }
         });
+
         return currentPlatform;
     }
+
 
     getPlayerPlatform(player) {
         let playerPlatform = null;
@@ -171,7 +181,18 @@ class Eclipser {
         const TICK = this.game.clockTick;
         const player = this.getPlayer();
 
-    
+        if (this.shouldJump(player)) {
+            console.log("Eclipser should jump!");  // Debugging
+
+            const jumpVelocity = this.calculateJumpVelocity(player.x, player.y);
+
+            this.velocity.x = jumpVelocity.x;
+            this.velocity.y = jumpVelocity.y; // Set upward velocity
+            this.landed = false; // Eclipser is now in the air
+            this.jumpPhase = 'ascending';
+        }
+
+
         if (this.hitpoints <= 0) {
             this.removeFromWorld = true;
             this.defeated = true;
@@ -265,7 +286,35 @@ class Eclipser {
         this.healthbar.update();
     }
 
-    
+    checkPlayerAttack() {
+        const player = this.getPlayer();
+        if (!player) return;
+
+        // Check for Grim's attacks
+        if (player instanceof Grim) {
+            // Check for GrimAxe collision
+            this.game.entities.forEach(entity => {
+                if (entity instanceof GrimAxe) {
+                    if (entity.isAnimating && this.box.collide(entity.box)) {
+                        this.takeDamage(10);
+                    }
+                }
+            });
+
+            // Check for Skull projectile collision
+            this.game.entities.forEach(entity => {
+                if (entity instanceof SkullProjectile) {
+                    if (this.box.collide(entity.box)) {
+                        this.takeDamage(5);
+                        entity.removeFromWorld = true;
+                    }
+                }
+            });
+        }
+
+
+    }
+
     draw(ctx) {
         const scale = this.spriteScale;
     

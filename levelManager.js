@@ -86,7 +86,7 @@ class LevelManager {
 
     update() {
         if (this.boss != null) {
-            
+
         }
         if (this.boss && this.boss.defeated) {
             this.game.entities.forEach(element => {
@@ -94,7 +94,7 @@ class LevelManager {
             });
             this.startLevelTransition(levelTwo);
         }
-        
+
         updateVolume();
     };
 
