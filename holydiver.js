@@ -53,7 +53,7 @@ class HolyDiver {
         // Check for laser collision
         this.laserBoxes.forEach(laserBox => {
             this.game.entities.forEach(entity => {
-                if ((entity instanceof Boss || entity instanceof stormSpirit || entity instanceof Drone || entity instanceof Phoenix || entity instanceof  Shizoku || entity instanceof  inferno) && laserBox.collide(entity.box) && this.aziel.isRangeAttacking) {
+                if ((entity instanceof Eclipser || entity instanceof stormSpirit || entity instanceof Drone || entity instanceof Phoenix || entity instanceof  Shizoku || entity instanceof  inferno) && laserBox.collide(entity.box) && this.aziel.isRangeAttacking) {
                     entity.takeDamage(100);
                     console.log(`${entity.constructor.name} takes damage! HP: ${entity.hitpoints}`);
                 }
@@ -61,7 +61,7 @@ class HolyDiver {
         });
         //Check for boss collision & apply damage close range
         this.game.entities.forEach(entity => {
-            if ((entity instanceof  inferno || entity instanceof  Shizoku || entity instanceof Boss) && this.box.collide(entity.box) && this.game.closeAttack) {
+            if ((entity instanceof  inferno || entity instanceof  Shizoku || entity instanceof Eclipser) && this.box.collide(entity.box) && this.game.closeAttack) {
                 entity.takeDamage(10); // Deal 10 damage to boss
                 console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
             } else if ((entity instanceof Drone ||entity instanceof Phoenix || entity instanceof stormSpirit) && this.box.collide(entity.box) && this.game.closeAttack) {

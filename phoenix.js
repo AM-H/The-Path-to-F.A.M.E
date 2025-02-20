@@ -252,22 +252,22 @@ class Phoenix {
 
         if (this.state === `attacking`) {
             if (this.facing === -1) {
-                this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+                this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, true);
             } else {
                 this.attackRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
             }
         } else {
             if (this.state === `chasing` || this.state === `moving` || this.jumpPhase === `jumping`) {
                 if (this.facing === -1) {
-                    this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+                    this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.5, true);
                 } else {
-                    this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+                    this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.5);
                 }
             } else {
                 if (this.facing === -1) {
-                    this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+                    this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.5, true);
                 } else {
-                    this.idleRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+                    this.idleRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.5);
                 }
             }
         }

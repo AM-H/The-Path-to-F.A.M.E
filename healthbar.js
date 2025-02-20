@@ -17,7 +17,7 @@ class HealthBar {
             if (this.agent instanceof AzielSeraph) {
                 ctx.fillRect(10, 10, 200 * ratio, 30);
                 ctx.strokeRect(10, 10, 200, 30);
-            } else if (this.agent instanceof Boss || this.agent instanceof  Shizoku || this.agent instanceof  inferno) {
+            } else if (this.agent instanceof Eclipser || this.agent instanceof  Shizoku || this.agent instanceof  inferno) {
                 ctx.fillRect(gameWorld.width-210, 10, 200 * ratio, 30);
                 ctx.strokeRect(gameWorld.width-210, 10, 200, 30);
             } else {

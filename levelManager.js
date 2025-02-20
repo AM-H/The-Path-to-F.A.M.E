@@ -3,15 +3,35 @@ class LevelManager {
         this.game = game;
         this.whichPlayer = player;
         this.boss = null;
-        this.currentLevel = 1;
+        //this.startLevelTransition(levelOne);
         this.loadLevel(levelOne);
     };
+    startLevelTransition(level) {
+        const transition = new LevelTransition(this.game);
+        this.game.addEntity(transition);
 
+        setTimeout(() => {
+            this.loadLevel(level);
+        }, 0); // Wait 4 seconds before loading the level
+    }
     loadLevel(level) {
-        // Set current level at the start of loadLevel
-        if(level === levelOne) {
-            this.currentLevel = 1;
-            this.boss = new Boss(this.game);
+        if (this.whichPlayer == `aziel`) {
+            const aziel = new AzielSeraph(this.game);
+            this.game.addEntity(aziel);
+            this.game.addEntity(new HolyDiver(this.game, aziel));
+        }
+        if(this.whichPlayer === `kanji`){
+            const kanji = new Kanji(this.game);
+            this.game.addEntity(kanji);
+        }
+
+        if(this.whichPlayer == `grim`){
+            const grim = new Grim(this.game);
+            this.game.addEntity(grim);
+            this.game.addEntity(new GrimAxe(this.game, grim));
+        }
+        if(level == levelOne) {
+            this.boss = new Eclipser(this.game);
             for (var i = 0; i < level.drones.length; i++) {
                 let drone = level.drones[i];
                 this.game.addEntity(new Drone(this.game, drone.x, drone.y, drone.speed));
@@ -21,18 +41,16 @@ class LevelManager {
             ASSET_MANAGER.playAsset(`./audio/level1Music.mp3`);
             ASSET_MANAGER.autoRepeat(`./audio/level1Music.mp3`);
         } else if (level === levelTwo) {
-            this.currentLevel = 2;
             this.boss = new inferno(this.game);
             this.game.addEntity(this.boss);
-            for (var i = 0; i < level.phoenixes.length; i++) {
-                let phoenix = level.phoenixes[i];
-                this.game.addEntity(new Phoenix(this.game, phoenix.x, phoenix.y, phoenix.speed));
-            }
+            // for (var i = 0; i < level.phoenixes.length; i++) {
+            //     let phoenix = level.phoenixes[i];
+            //     this.game.addEntity(new Phoenix(this.game, phoenix.x, phoenix.y, phoenix.speed));
+            // }
             ASSET_MANAGER.pauseBackgroundMusic();
             ASSET_MANAGER.playAsset(`./audio/level2Music.mp3`);
             ASSET_MANAGER.autoRepeat(`./audio/level2Music.mp3`);
         } else if(level === levelThree){
-            this.currentLevel = 3;
             this.boss = new Shizoku(this.game);
             this.game.addEntity(this.boss);
             for (var i = 0; i < level.spirits.length; i++) {
@@ -67,38 +85,16 @@ class LevelManager {
     };
 
     update() {
-        // Debug logs
-        if(this.currentLevel === 2){
-            console.log(this.boss.defeated);
-        }
-        if (this.boss.defeated && this.boss.removeFromWorld) {
-            console.log("Boss defeated at level:", this.currentLevel);
+        if (this.boss != null) {
 
+        }
+        if (this.boss && this.boss.defeated) {
             this.game.entities.forEach(element => {
                 element.removeFromWorld = true;
             });
-
-            if (this.currentLevel === 1) {
-                console.log("Transitioning to level 2");
-                this.loadLevel(levelThree);
-            } else if (this.currentLevel === 2) {
-                console.log("Transitioning to level 3");
-                this.loadLevel(levelThree);
-            } else {
-                console.log("Game completed!");
-                // Add any game completion logic here
-            }
+            this.startLevelTransition(levelTwo);
         }
 
-        if (this.character === `grim` && this.game.rangeAttack) {
-            const direction = {
-                x: (this.game.mouseX - this.player.x) / Math.sqrt((this.game.mouseX - this.player.x) ** 2 + (this.game.mouseY - this.player.y) ** 2),
-                y: (this.game.mouseY - this.player.y) / Math.sqrt((this.game.mouseX - this.player.x) ** 2 + (this.game.mouseY - this.player.y) ** 2)
-            };
-
-            const projectile = new SkullProjectile(this.game, this.player.x + this.player.box.width / 2, this.player.y + this.player.box.height / 2, direction);
-            this.game.addEntity(projectile);
-        }
         updateVolume();
     };
 
