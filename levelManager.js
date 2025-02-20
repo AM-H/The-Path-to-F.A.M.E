@@ -3,8 +3,7 @@ class LevelManager {
         this.game = game;
         this.whichPlayer = player;
         this.boss = null;
-        //this.startLevelTransition(levelOne);
-        this.loadLevel(levelOne);
+        this.startLevelTransition(levelOne);
     };
     startLevelTransition(level) {
         const transition = new LevelTransition(this.game);
