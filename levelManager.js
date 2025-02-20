@@ -11,7 +11,7 @@ class LevelManager {
 
         setTimeout(() => {
             this.loadLevel(level);
-        }, 0); // Wait 4 seconds before loading the level
+        }, 4000); // Wait 4 seconds before loading the level
     }
     loadLevel(level) {
         if (this.whichPlayer == `aziel`) {
