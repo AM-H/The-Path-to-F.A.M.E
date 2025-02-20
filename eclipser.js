@@ -38,7 +38,7 @@ class Eclipser {
         this.laserState = 'inactive';
         this.laserChargeTime = 0.5;
         this.laserFireTime = 0.5;
-        this.laserDamage = 35;
+        this.laserDamage = 10;
         this.laserDamageCooldown = 1; // Increased cooldown between damage ticks
         this.currentLaserDamageCooldown = 0;
         
@@ -129,7 +129,7 @@ class Eclipser {
 
     takeDamage(amount) {
         if (this.damageCooldown <= 0) {
-            this.hitpoints = Math.max(0, this.hitpoints - amount);
+            this.hitpoints -= amount;
             this.damageCooldown = this.invincibilityTime;
         }
     }
@@ -157,10 +157,11 @@ class Eclipser {
                 40 
             );
     
-            if (player.box.collide(laserBox)) {
+            if (player && player.box.collide(laserBox)) {
                 if (this.currentLaserDamageCooldown <= 0) {
                     player.takeDamage(this.laserDamage);
                     this.currentLaserDamageCooldown = this.laserDamageCooldown;
+                    console.log("attacking")
                 }
             }
         }
@@ -169,6 +170,7 @@ class Eclipser {
     update() {
         const TICK = this.game.clockTick;
         const player = this.getPlayer();
+
     
         if (this.hitpoints <= 0) {
             this.removeFromWorld = true;
