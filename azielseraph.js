@@ -3,7 +3,7 @@ class AzielSeraph {
         this.game = game;
         this.removeFromWorld = false;
         this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 5, .35,);
-        this.rangeAttackCooldown = 10;  //Cooldown in seconds
+        this.rangeAttackCooldown = 5;  //Cooldown in seconds
         this.rangeAttackDuration = 0.8; //Duration of the long-range attack in seconds
         this.rangeAttackStartTime = 0;  //Time when the current range attack started
         this.lastRangeAttackTime = -this.rangeAttackCooldown;  // Instant availability at the start
