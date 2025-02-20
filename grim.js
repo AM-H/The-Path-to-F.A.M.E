@@ -36,11 +36,9 @@ class Grim {
     }
 
     takeDamage(amount) {
-        if (this.damageCooldown <= 0) {
-            this.hitpoints = Math.max(0, this.hitpoints - amount);
-            this.damageCooldown = 0.5;
-            console.log(`Grim takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
-        }
+        this.hitpoints -= amount;
+        if(this.hitpoints < 0) this.hitpoints = 0;
+        console.log(`Grim takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
     }
 
     updateBoundingBox() {
@@ -56,8 +54,9 @@ class Grim {
         
         // Check if Grim is dead
         if (this.hitpoints <= 0) {
-            this.removeFromWorld = true;
-            console.log("Grim has been defeated!");
+            this.hitpoints = 0;
+            this.game.isGameOver = true;
+            this.game.addEntity(new GameOver(this.game));
             return;
         }
 
@@ -168,10 +167,6 @@ class Grim {
                     }
                 }
 
-                // Check for damage from enemies
-                if ((entity instanceof Boss || entity instanceof Drone) && entity.state === 'attacking') {
-                    this.takeDamage(10);
-                }
             }
             this.updateBoundingBox();
         });
