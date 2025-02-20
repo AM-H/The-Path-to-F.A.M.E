@@ -47,7 +47,6 @@ class Eclipser {
         this.attackRange = 50;
         this.chaseRange = 400;
         this.minDistance = 150;
-        this.jumpThreshold = 100; // Distance at which boss decides to jump to player's platform
 
         // Initialize bounding boxes
         this.updateBoundingBox();
@@ -88,21 +87,31 @@ class Eclipser {
         return { x: vx, y: vy };
     }
 
-    
+
     getCurrentPlatform() {
         let currentPlatform = null;
+
         this.game.entities.forEach(entity => {
             if (entity instanceof Platform) {
-                if (this.y + this.boxHeight >= entity.y && 
-                    this.y + this.boxHeight <= entity.y + 5 &&
-                    this.x + this.boxWidth > entity.x &&
-                    this.x < entity.x + entity.width) {
+                // Check if Eclipser is standing on a platform
+                if (
+                    this.y + this.boxHeight >= entity.y &&  // Bottom of Eclipser is at or below platform top
+                    this.y + this.boxHeight <= entity.y + Math.abs(this.velocity.y) + 5 && // Small buffer to prevent falling through
+                    this.x + this.boxWidth > entity.x &&   // Eclipser's right side is beyond platform's left side
+                    this.x < entity.x + entity.width       // Eclipser's left side is before platform's right side
+                ) {
                     currentPlatform = entity;
+                    this.landed = true;
+                    this.velocity.y = 0; // Stop falling
+                    this.jumpPhase = 'none';
+                    this.y = entity.y - this.boxHeight; // Snap to platform top
                 }
             }
         });
+
         return currentPlatform;
     }
+
 
     getPlayerPlatform(player) {
         let playerPlatform = null;
@@ -146,26 +155,6 @@ class Eclipser {
         );
     }
 
-    checkPlayerAttack() {
-        const player = this.getPlayer();
-        if (!player) return;
-        // Check for close attack collision
-        if (player.box && this.box.collide(player.box)) {
-            console.log(`HERE`);
-            if (player instanceof AzielSeraph || player instanceof HolyDiver) {
-                // Check for HolyDiver attack
-                //const holyDiver = this.game.entities.find(entity => entity instanceof HolyDiver);
-                if (player.box && this.box.collide(player.box) && this.game.closeAttack) {
-                    this.takeDamage(10);
-                }
-            } else if (player instanceof Grim) {
-                // Handle Grim's attack
-                if (player.game.closeAttack) {
-                    this.takeDamage(10);
-                }
-            }
-        }
-    }
 
     handleLaserDamage(player, TICK) {
         if (this.laserState === 'firing') {
@@ -198,7 +187,19 @@ class Eclipser {
     update() {
         const TICK = this.game.clockTick;
         const player = this.getPlayer();
-    
+
+        if (this.shouldJump(player)) {
+            console.log("Eclipser should jump!");  // Debugging
+
+            const jumpVelocity = this.calculateJumpVelocity(player.x, player.y);
+
+            this.velocity.x = jumpVelocity.x;
+            this.velocity.y = jumpVelocity.y; // Set upward velocity
+            this.landed = false; // Eclipser is now in the air
+            this.jumpPhase = 'ascending';
+        }
+
+
         if (this.hitpoints <= 0) {
             this.removeFromWorld = true;
             this.defeated = true;
@@ -331,12 +332,7 @@ class Eclipser {
             });
         }
 
-        // Check for other player attacks
-        if (player instanceof AzielSeraph || player instanceof HolyDiver) {
-            if (player.box && this.box.collide(player.box) && this.game.closeAttack) {
-                this.takeDamage(10);
-            }
-        }
+
     }
 
     draw(ctx) {
