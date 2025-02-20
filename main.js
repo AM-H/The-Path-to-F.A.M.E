@@ -5,6 +5,7 @@ const ASSET_MANAGER = new AssetManager();
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/TitleScreen.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/PLAYbutton.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/SelectPlayerScreen.png`);
+ASSET_MANAGER.queueDownload(`./levelBackgrounds/transitionScreen.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level1_background.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/youdied.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/playagainbutton.png`);
@@ -119,6 +120,12 @@ ASSET_MANAGER.queueDownload(`./audio/level2Music.mp3`);
 //KyraBlade
 ASSET_MANAGER.queueDownload(`./sprites/kyrablade/IdleRightKyra.png`);
 
+//Eclipser
+ASSET_MANAGER.queueDownload(`./sprites/eclipser/idleR.png`);
+ASSET_MANAGER.queueDownload(`./sprites/eclipser/idleL.png`);
+ASSET_MANAGER.queueDownload(`./sprites/eclipser/walkR.png`);
+ASSET_MANAGER.queueDownload(`./sprites/eclipser/walkL.png`);
+ASSET_MANAGER.queueDownload(`./sprites/eclipser/laser.png`);
 
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");

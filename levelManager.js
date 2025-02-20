@@ -3,15 +3,34 @@ class LevelManager {
         this.game = game;
         this.whichPlayer = player;
         this.boss = null;
-        this.currentLevel = 1;
-        this.loadLevel(levelOne);
+        this.startLevelTransition(levelOne);
     };
+    startLevelTransition(level) {
+        const transition = new LevelTransition(this.game);
+        this.game.addEntity(transition);
 
+        setTimeout(() => {
+            this.loadLevel(level);
+        }, 4000); // Wait 4 seconds before loading the level
+    }
     loadLevel(level) {
-        // Set current level at the start of loadLevel
-        if(level === levelOne) {
-            this.currentLevel = 1;
-            this.boss = new Boss(this.game);
+        if (this.whichPlayer == `aziel`) {
+            const aziel = new AzielSeraph(this.game);
+            this.game.addEntity(aziel);
+            this.game.addEntity(new HolyDiver(this.game, aziel));
+        }
+        if(this.whichPlayer === `kanji`){
+            const kanji = new Kanji(this.game);
+            this.game.addEntity(kanji);
+        }
+
+        if(this.whichPlayer == `grim`){
+            const grim = new Grim(this.game);
+            this.game.addEntity(grim);
+            this.game.addEntity(new GrimAxe(this.game, grim));
+        }
+        if(level == levelOne) {
+            this.boss = new Eclipser(this.game);
             for (var i = 0; i < level.drones.length; i++) {
                 let drone = level.drones[i];
                 this.game.addEntity(new Drone(this.game, drone.x, drone.y, drone.speed));
@@ -67,29 +86,16 @@ class LevelManager {
     };
 
     update() {
-        // Debug logs
-        if(this.currentLevel === 2){
-            console.log(this.boss.defeated);
+        if (this.boss != null) {
+            
         }
-        if (this.boss.defeated && this.boss.removeFromWorld) {
-            console.log("Boss defeated at level:", this.currentLevel);
-
+        if (this.boss && this.boss.defeated) {
             this.game.entities.forEach(element => {
                 element.removeFromWorld = true;
             });
-
-            if (this.currentLevel === 1) {
-                console.log("Transitioning to level 2");
-                this.loadLevel(levelTwo);
-            } else if (this.currentLevel === 2) {
-                console.log("Transitioning to level 3");
-                this.loadLevel(levelThree);
-            } else {
-                console.log("Game completed!");
-                // Add any game completion logic here
-            }
+            this.startLevelTransition(levelTwo);
         }
-
+        
         updateVolume();
     };
 
