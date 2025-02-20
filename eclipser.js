@@ -38,7 +38,7 @@ class Eclipser {
         this.laserState = 'inactive';
         this.laserChargeTime = 0.5;
         this.laserFireTime = 0.5;
-        this.laserDamage = 10;
+        this.laserDamage = 35;
         this.laserDamageCooldown = 1; // Increased cooldown between damage ticks
         this.currentLaserDamageCooldown = 0;
         

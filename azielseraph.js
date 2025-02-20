@@ -38,6 +38,7 @@ class AzielSeraph {
     takeDamage(amount) {
         this.hitpoints -= amount;
         if (this.hitpoints < 0) this.hitpoints = 0; // Prevent negative HP
+        this.healthbar.update()
         console.log("getting hit")
         console.log(amount)
     }    
