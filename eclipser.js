@@ -2,64 +2,60 @@ class Eclipser {
     constructor(game) {
         this.game = game;
       
-        // Load animations
+        // Load animations (keeping original animation setup)
         this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/eclipser/idleR.png`), 0, 0, 25, 108, 8, 0.35, true);
         this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/eclipser/idleL.png`), 0, 0, 25, 108, 8, 0.35, true);
         this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/eclipser/walkR.png`), 0, 0, 25, 108, 8, 0.35, true);
         this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/eclipser/walkL.png`), 0, 0, 25, 108, 8, 0.35, true);
         this.laserImage = ASSET_MANAGER.getAsset(`./sprites/eclipser/laser.png`);
 
-        // Position setup
+        // Position and movement properties
         this.x = 600;
         const groundHeight = gameWorld.height - 70;
         this.y = groundHeight - 64;
         
-        // Basic properties
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
         this.moveSpeed = 3;
         this.landed = true;
         
+        // Visual properties
         this.spriteScale = 2;
         this.width = 32 * this.spriteScale;    
         this.height = 32 * this.spriteScale;   
         this.boxWidth = 32;
         this.boxHeight = 64;  
         
-        // State
+        // State properties
         this.facing = -1;
         this.state = 'idle';
-        this.targetPlatform = null;
-        this.jumpPhase = 'none';
         this.isOnPlatform = false;
         
-         //laser attack system
-        this.laserCooldown = 2; // Time between laser attacks
-        this.laserTimer = 0;
-        this.laserRange = 200;
+        // Combat properties
+        this.laserCooldown = 3; // Increased cooldown between laser attacks
+        this.laserTimer = this.laserCooldown;
+        this.laserRange = 300; // Increased range
         this.laserState = 'inactive';
-        this.laserChargeTime = 1;
-        this.laserFireTime = 1;
-        this.laserDamageCooldown = 0.5; // Time between each laser damage tick
+        this.laserChargeTime = 0.5;
+        this.laserFireTime = 0.5;
+        this.laserDamage = 35;
+        this.laserDamageCooldown = 1; // Increased cooldown between damage ticks
         this.currentLaserDamageCooldown = 0;
         
-        // Combat ranges
         this.attackRange = 50;
         this.chaseRange = 400;
         this.minDistance = 150;
-        this.jumpThreshold = 100; // Distance at which boss decides to jump to player's platform
 
-        // Initialize bounding boxes
-        this.updateBoundingBox();
-        this.lastBox = this.box;
-
-        // Healthbar
-        this.hitpoints = 150;
-        this.maxhitpoints = 150;
+        // Health system
+        this.hitpoints = 1000;
+        this.maxhitpoints = 1000;
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
+        this.invincibilityTime = 0.5; // Time of invincibility after taking damage
 
-        this.debug = true;
+        // Initialize bounding box
+        this.updateBoundingBox();
+        this.lastBox = this.box;
 
         this.removeFromWorld = false;
         this.defeated = false;
@@ -134,8 +130,7 @@ class Eclipser {
     takeDamage(amount) {
         if (this.damageCooldown <= 0) {
             this.hitpoints = Math.max(0, this.hitpoints - amount);
-            this.damageCooldown = 0.5;
-            console.log(`Boss takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+            this.damageCooldown = this.invincibilityTime;
         }
     }
 
@@ -146,33 +141,12 @@ class Eclipser {
         );
     }
 
-    checkPlayerAttack() {
-        const player = this.getPlayer();
-        if (!player) return;
-        // Check for close attack collision
-        if (player.box && this.box.collide(player.box)) {
-            console.log(`HERE`);
-            if (player instanceof AzielSeraph || player instanceof HolyDiver) {
-                // Check for HolyDiver attack
-                //const holyDiver = this.game.entities.find(entity => entity instanceof HolyDiver);
-                if (player.box && this.box.collide(player.box) && this.game.closeAttack) {
-                    this.takeDamage(10);
-                }
-            } else if (player instanceof Grim) {
-                // Handle Grim's attack
-                if (player.game.closeAttack) {
-                    this.takeDamage(10);
-                }
-            }
-        }
-    }
-
     handleLaserDamage(player, TICK) {
         if (this.laserState === 'firing') {
-            console.log('Laser is FIRING!');
-    
             // Update laser damage cooldown
-            this.currentLaserDamageCooldown -= TICK;
+            if (this.currentLaserDamageCooldown > 0) {
+                this.currentLaserDamageCooldown -= TICK;
+            }
     
             let laserStartX = this.facing === 1 ? this.x + 35 : this.x - 200;
     
@@ -180,16 +154,13 @@ class Eclipser {
                 laserStartX,
                 this.y - 20,
                 200,
-                40
+                40 
             );
     
             if (player.box.collide(laserBox)) {
-                console.log('Laser hitbox colliding with player!');
-                // Only deal damage if both laser damage cooldown and player damage cooldown are done
-                if (this.currentLaserDamageCooldown <= 0 && (!player.damageCooldown || player.damageCooldown <= 0)) {
-                    player.takeDamage(20); // Deal damage to the player
-                    this.currentLaserDamageCooldown = this.laserDamageCooldown; // Reset laser damage cooldown
-                    console.log(`Laser hit player! Player HP: ${player.hitpoints}`);
+                if (this.currentLaserDamageCooldown <= 0) {
+                    player.takeDamage(this.laserDamage);
+                    this.currentLaserDamageCooldown = this.laserDamageCooldown;
                 }
             }
         }
@@ -208,8 +179,8 @@ class Eclipser {
         if (!player) return;
     
         // Update timers
-        this.laserTimer -= TICK;
-        this.damageCooldown -= TICK;
+        if (this.laserTimer > 0) this.laserTimer -= TICK;
+        if (this.damageCooldown > 0) this.damageCooldown -= TICK;
     
         const distToPlayer = Math.abs(this.x + this.width / 2 - (player.x + player.box.width / 2));
         const moveDir = player.x > this.x ? 1 : -1;
@@ -217,22 +188,29 @@ class Eclipser {
         // Laser state machine
         switch (this.laserState) {
             case 'inactive':
-                if (this.laserTimer <= 0 && distToPlayer < this.laserRange && distToPlayer > this.minDistance) {
-                    console.log('Starting laser charge!');
+                // Move towards player when not using laser
+                if (distToPlayer > this.minDistance) {
+                    this.x += this.moveSpeed * moveDir;
+                    this.facing = moveDir;
+                    this.state = 'chasing';
+                } else {
+                    this.state = 'idle';
+                }
+
+                // Start laser attack when in range and cooldown is done
+                if (this.laserTimer <= 0 && distToPlayer < this.laserRange) {
                     this.laserState = 'charging';
                     this.laserTimer = this.laserChargeTime;
                     this.facing = moveDir;
-                    this.state = 'idle';
                 }
                 break;
     
             case 'charging':
                 this.laserTimer -= TICK;
                 if (this.laserTimer <= 0) {
-                    console.log('Laser charge complete - FIRING!');
                     this.laserState = 'firing';
                     this.laserTimer = this.laserFireTime;
-                    this.currentLaserDamageCooldown = 0; // Reset damage cooldown when starting to fire
+                    this.currentLaserDamageCooldown = 0;
                 }
                 break;
     
@@ -241,34 +219,15 @@ class Eclipser {
                 this.laserTimer -= TICK;
     
                 if (this.laserTimer <= 0) {
-                    console.log('Laser firing complete - entering cooldown');
                     this.laserState = 'inactive';
                     this.laserTimer = this.laserCooldown;
                 }
                 break;
         }
     
-        // Movement only when not using laser
-        if (this.laserState === 'inactive') {
-            if (this.landed) {
-                if (distToPlayer < this.attackRange) {
-                    this.state = 'attacking';
-                } else if (distToPlayer < this.chaseRange) {
-                    this.state = 'chasing';
-                    this.x += this.moveSpeed * moveDir;
-                    this.facing = moveDir;
-                } else {
-                    this.state = 'idle';
-                }
-            }
-        }
-    
-        // Apply gravity and movement
+        // Apply gravity
         this.velocity.y += this.fallGrav * TICK;
         this.y += this.velocity.y * TICK;
-        if (this.laserState === 'inactive') {  // Only move horizontally when not using laser
-            this.x += this.velocity.x * TICK;
-        }
     
         this.updateLastBB();
         this.updateBoundingBox();
@@ -291,7 +250,6 @@ class Eclipser {
         if (!isOnGround && this.y + this.boxHeight > groundLevel) {
             this.y = groundLevel - this.boxHeight;
             this.velocity.y = 0;
-            this.velocity.x = 0;
             this.landed = true;
         }
     
@@ -301,44 +259,11 @@ class Eclipser {
             this.x = gameWorld.width - this.width;
         }
     
-        this.checkPlayerAttack();
+       
         this.healthbar.update();
     }
 
-    checkPlayerAttack() {
-        const player = this.getPlayer();
-        if (!player) return;
-
-        // Check for Grim's attacks
-        if (player instanceof Grim) {
-            // Check for GrimAxe collision
-            this.game.entities.forEach(entity => {
-                if (entity instanceof GrimAxe) {
-                    if (entity.isAnimating && this.box.collide(entity.box)) {
-                        this.takeDamage(10);
-                    }
-                }
-            });
-
-            // Check for Skull projectile collision
-            this.game.entities.forEach(entity => {
-                if (entity instanceof SkullProjectile) {
-                    if (this.box.collide(entity.box)) {
-                        this.takeDamage(5);
-                        entity.removeFromWorld = true;
-                    }
-                }
-            });
-        }
-
-        // Check for other player attacks
-        if (player instanceof AzielSeraph || player instanceof HolyDiver) {
-            if (player.box && this.box.collide(player.box) && this.game.closeAttack) {
-                this.takeDamage(10);
-            }
-        }
-    }
-
+    
     draw(ctx) {
         const scale = this.spriteScale;
     

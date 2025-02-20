@@ -32,10 +32,10 @@ class LevelManager {
         }
         if(level == levelOne) {
             this.boss = new Eclipser(this.game);
-            for (var i = 0; i < level.drones.length; i++) {
-                let drone = level.drones[i];
-                this.game.addEntity(new Drone(this.game, drone.x, drone.y, drone.speed));
-            }
+            // for (var i = 0; i < level.drones.length; i++) {
+            //     let drone = level.drones[i];
+            //     this.game.addEntity(new Drone(this.game, drone.x, drone.y, drone.speed));
+            // }
             this.game.addEntity(this.boss);
             ASSET_MANAGER.pauseBackgroundMusic();
             ASSET_MANAGER.playAsset(`./audio/level1Music.mp3`);
