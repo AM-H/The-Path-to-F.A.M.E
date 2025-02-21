@@ -2,7 +2,7 @@ class AzielSeraph {
     constructor(game) {
         this.game = game;
         this.removeFromWorld = false;
-        this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 5, .35,);
+        this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 5, .35);
         this.rangeAttackCooldown = 5;  //Cooldown in seconds
         this.rangeAttackDuration = 0.8; //Duration of the long-range attack in seconds
         this.rangeAttackStartTime = 0;  //Time when the current range attack started
@@ -139,10 +139,10 @@ class AzielSeraph {
                     this.landed = false;
                 }
                 if (this.game.right || this.game.left) { // Only check side collisions if moving horizontally
-                    if (this.lastBox.right <= entity.box.left && !(entity instanceof HolyDiver)) {// Collision from the left of platform
+                    if (this.lastBox.right <= entity.box.left && !(entity instanceof HolyDiver) && !(entity instanceof Bullet)) {// Collision from the left of platform
                         console.log(`right collision`);
                         this.x = entity.box.left - this.box.width;
-                    } else if (this.lastBox.left >= entity.box.right && !(entity instanceof HolyDiver)) { // Collision from the right of platform
+                    } else if (this.lastBox.left >= entity.box.right && !(entity instanceof HolyDiver) && !(entity instanceof Bullet)) { // Collision from the right of platform
                         console.log(`left collision`);
                         this.x = entity.box.right;
                     }
@@ -157,7 +157,7 @@ class AzielSeraph {
         this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
         ctx.lineWidth = 2;
         ctx.strokeStyle = "red";
-        ctx.strokeRect(this.box.x,this.box.y, this.box.width, this.box.height);
+        //ctx.strokeRect(this.box.x,this.box.y, this.box.width, this.box.height);
         this.healthbar.draw(ctx);
     };
 };

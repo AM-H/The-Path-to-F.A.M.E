@@ -48,8 +48,15 @@ class HolyDiver {
         this.rotation = Math.atan2(dy, dx);
 
         const facingLeft = this.game.mouseX < this.azielCenterX;
-        this.animator = this.animationMap.get(facingLeft ? "left" : "right");
-        this.laserAnimator = this.animationMap.get(facingLeft ? "leftRanged" : "rightRanged");
+        const newAnimator = this.animationMap.get(facingLeft ? "left" : "right");
+        const newLaserAnimator = this.animationMap.get(facingLeft ? "leftRanged" : "rightRanged");
+        //Save the current fram when swithcing sprite animation from left to right
+        if (this.laserAnimator !== newLaserAnimator) {
+            newLaserAnimator.elapsedTime = this.laserAnimator.elapsedTime;
+            newLaserAnimator.currentFrame = this.laserAnimator.currentFrame;
+        }
+        this.animator = newAnimator;
+        this.laserAnimator = newLaserAnimator;
         // Check for laser collision
         this.laserBoxes.forEach(laserBox => {
             this.game.entities.forEach(entity => {
@@ -93,7 +100,7 @@ class HolyDiver {
 
         // Debugging: Draw the hitboxes for visual reference
         ctx.strokeStyle = "red";
-        ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
-        this.laserBoxes.forEach(box => ctx.strokeRect(box.x, box.y, box.width, box.height));
+        //ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        //this.laserBoxes.forEach(box => ctx.strokeRect(box.x, box.y, box.width, box.height));
     }
 }

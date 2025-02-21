@@ -74,7 +74,6 @@ class Eclipser {
 
         // Initialize bounding box
         this.updateBoundingBox();
-        this.lastBox = this.box;
 
         this.removeFromWorld = false;
         this.defeated = false;
@@ -439,7 +438,7 @@ class Eclipser {
             ctx.strokeStyle = 'yellow';
             ctx.lineWidth = 1;
             const hitboxX = this.facing === 1 ? this.x + 35 : this.x - 200;
-            ctx.strokeRect(hitboxX, this.y - 20, 200, 30);
+            //ctx.strokeRect(hitboxX, this.y - 20, 200, 30);
         }
 
         if (this.isPhasing) {
@@ -451,7 +450,7 @@ class Eclipser {
         // Debug bounding box
         ctx.strokeStyle = 'red';
         ctx.lineWidth = 2;
-        ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        //ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
     
         this.healthbar.draw(ctx);
     }

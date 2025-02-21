@@ -18,13 +18,10 @@ class LevelManager {
             const aziel = new AzielSeraph(this.game);
             this.game.addEntity(aziel);
             this.game.addEntity(new HolyDiver(this.game, aziel));
-        }
-        if(this.whichPlayer === `kanji`){
+        } else if(this.whichPlayer === `kanji`){
             const kanji = new Kanji(this.game);
             this.game.addEntity(kanji);
-        }
-
-        if(this.whichPlayer == `grim`){
+        } else if(this.whichPlayer == `grim`){
             const grim = new Grim(this.game);
             this.game.addEntity(grim);
             this.game.addEntity(new GrimAxe(this.game, grim));
@@ -59,20 +56,6 @@ class LevelManager {
             ASSET_MANAGER.pauseBackgroundMusic();
         }
 
-        // Add player based on selection
-        if (this.whichPlayer === `aziel`) {
-            const aziel = new AzielSeraph(this.game);
-            this.game.addEntity(aziel);
-            this.game.addEntity(new HolyDiver(this.game, aziel));
-        } else if(this.whichPlayer === `kanji`){
-            const kanji = new Kanji(this.game);
-            this.game.addEntity(kanji);
-        } else if(this.whichPlayer === `grim`){
-            const grim = new Grim(this.game);
-            this.game.addEntity(grim);
-            this.game.addEntity(new GrimAxe(this.game, grim));
-        }
-
         // Add background and platforms
         this.game.addEntity(new Background(this.game, level.background.x, level.background.y, level.background.width, level.background.height, level.background.path));
         for (var i = 0; i < level.platform.length; i++) {
@@ -84,9 +67,6 @@ class LevelManager {
     };
 
     update() {
-        if (this.boss != null) {
-
-        }
         if (this.boss && this.boss.defeated) {
             this.game.entities.forEach(element => {
                 element.removeFromWorld = true;
