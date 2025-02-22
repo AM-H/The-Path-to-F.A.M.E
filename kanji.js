@@ -56,10 +56,14 @@ class Kanji {
     }
 
     takeDamage(amount) {
-        this.hitpoints -= amount;
-        if(this.hitpoints < 0) this.hitpoints = 0;
-        console.log(`Kanji takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
-        this.healthbar.update();
+        // Skip damage if invincible
+        if (!this.game.invincibleMode) {
+            this.hitpoints -= amount;
+            if (this.hitpoints < 0) this.hitpoints = 0;
+            console.log(`kanji takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+        } else {
+            console.log(`Damage blocked by invincibility!`);
+        }
     }
 
     updateLastBB() {
