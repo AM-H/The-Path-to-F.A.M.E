@@ -140,6 +140,10 @@ class GrimAxe {
     }
 
     draw(ctx) {
+
+        this.grimCenterX = this.grim.x + this.grim.box.width / 2;
+        this.grimCenterY = this.grim.y + this.grim.box.height / 2;
+
         if (this.isAnimating) {
             ctx.save();
             ctx.translate(this.grimCenterX, this.grimCenterY);
@@ -150,6 +154,7 @@ class GrimAxe {
             this.animator.drawFrame(this.game.clockTick, ctx, -24, -24, 1.25);
             
             ctx.restore();
+        }
 
             // Debug bounding box
             if (this.game.debugMode) {
@@ -157,6 +162,6 @@ class GrimAxe {
                 ctx.lineWidth = 2;
                 ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
             } 
-        }
+        
     }
 }
