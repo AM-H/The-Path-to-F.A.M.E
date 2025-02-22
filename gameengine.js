@@ -364,7 +364,7 @@ class GameEngine {
             const controls = [
                 "Movement: A (left), D (right)",
                 "Jump: Space",
-                "Melee Attack: Left Mouse Button (hold)",
+                "Melee Attack: Left Mouse Button (hold or click)",
                 "Range Attack: Right Mouse Button (click)",
                 "Debug Mode (Show Boxes): B",
                 "Invincibility Mode: I",
