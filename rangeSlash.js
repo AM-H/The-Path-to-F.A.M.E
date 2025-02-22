@@ -33,8 +33,8 @@ class RangeSlash {
         console.log("Animator:", this.animator);
 
 
-        this.width = 48;
-        this.height = 48;
+        this.width = 32;
+        this.height = 32;
         this.box = new BoundingBox(this.x, this.y, this.width, this.height);
     }
 
@@ -89,7 +89,7 @@ class RangeSlash {
     }
 
     draw(ctx) {
-        this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 0.15);
+        this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 0.12);
 
         // Draw debug bounding box
         if (this.box) {
