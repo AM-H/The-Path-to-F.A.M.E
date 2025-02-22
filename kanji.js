@@ -210,7 +210,7 @@ class Kanji {
         this.game.entities.forEach(entity => {
             if ((entity instanceof Eclipser || entity instanceof Drone)  && this.attackBox && this.attackBox.collide(entity.box) && this.game.closeAttack) {
                 if(entity instanceof Eclipser){
-                    entity.takeDamage(40);
+                    entity.takeDamage(45);
                 }else if(entity instanceof  Drone){
                     entity.takeDamage(20);
                 }
