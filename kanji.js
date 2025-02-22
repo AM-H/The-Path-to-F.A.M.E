@@ -222,6 +222,7 @@ class Kanji {
                 ctx.strokeRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
             }
         }
+        //draw health bar
         this.healthbar.draw(ctx);
     }
 }
