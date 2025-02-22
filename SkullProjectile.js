@@ -8,7 +8,15 @@ class SkullProjectile {
         
         this.velocityX = this.direction.x * this.speed;
         this.velocityY = this.direction.y * this.speed;
-        this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/LongRangeGrim.png`), 9, 8, 32, 32, 4, 0.1);
+        
+        // Determine sprite based on horizontal direction
+        if (this.direction.x >= 0) {
+            // Right half - use right-facing sprite
+            this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/LongRangeGrimR.png`), 9, 8, 32, 32, 4, 0.1);
+        } else {
+            // Left half - use left-facing sprite
+            this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/LongRangeGrimL.png`), 9, 8, 32, 32, 4, 0.1);
+        }
 
         // Damage properties
         this.damage = 50; // Damage per hit
