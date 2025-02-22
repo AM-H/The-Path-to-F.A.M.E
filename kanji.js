@@ -153,6 +153,11 @@ class Kanji {
             this.landed = false;
         }
 
+        if (this.x < 0) this.x = 0;
+        if (this.x > gameWorld.width - 48) {
+            this.x = gameWorld.width - 48;
+        }
+
         // Gravity
         this.velocity.y += this.fallGrav * TICK;
         this.y += this.velocity.y * TICK;
