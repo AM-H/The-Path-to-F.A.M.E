@@ -11,7 +11,7 @@ class SkullProjectile {
         this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/LongRangeGrim.png`), 9, 8, 32, 32, 4, 0.1);
 
         // Damage properties
-        this.damage = 30; // Damage per hit
+        this.damage = 50; // Damage per hit
         this.hasHit = false; // Track if projectile has hit something
 
         // Duration and distance
@@ -57,9 +57,9 @@ class SkullProjectile {
                 }
                 
                 // Check collision with platforms to make projectile disappear
-                if (entity instanceof Platform) {
-                    this.removeFromWorld = true;
-                }
+                // if (entity instanceof Platform) {
+                //     this.removeFromWorld = true;
+                // }
             }
         });
 

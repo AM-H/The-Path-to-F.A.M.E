@@ -36,6 +36,7 @@ class GameEngine {
         this.options = options || {
             debugging: false,
         };
+        
     };
 
     init(ctx) {
@@ -60,12 +61,14 @@ class GameEngine {
         });
 
 
-        const helpButton = document.getElementById('helpButton');
-        if (helpButton) {
-            helpButton.addEventListener('click', () => {
-                this.showControls = !this.showControls;
-            });
-        }
+        // const helpButton = document.getElementById('helpButton');
+        // if (helpButton) {
+        //     helpButton.addEventListener('click', () => {
+        //         this.showControls = !this.showControls;
+        //         this.isPaused = this.showControls;
+        //     });
+        // }
+
         
         this.ctx.canvas.addEventListener("mousemove", e => {
             if (this.options.debugging) {
@@ -246,65 +249,9 @@ class GameEngine {
         // this.ctx.fillStyle = `red`;
         // this.ctx.arc(this.mouseX, this.mouseY, 2, 0, Math.PI * 2);
         // this.ctx.fill();
-    }
-    };
-
-    drawHelpIcon() {
-        // Draw help icon in the top-right corner
-        const x = this.ctx.canvas.width - 50;
-        const y = 50;
-        const radius = 20;
-        
-        // Draw icon background
-        this.ctx.beginPath();
-        this.ctx.arc(x, y, radius, 0, Math.PI * 2);
-        this.ctx.fillStyle = "#444";
-        this.ctx.fill();
-        
-        // Draw white border
-        this.ctx.strokeStyle = "#FFF";
-        this.ctx.lineWidth = 2;
-        this.ctx.stroke();
-        
-        // Draw question mark
-        this.ctx.font = "24px Arial";
-        this.ctx.fillStyle = "#FFF";
-        this.ctx.textAlign = "center";
-        this.ctx.textBaseline = "middle";
-        this.ctx.fillText("?", x, y);
-        
-        // Add glow effect for visibility
-        const time = Date.now() * 0.001; // Current time in seconds
-        const glowSize = 5 + Math.sin(time * 2) * 3; // Pulsing effect
-        
-        this.ctx.beginPath();
-        this.ctx.arc(x, y, radius + glowSize, 0, Math.PI * 2);
-        this.ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
-        this.ctx.fill();
-        
-        // Check for mouse hover and click
-        const dx = this.mouseX - x;
-        const dy = this.mouseY - y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if (distance < radius) {
-            // Highlight on hover
-            this.ctx.beginPath();
-            this.ctx.arc(x, y, radius, 0, Math.PI * 2);
-            this.ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
-            this.ctx.fill();
-            
-            // Check for click
-            if (this.closeAttack) {
-                this.showControls = !this.showControls;
-                // Reset click to prevent multiple toggles
-                setTimeout(() => {
-                    this.closeAttack = false;
-                }, 100);
-            }
         }
+   
     };
-
 
     update() {
 
@@ -327,11 +274,6 @@ class GameEngine {
             this.isPaused = !this.isPaused;
             console.log("Game " + (this.isPaused ? "paused" : "resumed"));
         }
-
-        if (this.keys["KeyH"] && !this.lastKeys["KeyH"]) {
-            this.showControls = !this.showControls;
-            console.log("Controls:", this.showControls ? "SHOWN" : "HIDDEN");
-        }
         
         // Save current key state for next frame
         this.lastKeys = {...this.keys};
@@ -353,7 +295,7 @@ class GameEngine {
             }
         }
 
-        this.drawHelpIcon();
+        
     };
 
     
@@ -444,11 +386,12 @@ class GameEngine {
             this.ctx.font = "18px Arial";
             this.ctx.fillStyle = "#FFF";
             this.ctx.textAlign = "center";
-            this.ctx.fillText("Press H or Click Anywhere to Close", this.ctx.canvas.width / 2, panelY + panelHeight - 30);
+            this.ctx.fillText("Click Anywhere on the Game to Close", this.ctx.canvas.width / 2, panelY + panelHeight - 30);
             
             // Click anywhere to close
             if (this.closeAttack) {
                 this.showControls = false;
+                this.isPaused = false; // Resume game when closing controls
             }
         }
     }

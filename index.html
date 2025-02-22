@@ -103,13 +103,26 @@
             
             if (helpButton && gameCanvas) {
                 helpButton.addEventListener('click', function() {
-                    // Access the game engine instance and toggle the controls
-                    const gameEngine = gameCanvas.getContext('2d').gameEngine;
-                    if (gameEngine) {
-                        gameEngine.showControls = !gameEngine.showControls;
+                    // Access gameEngine directly through the window object
+                    if (window.gameEngine) {
+                        window.gameEngine.showControls = !window.gameEngine.showControls;
+                        window.gameEngine.isPaused = window.gameEngine.showControls;
+                        console.log("Controls:", window.gameEngine.showControls ? "SHOWN" : "HIDDEN");
+                        
+                        // Return focus to the canvas so keyboard events will work
+                        gameCanvas.focus();
                     }
                 });
             }
+            
+            // Add a global keyboard event listener for H key
+            document.addEventListener('keydown', function(e) {
+                if (e.code === "KeyH" && window.gameEngine) {
+                    window.gameEngine.showControls = !window.gameEngine.showControls;
+                    window.gameEngine.isPaused = window.gameEngine.showControls;
+                    console.log("H key pressed globally");
+                }
+            });
         });
     </script>
 

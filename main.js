@@ -1,5 +1,9 @@
 const gameEngine = new GameEngine();
 
+window.gameEngine = gameEngine;
+
+
+
 const ASSET_MANAGER = new AssetManager();
 
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/TitleScreen.png`);
