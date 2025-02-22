@@ -97,10 +97,12 @@ class RangeSlash {
         this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 0.12);
 
         // Draw debug bounding box
-        if (this.box) {
-            ctx.strokeStyle = "red";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        if (this.game.debugMode) {
+            if (this.box) {
+                ctx.strokeStyle = "red";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+            }
         }
     }
 }
