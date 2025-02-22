@@ -1,10 +1,14 @@
 class RangeSlash {
-    constructor(game, x, y, direction, playerVelocity = { x: 0, y: 0 }) {
+    constructor(game, x, y, direction, velocity = { x: 0, y: 0 }) {
         this.game = game;
         this.x = x;
         this.y = y;
         this.direction = direction;
+        this.velocity = velocity;
+        this.damage = 20;
         this.speed = 450;
+
+        this.box = new BoundingBox(this.x, this.y, 32, 32); // Set bounding box size for the projectile
 
         // Apply speed to direction
         this.velocityX = this.direction.x * this.speed;
@@ -15,10 +19,19 @@ class RangeSlash {
             right: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/slashRight.png`), 150, 0, 495, 363, 1, 0.1),
             left: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/slashLeft.png`), 0, 0, 495, 363, 1, 0.1),
             up: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/slashUp.png`), 0, 0, 363, 495, 1, 0.1),
-            down: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/slashDown.png`), 0, 0, 363, 495, 1, 0.1)
+            down: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/slashDown.png`), 0, 0, 363, 495, 1, 0.1),
+            bottomLeft: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/bottomLeft.png`), 0, 0, 363, 495, 1, 0.1),
+            bottomRight: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/bottomRight.png`), 0, 0, 363, 495, 1, 0.1),
+            topLeft: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/topLeft.png`), 0, 0, 363, 495, 1, 0.1),
+            topRight: new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/topRight.png`), 0, 0, 363, 495, 1, 0.1),
         };
 
-        this.setAnimation(); // Set the correct animation based on direction
+        this.setAnimation();
+
+        // Debugging
+        console.log("Direction:", this.direction);
+        console.log("Animator:", this.animator);
+
 
         this.width = 48;
         this.height = 48;
@@ -28,14 +41,22 @@ class RangeSlash {
     setAnimation() {
         const angle = Math.atan2(this.direction.y, this.direction.x) * (180 / Math.PI);
 
-        if (angle >= -45 && angle <= 45) {
+        if (angle >= -22.5 && angle <= 22.5) {
             this.animator = this.animations.right; // Right
-        } else if (angle > 45 && angle < 135) {
-            this.animator = this.animations.down; // Down
-        } else if (angle < -45 && angle > -135) {
-            this.animator = this.animations.up; // Up
-        } else {
+        } else if (angle > 22.5 && angle <= 67.5) {
+            this.animator = this.animations.bottomRight; // bottom Right
+        } else if (angle > 67.5 && angle <= 112.5) {
+            this.animator = this.animations.down; // down
+        } else if (angle > 112.5 && angle <= 157.5) {
+            this.animator = this.animations.bottomLeft; // bottom Left
+        } else if (angle > 157.5 || angle <= -157.5) {
             this.animator = this.animations.left; // Left
+        } else if (angle > -157.5 && angle <= -112.5) {
+            this.animator = this.animations.topLeft; // top Left
+        } else if (angle > -112.5 && angle <= -67.5) {
+            this.animator = this.animations.up; // Down
+        } else if (angle > -67.5 && angle <= -22.5) {
+            this.animator = this.animations.topRight; // top Right
         }
     }
 
@@ -51,7 +72,10 @@ class RangeSlash {
         // Collision detection
         this.game.entities.forEach(entity => {
             if (entity !== this && entity.box && this.box.collide(entity.box)) {
-                if (entity instanceof Platform || entity instanceof Boss || entity instanceof Drone || entity instanceof stormSpirit || entity instanceof Phoenix) {
+                if (entity instanceof Drone || entity instanceof stormSpirit || entity instanceof Phoenix || entity instanceof Eclipser) {
+                    entity.takeDamage(20);
+                }
+                if(entity instanceof Platform){
                     this.removeFromWorld = true;
                 }
             }
