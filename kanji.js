@@ -210,18 +210,17 @@ class Kanji {
             this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
         }
 
-        // Draw attack box (for debugging)
-        if (this.attackBox) {
-            ctx.strokeStyle = "blue";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
-        }
-
         // Draw bounding box
         if (this.game.debugMode) {
             ctx.strokeStyle = "red";
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+            // Draw attack box (for debugging)
+            if (this.attackBox) {
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
+            }
         }
         this.healthbar.draw(ctx);
     }
