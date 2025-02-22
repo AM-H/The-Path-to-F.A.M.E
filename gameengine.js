@@ -365,7 +365,7 @@ class GameEngine {
                 "Movement: A (left), D (right)",
                 "Jump: Space",
                 "Melee Attack: Left Mouse Button (hold or click)",
-                "Range Attack: Right Mouse Button (click)",
+                "Range Attack: Right Mouse Button (hold or click)",
                 "Debug Mode (Show Boxes): B",
                 "Invincibility Mode: I",
                 "Pause Game: P",
