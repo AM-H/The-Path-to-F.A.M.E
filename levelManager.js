@@ -72,7 +72,7 @@ class LevelManager {
             this.game.entities.forEach(element => {
                 element.removeFromWorld = true;
             });
-            this.startLevelTransition(levelTwo);
+            this.startLevelTransition(levelThree);
         }
 
         updateVolume();

@@ -26,6 +26,8 @@ ASSET_MANAGER.queueDownload(`./levelBackgrounds/level3_background.png`)
 ASSET_MANAGER.queueDownload(`./sprites/drone.png`);
 ASSET_MANAGER.queueDownload(`./sprites/bullet.png`);
 
+
+
 //storm spirits
 ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/IdleRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/IdleLeft.png`);
@@ -76,6 +78,12 @@ ASSET_MANAGER.queueDownload(`./sprites/kanji/runRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kanji/runLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kanji/jumpLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kanji/jumpRight.png`);
+
+
+ASSET_MANAGER.queueDownload(`./sprites/kanji/slashRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/slashLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/slashDown.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kanji/slashUp.png`);
 
 
 //Boss

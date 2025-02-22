@@ -10,9 +10,10 @@ class Kanji {
         this.attackDirection = null;
         this.removeFromWorld = false;
         this.canAttack = false;
+        this.canRangeAttack = true;
 
         setTimeout(() => { this.canAttack = true; }, 100);
-
+        setTimeout(() => { this.canRangeAttack = true; }, 500);
         // Animation Map
         this.animationMap = new Map();
         this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/runRight.png`), 0, 0, 32, 32, 6, 0.2));
@@ -40,8 +41,52 @@ class Kanji {
 
     }
 
+    performRangeAttack() {
+        if (this.game.rangeAttack && this.canRangeAttack) {
+            // Get player center position
+            const centerX = this.x + (this.box.width / 2);
+            const centerY = this.y + (this.box.height / 2);
+
+            // Adjust projectile spawn position
+            const projectileCenterX = centerX - 16;
+            const projectileCenterY = centerY - 16;
+
+            // Calculate direction towards the mouse
+            const deltaX = this.game.mouseX - centerX;
+            const deltaY = this.game.mouseY - centerY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+            // Normalize direction vector
+            const direction = {
+                x: deltaX / distance,
+                y: deltaY / distance
+            };
+
+            // Create the projectile (RangeSlash)
+            const slash = new RangeSlash(
+                this.game,
+                projectileCenterX,
+                projectileCenterY,
+                direction,
+                { x: this.velocity.x, y: this.velocity.y }
+            );
+
+            this.game.addEntity(slash); // Add to game
+
+            // Set cooldown
+            this.canRangeAttack = false;
+            setTimeout(() => { this.canRangeAttack = true; }, 500);
+        }
+    }
+
+
+
     updateBoundingBox() {
         this.box = new BoundingBox(this.x, this.y, 48, 64);
+
+        if (this.game.rangeAttack && this.canRangeAttack) { // Check input for ranged attack
+            this.performRangeAttack();
+        }
 
         // Set attack box if attacking
         if (this.attacking) {
@@ -147,6 +192,11 @@ class Kanji {
             this.velocity.y = -800;
             this.fallGrav = 1900;
             this.landed = false;
+        }
+
+        if (this.x < 0) this.x = 0;
+        if (this.x > gameWorld.width - 48) {
+            this.x = gameWorld.width - 48;
         }
 
         // Gravity
