@@ -435,10 +435,12 @@ class Eclipser {
             ctx.drawImage(this.laserImage, laserX, laserY, 200, 20);
     
             // Debug: Draw laser hitbox
+            if (this.game.debugMode) {
             ctx.strokeStyle = 'yellow';
             ctx.lineWidth = 1;
             const hitboxX = this.facing === 1 ? this.x + 35 : this.x - 200;
-            //ctx.strokeRect(hitboxX, this.y - 20, 200, 30);
+            ctx.strokeRect(hitboxX, this.y - 20, 200, 30);
+            }
         }
 
         if (this.isPhasing) {

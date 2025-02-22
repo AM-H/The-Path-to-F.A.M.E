@@ -189,10 +189,12 @@ class Kanji {
                 }
 
                 // Horizontal collision
-                if (this.game.right || this.game.left) {
-                    if (this.lastBox.right <= entity.box.left) {
+                if (this.game.right || this.game.left) { 
+                    if (this.lastBox.right <= entity.box.left &&  !(entity instanceof Bullet)) {
+                        console.log(`right collision`);
                         this.x = entity.box.left - this.box.width;
-                    } else if (this.lastBox.left >= entity.box.right) {
+                    } else if (this.lastBox.left >= entity.box.right && !(entity instanceof Bullet)) { 
+                        console.log(`left collision`);
                         this.x = entity.box.right;
                     }
                 }
