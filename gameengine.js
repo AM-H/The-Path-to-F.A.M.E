@@ -360,7 +360,7 @@ class GameEngine {
             const controlsX = panelX + 50;
             let controlsY = panelY + 90;
             const lineHeight = 30;
-            
+            //checking
             const controls = [
                 "Movement: A (left), D (right)",
                 "Jump: Space",
