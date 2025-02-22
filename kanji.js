@@ -164,9 +164,9 @@ class Kanji {
         this.game.entities.forEach(entity => {
             if ((entity instanceof Eclipser || entity instanceof Drone)  && this.attackBox && this.attackBox.collide(entity.box) && this.game.closeAttack) {
                 if(entity instanceof Eclipser){
-                    entity.takeDamage(100);
+                    entity.takeDamage(35);
                 }else if(entity instanceof  Drone){
-                    entity.takeDamage(100);
+                    entity.takeDamage(20);
                 }
 
             }
@@ -194,6 +194,7 @@ class Kanji {
             }
             this.updateBoundingBox();
         });
+        this.healthbar.update();
 
     }
 
@@ -217,5 +218,6 @@ class Kanji {
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }
+        this.healthbar.draw(ctx);
     }
 }
