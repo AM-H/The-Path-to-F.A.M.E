@@ -74,10 +74,10 @@ class RangeSlash {
             if (entity !== this && entity.box && this.box.collide(entity.box)) {
                 if (entity instanceof Drone || entity instanceof stormSpirit || entity instanceof Phoenix || entity instanceof Eclipser) {
                     if(entity instanceof Drone){
-                        entity.takeDamage(60);
+                        entity.takeDamage(100);
                     }
                     if(entity instanceof Eclipser){
-                        entity.takeDamage(40);
+                        entity.takeDamage(60);
                     }
                     this.removeFromWorld = true;
                 }
