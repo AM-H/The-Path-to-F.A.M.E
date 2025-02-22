@@ -37,14 +37,17 @@ class AzielSeraph {
     updateLastBB() {
         this.lastBox = this.box;
     };
-
+    
     takeDamage(amount) {
-        this.hitpoints -= amount;
-        if (this.hitpoints < 0) this.hitpoints = 0; // Prevent negative HP
-        this.healthbar.update()
-        console.log("getting hit")
-        console.log(amount)
-    } 
+        // Skip damage if invincible
+        if (!this.game.invincibleMode) {
+            this.hitpoints -= amount;
+            if (this.hitpoints < 0) this.hitpoints = 0;
+            console.log(`Aziel takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+        } else {
+            console.log(`Damage blocked by invincibility!`);
+        }
+    }
        
     update () {
         const TICK = this.game.clockTick;
@@ -155,9 +158,13 @@ class AzielSeraph {
     };
     draw(ctx) {
         this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = "red";
-        //ctx.strokeRect(this.box.x,this.box.y, this.box.width, this.box.height);
+        
+        if (this.game.debugMode) {
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        }
+
         this.healthbar.draw(ctx);
     };
 };

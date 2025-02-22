@@ -5,8 +5,8 @@ class GrimAxe {
         
         // Create animation map for both directions
         this.animationMap = new Map([
-            [`right`, new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimAxeR.png`), 0, 0, 48, 48, 8, 0.09)],
-            [`left`, new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimAxeL.png`), 0, 0, 48, 48, 8, 0.09)]
+            [`right`, new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimAxeR.png`), 0, 0, 48, 48, 8, 0.07)],
+            [`left`, new Animator(ASSET_MANAGER.getAsset(`./sprites/GrimAxeL.png`), 0, 0, 48, 48, 8, 0.07)]
         ]);
         
         // Default to right-facing animation
@@ -27,6 +27,8 @@ class GrimAxe {
         this.hasStartedAttack = false;  // New flag to track if attack has started
         this.elapsedTime = 0;
         this.animationDuration = 8 * 0.1; // frameCount * frameDuration
+
+        this.debug = false;
     }
 
     updateBoundingBox() {
@@ -67,29 +69,72 @@ class GrimAxe {
 
          //Check for boss collision & apply damage close range
          this.game.entities.forEach(entity => {
-            if ((entity instanceof  inferno || entity instanceof  Shizoku || entity instanceof Boss) && this.box.collide(entity.box) && this.game.closeAttack) {
+            if ((entity instanceof  inferno || entity instanceof  Shizoku || entity instanceof Eclipser) && this.box.collide(entity.box) && this.game.closeAttack) {
                 entity.takeDamage(10); // Deal 10 damage to boss
                 console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
             } else if ((entity instanceof Drone ||entity instanceof Phoenix || entity instanceof stormSpirit) && this.box.collide(entity.box) && this.game.closeAttack) {
-                entity.takeDamage(10);
+                entity.takeDamage(3);
                 console.log(`Drone takes damage! HP: ${entity.hitpoints}`);
             }
         });
 
-
-        // Update animation
+        // Handle attack - will continuously animate while button is held
+        if (this.game.closeAttack) {
+            // Start animating if not already
+            if (!this.isAnimating) {
+                console.log("Starting close attack");
+                this.isAnimating = true;
+                this.elapsedTime = 0;
+                this.animator = this.animationMap.get(this.facing);
+            }
+            
+            // Track elapsed time for damage cooldown
+            this.damageCooldown -= this.game.clockTick;
+            
+            // Check for collisions and apply damage with cooldown
+            if (this.damageCooldown <= 0) {
+                this.game.entities.forEach(entity => {
+                    if (this.box.collide(entity.box)) {
+                        if (entity instanceof Eclipser || entity instanceof inferno || entity instanceof Shizoku) {
+                            entity.takeDamage(10); // Deal 10 damage to boss
+                            console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
+                            this.damageCooldown = 0.5; // Set cooldown between damage ticks (0.5 seconds)
+                        } else if (entity instanceof Drone || entity instanceof Phoenix || entity instanceof stormSpirit) {
+                            entity.takeDamage(5); // Deal 5 damage to minions
+                            console.log(`Enemy takes damage! HP: ${entity.hitpoints}`);
+                            this.damageCooldown = 0.3; // Faster cooldown for minions (0.3 seconds)
+                        }
+                    }
+                });
+            }
+        } else {
+            // Stop animating when close attack button is released
+            this.isAnimating = false;
+        }
+        
+        // Animation timing logic
         if (this.isAnimating) {
             this.elapsedTime += this.game.clockTick;
             if (this.elapsedTime >= this.animationDuration) {
-                this.isAnimating = false;
+                // Reset animation timer but keep animating if button is still held
                 this.elapsedTime = 0;
             }
         }
 
+
+        // Update animation
+        // if (this.isAnimating) {
+        //     this.elapsedTime += this.game.clockTick;
+        //     if (this.elapsedTime >= this.animationDuration) {
+        //         this.isAnimating = false;
+        //         this.elapsedTime = 0;
+        //     }
+        // }
+
         // Reset attack flag when mouse button is released
-        if (!this.game.closeAttack) {
-            this.hasStartedAttack = false;
-        }
+        // if (!this.game.closeAttack) {
+        //     this.hasStartedAttack = false;
+        // }
 
         this.updateBoundingBox();
     }
@@ -102,15 +147,16 @@ class GrimAxe {
             ctx.translate(this.distanceFromGrim, 0);
             
             // Draw the animated axe
-            this.animator.drawFrame(this.game.clockTick, ctx, -24, -24, 1);
+            this.animator.drawFrame(this.game.clockTick, ctx, -24, -24, 1.25);
             
             ctx.restore();
 
             // Debug bounding box
-            ctx.strokeStyle = "red";
-            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
-
-            
+            if (this.game.debugMode) {
+                ctx.strokeStyle = "red";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+            } 
         }
     }
 }

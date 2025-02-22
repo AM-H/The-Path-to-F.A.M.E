@@ -9,6 +9,15 @@ class SkullProjectile {
         this.velocityX = this.direction.x * this.speed;
         this.velocityY = this.direction.y * this.speed;
         this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/LongRangeGrim.png`), 9, 8, 32, 32, 4, 0.1);
+
+        // Damage properties
+        this.damage = 30; // Damage per hit
+        this.hasHit = false; // Track if projectile has hit something
+
+        // Duration and distance
+        this.lifespan = 1.5; // Seconds before disappearing
+        this.timeAlive = 0;
+
         this.width = 32;
         this.height = 32;
         this.box = new BoundingBox(this.x, this.y, this.width, this.height);
@@ -24,9 +33,31 @@ class SkullProjectile {
         this.box = new BoundingBox(this.x, this.y, this.width, this.height);
 
         // Collision checks remain the same
-        this.game.entities.forEach(entity => {
-            if (entity !== this && entity.box && this.box.collide(entity.box)) {
-                if (entity instanceof Platform || entity instanceof Boss || entity instanceof Drone || entity instanceof stormSpirit || entity instanceof Phoenix) {
+         // Check for collisions with enemies
+         this.game.entities.forEach(entity => {
+            // Only check for collision if we haven't hit anything yet
+            if (!this.hasHit && entity.box && this.box.collide(entity.box)) {
+                // Check if entity is an enemy
+                if ((entity instanceof Drone || 
+                     entity instanceof Eclipser || 
+                     entity instanceof inferno || 
+                     entity instanceof Shizoku ||
+                     entity instanceof stormSpirit ||
+                     entity instanceof Phoenix)) {
+                    
+                    // Deal damage if entity has a takeDamage method
+                    if (entity.takeDamage) {
+                        entity.takeDamage(this.damage);
+                        console.log(`Skull projectile hit for ${this.damage} damage!`);
+                        
+                        // Mark projectile for removal
+                        this.hasHit = true;
+                        this.removeFromWorld = true;
+                    }
+                }
+                
+                // Check collision with platforms to make projectile disappear
+                if (entity instanceof Platform) {
                     this.removeFromWorld = true;
                 }
             }
@@ -41,7 +72,7 @@ class SkullProjectile {
         this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
         
         // Draw debug bounding box
-        if (this.box) {
+        if (this.game.debugMode) {
             ctx.strokeStyle = "red";
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);

@@ -13,7 +13,8 @@ class HealthBar {
     draw(ctx) {
         const ratio = Math.max(0, Math.min(1, this.agent.hitpoints / this.agent.maxhitpoints));
         
-        if (this.agent instanceof AzielSeraph) {
+        // Handle player characters
+        if (this.agent instanceof AzielSeraph || this.agent instanceof Grim || this.agent instanceof Kanji) {
             ctx.fillStyle = "#3a3a3a";  // Dark gray 
             ctx.fillRect(10, 10, 200, 30);
             
@@ -49,6 +50,10 @@ class HealthBar {
             ctx.strokeRect(barX, 10, 200, 30);
             
         } else {
+            // For other entities like drones
+            // Make sure we have the necessary properties before rendering
+            if (!this.agent.radius || !this.agent.box) return;
+            
             const healthBarX = this.agent.x - this.agent.radius + 27;
             const healthBarY = this.agent.y - this.agent.box.height / 5;
             

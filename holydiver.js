@@ -99,8 +99,10 @@ class HolyDiver {
         }
 
         // Debugging: Draw the hitboxes for visual reference
-        ctx.strokeStyle = "red";
-        //ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
-        //this.laserBoxes.forEach(box => ctx.strokeRect(box.x, box.y, box.width, box.height));
+        if (this.game.debugMode) {
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        }
     }
 }

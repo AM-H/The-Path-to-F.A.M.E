@@ -31,7 +31,7 @@ class Bullet {
         this.box = new BoundingBox(this.x, this.y, this.width, this.height);
 
 
-        let player = this.game.entities.find(e => e instanceof AzielSeraph);
+        let player = this.game.entities.find(e => e instanceof AzielSeraph || e instanceof Grim || e instanceof Kanji);
         if (player && this.box.collide(player.box)) {
             player.takeDamage(10);
             this.removeFromWorld = true;
@@ -53,5 +53,11 @@ class Bullet {
 
     draw(ctx) {
         ctx.drawImage(this.sprite, this.x, this.y, this.width, this.height);
+
+        if (this.game.debugMode) {
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        }
     }
 }

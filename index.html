@@ -19,6 +19,40 @@
     cursor: none;
     }
 
+    #helpButtonContainer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        #helpButton {
+            background-color: #444;
+            color: white;
+            border: 2px solid #FFF;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            animation: pulse 2s infinite;
+        }
+
+        #helpButton:hover {
+            background-color: #666;
+        }
+          
+        @keyframes pulse {
+            0% { box-shadow: 0 0 5px rgba(255,255,255,0.5); }
+            50% { box-shadow: 0 0 15px rgba(255,255,255,0.8); }
+            100% { box-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        }
+
     </style>
     
     <script type="text/javascript" src="./assetmanager.js"></script>
@@ -56,5 +90,29 @@
     <div class="slidecontainer">
         <input type="range" min="0" max="100" value="8" class="slider" id="myVolume">
     </div>
+
+    <div id="helpButtonContainer">
+        <button id="helpButton">?</button>
+    </div>
+
+    <script>
+        // Initialize help button functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const helpButton = document.getElementById('helpButton');
+            const gameCanvas = document.getElementById('gameWorld');
+            
+            if (helpButton && gameCanvas) {
+                helpButton.addEventListener('click', function() {
+                    // Access the game engine instance and toggle the controls
+                    const gameEngine = gameCanvas.getContext('2d').gameEngine;
+                    if (gameEngine) {
+                        gameEngine.showControls = !gameEngine.showControls;
+                    }
+                });
+            }
+        });
+    </script>
+
+
 </body>
 </html>
