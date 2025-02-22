@@ -31,7 +31,7 @@ class Bullet {
         this.box = new BoundingBox(this.x, this.y, this.width, this.height);
 
 
-        let player = this.game.entities.find(e => e instanceof AzielSeraph);
+        let player = this.game.entities.find(e => e instanceof AzielSeraph || e instanceof Kanji);
         if (player && this.box.collide(player.box)) {
             player.takeDamage(10);
             this.removeFromWorld = true;

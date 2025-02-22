@@ -49,27 +49,7 @@ class Drone {
         );
     }
 
-    checkPlayerAttack() {
-        const player = this.getPlayer();
-        if (!player) return false;
 
-        if (this.box.collide(player.box)) {
-            if (player instanceof AzielSeraph) {
-                const holyDiver = this.game.entities.find(entity => entity instanceof HolyDiver);
-                if (holyDiver && this.box.collide(holyDiver.box) && player.game.closeAttack) {
-                    return true;
-                }
-            } else if (player instanceof Grim) {
-                if (player.game.closeAttack) {
-                    const axe = tthis.game.entities.find(entity => entity instanceof GrimAxe);
-                    if (axe && this.box.collide(axe.box) && player.game.closeAttack){
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
     takeDamage(amount) {
         this.hitpoints = Math.max(0, this.hitpoints - amount);
     }
