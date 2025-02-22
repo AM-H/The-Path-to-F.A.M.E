@@ -7,12 +7,13 @@ class LevelManager {
         this.loadLevel(levelOne)
     };
     startLevelTransition(level) {
-        const transition = new LevelTransition(this.game);
-        this.game.addEntity(transition);
+       // const transition = new LevelTransition(this.game);
+        //this.game.addEntity(transition);
+        this.loadLevel(level)
 
-        setTimeout(() => {
-            this.loadLevel(level);
-        }, 4000); // Wait 4 seconds before loading the level
+        // setTimeout(() => {
+        //     this.loadLevel(level);
+        // }, 4000); // Wait 4 seconds before loading the level
     }
     loadLevel(level) {
         if (this.whichPlayer == `aziel`) {
