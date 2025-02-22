@@ -65,9 +65,9 @@ class SkullProjectile {
                 }
                 
                 // Check collision with platforms to make projectile disappear
-                // if (entity instanceof Platform) {
-                //     this.removeFromWorld = true;
-                // }
+                if (entity instanceof Platform) {
+                    this.removeFromWorld = true;
+                }
             }
         });
 
