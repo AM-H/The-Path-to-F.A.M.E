@@ -152,29 +152,31 @@ class Grim {
         // Collision detection
         this.game.entities.forEach(entity => {
             if (entity.box && this.box.collide(entity.box)) {
-                // Platform collisions
-                if (entity instanceof Platform) {
-                    if (this.velocity.y > 0 && this.lastBox.bottom <= entity.box.top) {
+                if (this.velocity.y > 0) {
+                    if ((entity instanceof Platform) && (this.lastBox.bottom) <= entity.box.top) {
                         this.velocity.y = 0;
-                        this.y = entity.box.top - 64;
+                        this.y = entity.box.top-64;
                         this.landed = true;
-                    } else if (this.velocity.y < 0 && this.lastBox.top >= entity.box.bottom) {
+                        //console.log(`bottom collision`);
+                    }
+                } else if (this.velocity.y < 0) {
+                    if ((entity instanceof Platform) && (this.lastBox.top) >= entity.box.bottom) {
                         this.velocity.y = 300;
                         this.y = entity.box.bottom;
+                        console.log(`top collision`);
                     }
-
-                    // Horizontal collision
-                    if (this.game.right || this.game.left) { 
-                        if (this.lastBox.right <= entity.box.left && !(entity instanceof GrimAxe) && !(entity instanceof Bullet)) {// Collision from the left of platform
-                            console.log(`right collision`);
-                            this.x = entity.box.left - this.box.width;
-                        } else if (this.lastBox.left >= entity.box.right && !(entity instanceof GrimAxe) && !(entity instanceof Bullet)) { // Collision from the right of platform
-                            console.log(`left collision`);
-                            this.x = entity.box.right;
-                        }
+                } else {
+                    this.landed = false;
+                }
+                if (this.game.right || this.game.left) { // Only check side collisions if moving horizontally
+                    if (this.lastBox.right <= entity.box.left && !(entity instanceof GrimAxe) && !(entity instanceof Bullet)) {// Collision from the left of platform
+                        console.log(`right collision`);
+                        this.x = entity.box.left - this.box.width;
+                    } else if (this.lastBox.left >= entity.box.right && !(entity instanceof GrimAxe) && !(entity instanceof Bullet)) { // Collision from the right of platform
+                        console.log(`left collision`);
+                        this.x = entity.box.right;
                     }
                 }
-
             }
             this.updateBoundingBox();
         });
