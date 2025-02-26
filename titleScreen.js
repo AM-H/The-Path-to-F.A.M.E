@@ -46,7 +46,7 @@ class SelectPlayerScreen {
         this.spritesheet = ASSET_MANAGER.getAsset(`./levelBackgrounds/SelectPlayerScreen.png`);
         this.player1 = {
             idle: new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleRightKyra.png`), 0, 0, 96, 40, 5, 0.35),
-            x: (gameWorld.width/5),
+            x: (gameWorld.width/5) / 2,
             y: (gameWorld.height/8)*6
         };
         this.player2 = {
@@ -70,6 +70,18 @@ class SelectPlayerScreen {
     }
 
     update() {
+        // Check hover for Kyra (player1)
+        if ((this.game.mouseX > this.player1.x) && this.game.mouseX < this.player1.x+32 && 
+            this.game.mouseY > this.player1.y && this.game.mouseY < this.player1.y+64) {
+            this.hovering1 = true;
+            if (this.game.closeAttack) {
+                this.removeFromWorld = true;
+                this.game.addEntity(new LevelManager(this.game, `kyra`));
+            }
+        } else {
+            this.hovering1 = false;
+        }
+
         // Check hover for Grim (player2)
         if ((this.game.mouseX > this.player2.x) && this.game.mouseX < this.player2.x+64 && 
             this.game.mouseY > this.player2.y && this.game.mouseY < this.player2.y+64) {
@@ -115,6 +127,12 @@ class SelectPlayerScreen {
         this.player4.idle.drawFrame(this.game.clockTick, ctx, this.player4.x, this.player4.y, 2);
 
         // Draw selection boxes
+        if (this.hovering1) {
+            ctx.strokeStyle = `#fafad4`;
+            ctx.lineWidth = 6;
+            ctx.strokeRect(this.player1.x, this.player1.y, 64, 64);
+        }
+
         if (this.hovering2) {
             ctx.strokeStyle = `#fafad4`;
             ctx.lineWidth = 6;
