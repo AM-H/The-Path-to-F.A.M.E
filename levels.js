@@ -75,7 +75,7 @@ var levelThree = {
             y: gameWorld.height - 140,
             width: gameWorld.width,
             height: 140,
-            bColor: `rgba(3,51,60,0)`
+            bColor: `#c4cddc`
         },
         // Left elevated platform (moved more left)
         {
