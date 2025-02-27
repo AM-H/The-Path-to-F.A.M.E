@@ -245,9 +245,15 @@ class Kanji {
 
     draw(ctx) {
         if (this.attacking && this.facing === "left") {
+            console.log("attacking left");
             this.animator.drawFrame(this.game.clockTick, ctx, this.x - 38, this.y - 4, 2);
         } else {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+            if(this.facing === "left"){
+                this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, false, true);
+            }else{
+                this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+            }
+
         }
 
         // Draw attack box (for debugging)
