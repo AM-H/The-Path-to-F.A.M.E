@@ -103,7 +103,36 @@ var levelThree = {
         }
     ],
     spirits: [{ x: 221, speed: 0.5}, {x: 300, speed: 1}, {  x: gameWorld.width - (gameWorld.width/10) - gameWorld.width/4, speed: 1.5}, {x: gameWorld.width/2 - gameWorld.width/8, speed: 2}, { x: 500, speed: 3}]
-};
 
+};
+var levelFour = {
+    background: {
+        x: 0,
+        y: 0,
+        width: gameWorld.width,
+        height: gameWorld.height,
+        path: `./levelBackgrounds/level4_background.png`
+    },
+    platform: [
+        //ground floor
+        {x: 0, y : gameWorld.height-25, width: gameWorld.width, height: 25, bColor: `#1f1323`},
+        //left 1st story platform
+        {x: 0, y : 580, width: 180, height: 20, bColor: `#08e8d7`},
+        //right 1st story platform
+        {x: gameWorld.width - 180, y: 580, width: 180, height: 20, bColor: `#08e8d7`},
+        //middle 2nd story platform
+        {x: gameWorld.width/2 - 110, y: 500, width: 220, height: 20, bColor: `#08e8d7`},
+        //left 3rd story platform
+        {x: 190, y: 412, width: 180, height: 20, bColor: `#08e8d7`},
+        //right 3rd story platform
+        {x: gameWorld.width-190*2, y: 412, width: 180, height: 20, bColor : `#08e8d7`},
+        //left 4th story platform
+        {x: 0, y: 244, width: 180, height: 20, bColor: `#08e8d7`},
+        //right 4th story platform
+        {x: gameWorld.width - 180, y: 244, width: 180, height: 20, bColor : `#08e8d7`},
+        //middle 5th story platform
+        {x: gameWorld.width/2 - 110, y: 244, width: 220, height: 20, bColor: `#08e8d7`}
+    ]
+};
 
 

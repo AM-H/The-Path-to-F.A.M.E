@@ -17,7 +17,8 @@ ASSET_MANAGER.queueDownload(`./levelBackgrounds/playagainbutton.png`);
 ASSET_MANAGER.queueDownload(`./audio/YouSeeBIGGIRLT_T.mp3`);
 
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level2_background.png`);
-ASSET_MANAGER.queueDownload(`./levelBackgrounds/level3_background.png`)
+ASSET_MANAGER.queueDownload(`./levelBackgrounds/level3_background.png`);
+ASSET_MANAGER.queueDownload(`./levelBackgrounds/level4_background.png`);
 // ASSET_MANAGER.queueDownload(`./sprites/IdleLeft.png`);
 // ASSET_MANAGER.queueDownload(`./sprites/IdleRight.png`);
 // ASSET_MANAGER.queueDownload(`./sprites/runLeft.png`);

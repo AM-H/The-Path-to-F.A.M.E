@@ -3,7 +3,8 @@ class LevelManager {
         this.game = game;
         this.whichPlayer = player;
         this.boss = null;
-        this.startLevelTransition(levelOne);
+        // this.startLevelTransition(levelOne);
+        this.startLevelTransition(levelFour);
     };
     startLevelTransition(level) {
         const transition = new LevelTransition(this.game);
@@ -53,6 +54,8 @@ class LevelManager {
                 this.game.addEntity(new stormSpirit(this.game, spirit.x, spirit.speed));
             }
             ASSET_MANAGER.pauseBackgroundMusic();
+        } else if (level = levelFour) {
+
         }
 
         // Add background and platforms

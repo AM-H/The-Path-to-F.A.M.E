@@ -8,8 +8,8 @@ class AzielSeraph {
         this.rangeAttackStartTime = 0;  //Time when the current range attack started
         this.lastRangeAttackTime = -this.rangeAttackCooldown;  // Instant availability at the start
         this.isRangeAttacking = false;  //Flag to track if the range attack is active
-        this.x = 0;
-        this.y = 500;
+        this.x = gameWorld.width/2;
+        this.y = 50;
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
         this.facing = "right";
@@ -132,12 +132,14 @@ class AzielSeraph {
                         this.landed = true;
                         //console.log(`bottom collision`);
                     }
-                } else if (this.velocity.y < 0) {
-                    if ((entity instanceof Platform) && (this.lastBox.top) >= entity.box.bottom) {
-                        this.velocity.y = 300;
-                        this.y = entity.box.bottom;
-                        console.log(`top collision`);
-                    }
+                //REMOVED COLLISION WITH BOTTOM OF PLATFORM
+                // } 
+                // else if (this.velocity.y < 0) {
+                //     if ((entity instanceof Platform) && (this.lastBox.top) >= entity.box.bottom) {
+                //         this.velocity.y = 300;
+                //         this.y = entity.box.bottom;
+                //         console.log(`top collision`);
+                //     }
                 } else {
                     this.landed = false;
                 }
