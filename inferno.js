@@ -7,11 +7,11 @@ class inferno {
         this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/IdleLeft.png`), -55, 11, 150, 64, 8, 0.6);
         this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/runRight.png`), -55, 11, 150, 64, 8, 0.6);
         this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/runLeft.png`), -55, 11, 150, 64, 8, 0.6);
-        this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/attackRight.png`),-55, 11, 150, 64, 8, 1);
-        this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/attackLeft.png`), -55, 11, 150, 64, 8, 1);
+        this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/attackRight.png`),-28, 11, 150, 64, 8, 0.05);
+        this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/attackLeft.png`), -28, 11, 150, 64, 8, 1);
 
-        // Position setup
-        this.x = 600;
+        // Position setup - start on right side
+        this.x = gameWorld.width - 200;
         const groundHeight = gameWorld.height - 70;
         this.y = groundHeight - 70;
 
@@ -29,17 +29,17 @@ class inferno {
         this.boxHeight = 64;
 
         // State
-        this.facing = -1;
-        this.state = `idle`;
-        this.targetPlatform = null;
-        this.jumpPhase = `none`;
-        this.isOnPlatform = false;
+        this.facing = -1; // Start facing left
+        this.state = 'idle';
+        this.battleStarted = false;
 
         // Combat ranges
-        this.attackRange = 50;
-        this.chaseRange = 400;
-        this.minDistance = 100;
-        this.jumpThreshold = 100;
+        this.attackRange = 60; // Distance to player when boss will attack
+        this.chaseRange = 400; // Distance to player when boss will start chasing
+
+        // Animation timing
+        this.attackDuration = 1.5; // How long the attack animation lasts
+        this.attackTimer = 0;     // Timer for attack animation
 
         // Initialize bounding boxes
         this.updateBoundingBox();
@@ -69,104 +69,19 @@ class inferno {
         this.lastBox = this.box;
     }
 
-    getPlayerPlatform(player) {
-        let playerPlatform = null;
-        this.game.entities.forEach(entity => {
-            if (entity instanceof Platform) {
-                if (player.y + player.box.height >= entity.y &&
-                    player.y + player.box.height <= entity.y + 5 &&
-                    player.x + player.box.width > entity.x &&
-                    player.x < entity.x + entity.width) {
-                    playerPlatform = entity;
-                }
-            }
-        });
-        return playerPlatform;
-    }
-    
-    shouldJump(player) {
-        if (!this.landed) return false;
-    
-        const playerPlatform = this.getPlayerPlatform(player);
-        const currentPlatform = this.getCurrentPlatform();
-    
-        if (!playerPlatform || !currentPlatform) return false;
-    
-        return playerPlatform.y < currentPlatform.y &&
-            Math.abs(this.x - player.x) < this.chaseRange;
-    }
-    
-    calculateJumpVelocity(targetX, targetY) {
-        const jumpTime = 1.0;
-        const dx = targetX - this.x;
-        const vx = dx / jumpTime;
-        const dy = targetY - this.y;
-        const vy = (dy - (0.5 * this.fallGrav * jumpTime * jumpTime)) / jumpTime;
-        return { x: vx, y: vy };
-    }
-    
-    getCurrentPlatform() {
-        let currentPlatform = null;
-        this.game.entities.forEach(entity => {
-            if (entity instanceof Platform) {
-                if (this.y + this.boxHeight >= entity.y &&
-                    this.y + this.boxHeight <= entity.y + 5 &&
-                    this.x + this.boxWidth > entity.x &&
-                    this.x < entity.x + entity.width) {
-                    currentPlatform = entity;
-                }
-            }
-        });
-        return currentPlatform;
+    getPlayer() {
+        return this.game.entities.find(entity =>
+            entity instanceof AzielSeraph || entity instanceof HolyDiver || 
+            entity instanceof Grim || entity instanceof Kanji
+        );
     }
 
     takeDamage(amount) {
         if (this.damageCooldown <= 0) {
             this.hitpoints = Math.max(0, this.hitpoints - amount);
             this.damageCooldown = 0.5;
+            this.battleStarted = true; // Getting hit starts the battle
             console.log(`Boss takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
-        }
-    }
-
-    getPlayer() {
-        return this.game.entities.find(entity =>
-            entity instanceof AzielSeraph || entity instanceof HolyDiver || entity instanceof Grim || entity instanceof Kanji
-        );
-    }
-
-    checkPlayerAttack() {
-        const player = this.getPlayer();
-        if (!player) return;
-
-        // Check for Grim's attacks
-        if (player instanceof Grim) {
-            // Check for GrimAxe collision
-            this.game.entities.forEach(entity => {
-                if (entity instanceof GrimAxe) {
-                    if (entity.isAnimating && this.box.collide(entity.box)) {
-                        this.takeDamage(10);
-                        console.log(`Boss takes axe damage! HP: ${this.hitpoints}`);
-                    }
-                }
-            });
-
-            // Check for Skull projectile collision
-            this.game.entities.forEach(entity => {
-                if (entity instanceof SkullProjectile) {
-                    if (this.box.collide(entity.box)) {
-                        this.takeDamage(5);
-                        entity.removeFromWorld = true;
-                        console.log(`Boss takes projectile damage! HP: ${this.hitpoints}`);
-                    }
-                }
-            });
-        }
-
-        // Check for other player attacks
-        if (player instanceof AzielSeraph || player instanceof HolyDiver) {
-            if (player.box && this.box.collide(player.box) && this.game.closeAttack) {
-                this.takeDamage(10);
-            }
         }
     }
 
@@ -174,6 +89,7 @@ class inferno {
         const TICK = this.game.clockTick;
         const player = this.getPlayer();
 
+        // Basic checks
         if (this.hitpoints <= 0) {
             this.defeated = true;
             this.removeFromWorld = true;
@@ -182,42 +98,93 @@ class inferno {
         }
 
         if (!player) return;
-
-        // Handle jumping
-        if (this.shouldJump(player)) {
-            const playerPlatform = this.getPlayerPlatform(player);
-            const targetX = playerPlatform.x + playerPlatform.width/2;
-            const targetY = playerPlatform.y - this.boxHeight;
-            this.velocity = this.calculateJumpVelocity(targetX, targetY);
-            this.landed = false;
+        
+        // Calculate distance to player (center to center)
+        const distToPlayer = Math.abs(
+            (this.x + this.width/2) - (player.x + player.box.width/2)
+        );
+        
+        // Determine which side the player is on
+        const playerIsOnLeft = player.x < this.x;
+        
+        // Check if battle should start based on proximity
+        if (!this.battleStarted && distToPlayer < this.chaseRange) {
+            this.battleStarted = true;
         }
-
-        // Normal movement
-        const distToPlayer = Math.abs(this.x + this.width/2 - (player.x + player.box.width/2));
-        const moveDir = player.x > this.x ? 1 : -1;
-
-        if (this.landed) {  // Only move horizontally when landed
-            if (distToPlayer < this.attackRange) {
-                this.state = `attacking`;
-            } else if (distToPlayer < this.chaseRange) {
-                this.state = `chasing`;
+        
+        // Decrease timers
+        if (this.attackTimer > 0) {
+            this.attackTimer -= TICK;
+        }
+        
+        if (this.damageCooldown > 0) {
+            this.damageCooldown -= TICK;
+        }
+        
+        // Handle boss behavior
+        if (!this.battleStarted) {
+            // Stay idle until player gets close
+            this.state = 'idle';
+        } else {
+            // ALWAYS set facing direction based on player position
+            // This ensures boss always faces player, even during attack
+            this.facing = playerIsOnLeft ? -1 : 1;
+            
+            // Handle state transitions
+            if (this.attackTimer > 0) {
+                // Continue attack animation until timer expires
+                this.state = 'attacking';
+                
+                // Deal damage throughout attack animation when in contact
+                if (this.box.collide(player.box)) {
+                    if (player.takeDamage && this.damageCooldown <= 0) {
+                        player.takeDamage(10);
+                        this.damageCooldown = 0.5; // Prevent damage spam
+                        console.log("Player takes damage!");
+                    }
+                }
+            } else if (distToPlayer <= this.attackRange) {
+                // Start attack when in range
+                this.state = 'attacking';
+                this.attackTimer = this.attackDuration;
+                
+                // Deal initial damage when starting attack
+                if (this.box.collide(player.box)) {
+                    if (player.takeDamage) {
+                        player.takeDamage(10);
+                        this.damageCooldown = 0.5;
+                        console.log("Player takes damage!");
+                    }
+                }
+            } else if (distToPlayer <= this.chaseRange) {
+                // Chase the player when in chase range but not in attack range
+                this.state = 'chasing';
+                
+                // Move towards player
+                const moveDir = playerIsOnLeft ? -1 : 1;
                 this.x += this.moveSpeed * moveDir;
-                this.facing = moveDir;
             } else {
-                this.state = `idle`;
+                // Default to idle when out of range
+                this.state = 'idle';
             }
         }
-
-        // Apply gravity and movement
+        
+        // Apply gravity
         this.velocity.y += this.fallGrav * TICK;
         this.y += this.velocity.y * TICK;
-        this.x += this.velocity.x * TICK;
-
+        
         this.updateLastBB();
         this.updateBoundingBox();
-
-        // Platform and ground collisions
-        let isOnGround = false;
+        
+        // Check ground collision
+        const groundLevel = gameWorld.height - 70;
+        if (this.y + this.boxHeight > groundLevel) {
+            this.y = groundLevel - this.boxHeight;
+            this.velocity.y = 0;
+            this.landed = true;
+        }
+        
+        // Check platform collisions
         this.game.entities.forEach(entity => {
             if (entity instanceof Platform) {
                 if (this.box.collide(entity.box)) {
@@ -225,72 +192,49 @@ class inferno {
                         this.velocity.y = 0;
                         this.y = entity.box.top - this.boxHeight;
                         this.landed = true;
-                        isOnGround = true;
                     }
                 }
             }
         });
-
-        //damage to aziel
-        this.game.entities.forEach(entity => {
-            if (entity instanceof AzielSeraph && this.box.collide(entity.box) && this.state == `attacking`) {
-                entity.takeDamage(10);
-                console.log(`Aziel takes damage! HP: ${entity.hitpoints}`);
-            }
-        });
-
-        // Ground level check
-        const groundLevel = gameWorld.height - 70;
-        if (!isOnGround && this.y + this.boxHeight > groundLevel) {
-            this.y = groundLevel - this.boxHeight;
-            this.velocity.y = 0;
-            this.velocity.x = 0;
-            this.landed = true;
-        }
-
+        
         // Screen boundaries
         if (this.x < 0) this.x = 0;
         if (this.x > gameWorld.width - this.width) {
             this.x = gameWorld.width - this.width;
         }
-
-        this.damageCooldown -= TICK;
-        this.checkPlayerAttack();
+        
         this.healthbar.update();
     }
-
+    
     draw(ctx) {
-        if (this.state === `attacking`) {
+        // Draw the appropriate animation based on state and direction
+        if (this.state === 'attacking') {
             if (this.facing === -1) {
                 this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.25);
             } else {
                 this.attackRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.25);
             }
-        } else {
-            if (this.state === `chasing` || this.state === `moving` || this.jumpPhase === `jumping`) {
-                if (this.facing === -1) {
-                    this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.25);
-                } else {
-                    this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.25);
-                }
+        } else if (this.state === 'chasing') {
+            if (this.facing === -1) {
+                this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.25);
             } else {
-                if (this.facing === -1) {
-                    this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.25);
-                } else {
-                    this.idleRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.25);
-                }
+                this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.25);
+            }
+        } else { // idle state
+            if (this.facing === -1) {
+                this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.25);
+            } else {
+                this.idleRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.25);
             }
         }
-
+        
         // Debug bounding box
         if (this.game.debugMode) {
             ctx.strokeStyle = "red";
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }
-
+        
         this.healthbar.draw(ctx);
     }
 }
-
-
