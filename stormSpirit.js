@@ -12,37 +12,34 @@ class stormSpirit{
 
         // Position setup
         this.x = x;
-        const groundHeight = gameWorld.height;
-        this.y = groundHeight + 70;
+        this.y =  gameWorld.height - 200;
 
         // Basic properties
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
         // Increase the move speed by 3-4 times for faster movement
-        this.moveSpeed = speed * 3.5;
+        this.moveSpeed = speed;
         this.landed = true;
 
         this.spriteScale = 1.4;
         this.width = 32 * this.spriteScale;
         this.height = 32 * this.spriteScale;
+        this.boxHeight = 36;
         this.boxWidth = 32;
-        this.boxHeight = 64;
-
+       this.box = new BoundingBox(this.x + 5, this.y, 32, 36);
         // State
         this.facing = -1;
         this.state = `idle`;
         this.targetPlatform = null;
-        this.jumpPhase = `none`;
-        this.isOnPlatform = false;
+
         this.jumpCooldown = 0;
-        this.jumpAttemptTimer = 0;
+
         this.lastJumpTime = 0;
 
         // Combat ranges
         this.attackRange = 50;
         this.chaseRange = 500; // Increased chase range
-        this.minDistance = 100;
-        this.jumpThreshold = 500; // Increased jump threshold
+
 
         // Initialize bounding boxes
         this.updateBoundingBox();
@@ -63,12 +60,7 @@ class stormSpirit{
 
     updateBoundingBox() {
         const xOffset = (this.width - this.boxWidth) / 2;
-        this.box = new BoundingBox(
-            this.x + xOffset + 10,
-            this.y - 45,
-            this.boxWidth - 5,
-            this.boxHeight - 24
-        );
+        this.box = new BoundingBox(this.x + xOffset, this.y, 32, 36);
     }
 
     updateLastBB() {
@@ -76,34 +68,28 @@ class stormSpirit{
     }
 
     calculateJumpVelocity(targetX, targetY) {
-        // If targeting a platform, adjust targetX and targetY to the platform's center
         if (this.targetPlatform) {
-            targetX = this.targetPlatform.x + this.targetPlatform.width / 2 - this.boxWidth / 2; // Center of platform
-            targetY = this.targetPlatform.y - this.boxHeight; // Top of platform
+            targetX = this.targetPlatform.x + this.targetPlatform.width / 2 - 32 / 2;
+            targetY = this.targetPlatform.y - 64; // Align with platform top
         }
 
         const dx = targetX - this.x;
         const dy = targetY - this.y;
 
-        // Determine horizontal speed based on distance
-        let vx = dx > 0 ? 300 : -300; // Fixed horizontal speed
-        if (Math.abs(dx) < 100) vx = dx * 3; // Scale down for small distances
+        let vx = dx > 0 ? 300 : -300;
+        if (Math.abs(dx) < 100) vx = dx * 3;
 
-        // Calculate time to reach targetX
         const time = Math.abs(dx / vx);
+        let vy = (dy - 0.5 * this.fallGrav * time * time) / time;
 
-        // Calculate vertical velocity to reach targetY, accounting for gravity
-        const vy = (dy - 0.5 * this.fallGrav * time * time) / time;
-
-        // Ensure upward velocity is strong enough
+        // Cap vertical velocity for more controlled jumps
         if (vy > 0 || Math.abs(vy) < 200) {
-            const minVy = -800; // Minimum upward velocity for a decent jump
-            if (this.debug) console.log(`Adjusted vy from ${vy} to ${minVy} for better jump`);
-            return { x: vx, y: minVy };
+            vy = -800; // Consistent upward impulse
+        } else if (vy < -1000) {
+            vy = -1000; // Prevent overly strong jumps
         }
 
         if (this.debug) console.log(`Jump velocity: (${vx}, ${vy}), target: (${targetX}, ${targetY})`);
-
         return { x: vx, y: vy };
     }
 
@@ -111,9 +97,9 @@ class stormSpirit{
         let currentPlatform = null;
         this.game.entities.forEach(entity => {
             if (entity instanceof Platform) {
-                // Check if stormSpirit is standing on this platform
-                if (this.y + this.boxHeight >= entity.y - 10 &&
-                    this.y + this.boxHeight <= entity.y + 20 && // Increased tolerance
+                // Check if StormSpirit's bottom is close to or slightly below the platform's top
+                if (this.y + this.boxHeight >= entity.y - 5 && // Reduced tolerance from -10 to -5
+                    this.y + this.boxHeight <= entity.y + 10 && // Reduced tolerance from +20 to +10
                     this.x + this.boxWidth > entity.x &&
                     this.x < entity.x + entity.width) {
                     currentPlatform = entity;
@@ -235,7 +221,7 @@ class stormSpirit{
 
     update() {
         const TICK = this.game.clockTick;
-        const player = this.getPlayer(); // Prioritizes Kanji
+        const player = this.getPlayer();
 
         if (this.hitpoints <= 0) {
             this.removeFromWorld = true;
@@ -246,37 +232,33 @@ class stormSpirit{
 
         if (!player) return;
 
-        // Decrease jump cooldown
         if (this.jumpCooldown > 0) {
             this.jumpCooldown -= TICK;
         }
 
-        // Check for player attacks
         this.checkPlayerAttack();
 
         // Handle jumping to player's platform
         if (this.shouldJump(player) && this.jumpCooldown <= 0) {
-            let targetX = player.x; // Default to player position
+            let targetX = player.x;
             let targetY = player.y;
 
-            // If targeting a platform, use its coordinates
             if (this.targetPlatform) {
                 targetX = this.targetPlatform.x + this.targetPlatform.width / 2 - this.boxWidth / 2;
                 targetY = this.targetPlatform.y - this.boxHeight;
             }
 
-            // Calculate and apply jump velocity
+            // Set facing direction based on jump target
+            this.facing = targetX > this.x ? 1 : -1; // Face right (1) if targetX is right, left (-1) if left
+
             this.velocity = this.calculateJumpVelocity(targetX, targetY);
             this.landed = false;
             this.state = "jumping";
-
-            // Set jump cooldown to prevent constant jumping
             this.jumpCooldown = 1.0;
 
-            if (this.debug) console.log(`StormSpirit jumping to (${targetX}, ${targetY})`);
+            if (this.debug) console.log(`StormSpirit jumping to (${targetX}, ${targetY}), facing: ${this.facing}`);
         }
 
-        // Update state based on conditions
         const distToPlayer = Math.abs(this.x + this.width / 2 - (player.x + player.box.width / 2));
         const moveDir = player.x > this.x ? 1 : -1;
         const currentPlatform = this.getCurrentPlatform();
@@ -285,26 +267,21 @@ class stormSpirit{
         if (this.landed) {
             if (distToPlayer < this.attackRange) {
                 this.state = `attacking`;
+                this.velocity.x = 0;
             } else if (distToPlayer < this.chaseRange) {
-                this.state = `chasing`;
-                // Move faster when on the same platform
+                if (this.state !== 'chasing' || Math.abs(this.velocity.x) < 1) {
+                    this.state = `chasing`;
+                }
                 const speedMultiplier = (currentPlatform && playerPlatform && currentPlatform === playerPlatform) ? 1.5 : 1;
-                this.x += this.moveSpeed * moveDir * TICK * speedMultiplier;
+                this.velocity.x = this.moveSpeed * moveDir * speedMultiplier;
+                this.x += this.velocity.x * TICK;
                 this.facing = moveDir;
             } else {
                 this.state = `idle`;
-            }
-        } else {
-            // In-air state handling
-            this.state = "jumping";
-            if (this.velocity.x > 0) {
-                this.facing = 1;
-            } else if (this.velocity.x < 0) {
-                this.facing = -1;
+                this.velocity.x = 0;
             }
         }
 
-        // Apply gravity and movement
         this.velocity.y += this.fallGrav * TICK;
         this.y += this.velocity.y * TICK;
         if (!this.landed) {
@@ -312,31 +289,23 @@ class stormSpirit{
         }
 
         this.updateLastBB();
-        this.updateBoundingBox();
 
-        // Platform collision handling
         let isOnGround = false;
         this.game.entities.forEach(entity => {
             if (entity instanceof Platform) {
+                this.updateBoundingBox();
                 if (this.box.collide(entity.box)) {
                     if (this.velocity.y > 0 && this.lastBox.bottom <= entity.box.top) {
-                        // Landing on a platform
-                        this.velocity.y = 0;
                         this.y = entity.box.top - this.boxHeight;
+                        this.velocity.y = 0;
                         this.landed = true;
                         isOnGround = true;
-                        this.state = "idle"; // Reset to idle, let chasing take over
-                        if (this.debug) console.log("Landed on platform");
-                    } else if (this.velocity.y < 0 && this.lastBox.top >= entity.box.bottom) {
-                        // Hitting head on bottom of platform
-                        this.velocity.y = 0;
-                        this.y = entity.box.bottom;
+                        this.state = "idle";
+                        if (this.debug) console.log("Landed on platform at y:", this.y);
                     } else if (this.velocity.x > 0 && this.lastBox.right <= entity.box.left) {
-                        // Hitting right side of platform
                         this.x = entity.box.left - this.boxWidth;
                         this.velocity.x = 0;
                     } else if (this.velocity.x < 0 && this.lastBox.left >= entity.box.right) {
-                        // Hitting left side of platform
                         this.x = entity.box.right;
                         this.velocity.x = 0;
                     }
@@ -344,7 +313,8 @@ class stormSpirit{
             }
         });
 
-        // If StormSpirit falls off, reset to the ground
+        this.updateBoundingBox();
+
         const groundLevel = gameWorld.height - 70;
         if (!isOnGround && this.y + this.boxHeight > groundLevel) {
             this.y = groundLevel - this.boxHeight;
@@ -352,10 +322,10 @@ class stormSpirit{
             this.velocity.x = 0;
             this.landed = true;
             this.state = "idle";
-            if (this.debug) console.log("Reset to ground level");
+            this.updateBoundingBox();
+            if (this.debug) console.log("Reset to ground level at y:", this.y);
         }
 
-        // Screen boundaries
         if (this.x < 0) {
             this.x = 0;
             this.velocity.x = 0;
@@ -371,10 +341,16 @@ class stormSpirit{
 
     draw(ctx) {
         const scale = this.spriteScale;
+        const xOffset = (this.width - this.boxWidth) / 2;
+        const yOffset = this.boxHeight - 45;
 
-        // Adjust offset to align sprite with bounding box
-        const xOffset = (this.width - 32) / 2; // 32 is the sprite frame width
-        const yOffset = this.boxHeight - 115; // Adjust if sprite is not vertically aligned
+        // Log state and velocity for debugging
+        if (this.debug) {
+            console.log(`State: ${this.state}, Velocity X: ${this.velocity.x}, Facing: ${this.facing}`);
+        }
+
+        // Check if the character is moving horizontally (with a small threshold to avoid jitter)
+        const isMoving = Math.abs(this.velocity.x) > 0.1; // Lowered threshold from 1 to 0.1 for sensitivity
 
         if (this.state === `attacking`) {
             if (this.facing === 1) {
@@ -382,13 +358,22 @@ class stormSpirit{
             } else {
                 this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale);
             }
-        } else if (this.state === `chasing` || this.state === `jumping`) {
+        } else if (this.state === `jumping`) {
+            // Use walking animations during jump for consistency (or adjust if you want a unique jump animation)
+            if (this.facing === 1) {
+                this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale);
+            } else {
+                this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale);
+            }
+        } else if (isMoving && this.landed) {
+            // Use walking animations when moving on the ground
             if (this.facing === 1) {
                 this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale);
             } else {
                 this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale);
             }
         } else {
+            // Use idle animations when not moving
             if (this.facing === 1) {
                 this.idleRightAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale);
             } else {
@@ -400,7 +385,9 @@ class stormSpirit{
         this.healthbar.draw(ctx);
 
         // Draw bounding box for debugging
-        ctx.strokeStyle = "red";
-        ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        if (this.debug) {
+            ctx.strokeStyle = "red";
+            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        }
     }
 }

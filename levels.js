@@ -79,15 +79,15 @@ var levelThree = {
         },
         // Left elevated platform (moved more left)
         {
-            x: gameWorld.width/10,  // Changed from width/6 to width/12 to move it more left
+            x: gameWorld.width/20,  // Changed from width/6 to width/12 to move it more left
             y: gameWorld.height/1.50,
-            width: gameWorld.width/4,
+            width: gameWorld.width/6,
             height: 30,
             bColor: `#37446e`
         },
         // Middle platform
         {
-            x: gameWorld.width/2 - gameWorld.width/8,
+            x: gameWorld.width/4,
             y: gameWorld.height/1.96,
             width: gameWorld.width/4,
             height: 30,
@@ -96,13 +96,13 @@ var levelThree = {
         // Right elevated platform (moved more right)
         {
             x: gameWorld.width - (gameWorld.width/10) - gameWorld.width/4,  // Adjusted to move it more right
-            y: gameWorld.height/2.50,
+            y: gameWorld.height/1.50,
             width: gameWorld.width/4,
             height: 30,
             bColor: `#37446e`
         }
     ],
-    spirits: [{ x: 221, speed: 0.5}, {x: 300, speed: 1}, {  x: gameWorld.width - (gameWorld.width/10) - gameWorld.width/4, speed: 1.5}, {x: gameWorld.width/2 - gameWorld.width/8, speed: 2}, { x: 500, speed: 3}]
+    spirits: [{ x: 221, speed: 50}, {x: 300, speed: 60}, {  x: gameWorld.width - (gameWorld.width/10) - gameWorld.width/4, speed: 40}, {x: gameWorld.width/2 - gameWorld.width/8, speed: 70}, { x: 500, speed: 30}]
 };
 
 
