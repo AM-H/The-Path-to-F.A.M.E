@@ -8,7 +8,7 @@ class AzielSeraph {
         this.rangeAttackStartTime = 0;  //Time when the current range attack started
         this.lastRangeAttackTime = -this.rangeAttackCooldown;  // Instant availability at the start
         this.isRangeAttacking = false;  //Flag to track if the range attack is active
-        this.x = gameWorld.width/2;
+        this.x = 50;
         this.y = 50;
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
@@ -52,6 +52,7 @@ class AzielSeraph {
     update () {
         const TICK = this.game.clockTick;
         const currentTime = this.game.timer.gameTime;
+        //console.log(`x value: ` + this.x + `y value: ` + this.y);
 
         if (this.hitpoints <= 0) {
             this.hitpoints = 0;
@@ -95,8 +96,8 @@ class AzielSeraph {
         if (this.x < 0) {
             this.x = 0;
         }
-        if (this.x > gameWorld.width-16) {
-            this.x = gameWorld.width-16;
+        if (this.x > gameWorld.width-this.box.width) {
+            this.x = gameWorld.width-this.box.width;
         }
 
         if (this.game.rangeAttack) {
@@ -131,26 +132,11 @@ class AzielSeraph {
                         this.y = entity.box.top-64;
                         this.landed = true;
                         //console.log(`bottom collision`);
+                    } else {
+                        this.landed = false;
                     }
-                //REMOVED COLLISION WITH BOTTOM OF PLATFORM
-                // } 
-                // else if (this.velocity.y < 0) {
-                //     if ((entity instanceof Platform) && (this.lastBox.top) >= entity.box.bottom) {
-                //         this.velocity.y = 300;
-                //         this.y = entity.box.bottom;
-                //         console.log(`top collision`);
-                //     }
                 } else {
                     this.landed = false;
-                }
-                if (this.game.right || this.game.left) { // Only check side collisions if moving horizontally
-                    if (this.lastBox.right <= entity.box.left && !(entity instanceof HolyDiver) && !(entity instanceof Bullet)) {// Collision from the left of platform
-                        console.log(`right collision`);
-                        this.x = entity.box.left - this.box.width;
-                    } else if (this.lastBox.left >= entity.box.right && !(entity instanceof HolyDiver) && !(entity instanceof Bullet)) { // Collision from the right of platform
-                        console.log(`left collision`);
-                        this.x = entity.box.right;
-                    }
                 }
             }
             this.updateBoundingBox();

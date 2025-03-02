@@ -145,6 +145,9 @@ ASSET_MANAGER.queueDownload(`./sprites/eclipser/walkR.png`);
 ASSET_MANAGER.queueDownload(`./sprites/eclipser/walkL.png`);
 ASSET_MANAGER.queueDownload(`./sprites/eclipser/laser.png`);
 
+//Levaith Draconis
+ASSET_MANAGER.queueDownload(`./sprites/leviathDraconis/LeviathDraconisIdleRight.png`);
+
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");
 	const ctx = canvas.getContext("2d");

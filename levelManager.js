@@ -7,11 +7,12 @@ class LevelManager {
         this.startLevelTransition(levelFour);
     };
     startLevelTransition(level) {
-        const transition = new LevelTransition(this.game);
-        this.game.addEntity(transition);
-        setTimeout(() => {
-            this.loadLevel(level);
-         }, 4000); // Wait 4 seconds before loading the level
+        // const transition = new LevelTransition(this.game);
+        // this.game.addEntity(transition);
+        // setTimeout(() => {
+        //     this.loadLevel(level);
+        //  }, 4000); // Wait 4 seconds before loading the level
+        this.loadLevel(level);
     }
     loadLevel(level) {
         if (this.whichPlayer == `aziel`) {
@@ -55,7 +56,8 @@ class LevelManager {
             }
             ASSET_MANAGER.pauseBackgroundMusic();
         } else if (level = levelFour) {
-
+            this.boss = new LeviathDraconis(this.game);
+            this.game.addEntity(this.boss);
         }
 
         // Add background and platforms

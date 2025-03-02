@@ -116,22 +116,22 @@ var levelFour = {
     platform: [
         //ground floor
         {x: 0, y : gameWorld.height-25, width: gameWorld.width, height: 25, bColor: `#1f1323`},
-        //left 1st story platform
+        //left 2nd story platform
         {x: 0, y : 580, width: 180, height: 20, bColor: `#08e8d7`},
-        //right 1st story platform
+        //right 2nd story platform
         {x: gameWorld.width - 180, y: 580, width: 180, height: 20, bColor: `#08e8d7`},
-        //middle 2nd story platform
+        //middle 3rd story platform
         {x: gameWorld.width/2 - 110, y: 500, width: 220, height: 20, bColor: `#08e8d7`},
-        //left 3rd story platform
-        {x: 190, y: 412, width: 180, height: 20, bColor: `#08e8d7`},
-        //right 3rd story platform
-        {x: gameWorld.width-190*2, y: 412, width: 180, height: 20, bColor : `#08e8d7`},
         //left 4th story platform
-        {x: 0, y: 244, width: 180, height: 20, bColor: `#08e8d7`},
+        {x: 200, y: 412, width: 180, height: 20, bColor: `#08e8d7`},
         //right 4th story platform
+        {x: gameWorld.width-190*2, y: 412, width: 180, height: 20, bColor : `#08e8d7`},
+        //left 5th story platform
+        {x: 0, y: 244, width: 180, height: 20, bColor: `#08e8d7`},
+        //right 5th story platform
         {x: gameWorld.width - 180, y: 244, width: 180, height: 20, bColor : `#08e8d7`},
         //middle 5th story platform
-        {x: gameWorld.width/2 - 110, y: 244, width: 220, height: 20, bColor: `#08e8d7`}
+        {x: gameWorld.width/2 - 100, y: 244, width: 200, height: 20, bColor: `#08e8d7`}
     ]
 };
 
