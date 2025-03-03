@@ -2,6 +2,12 @@ class LeviathDraconis {
     constructor(game) {
         this.game = game;
         this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/leviathDraconis/LeviathDraconisIdleRight.png`), 2, 0, 32, 32, 5, .35);
+        this.animationMap = new Map();
+        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/leviathDraconis/LeviathDraconisRight.png`), 2, 0, 32, 32, 6, 0.15));
+        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/leviathDraconis/LeviathDraconisLeft.png`), 13, 0, 32, 32, 6, 0.15));
+        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/leviathDraconis/LeviathDraconisIdleRight.png`), 2, 0, 32, 32, 4, 0.2));
+        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/leviathDraconis/LeviathDraconisIdleLeft.png`), 13, 0, 32, 32, 4, 0.2));
+        this.facing = "left";
         this.box = new BoundingBox(this.x, this.y, 32, 64);
         this.x = gameWorld.width-50; //start x position
         this.y = 50; // start y position
@@ -14,10 +20,16 @@ class LeviathDraconis {
         this.maxhitpoints = 1000;
         this.healthbar = new HealthBar(this);
         this.removeFromWorld = false;
+        this.defeated = false;
+        this.isCloseAttacking = false;
+        this.rangeAttackCooldown = 10;  //Cooldown in seconds
+        this.rangeAttackDuration = 0.8; //Duration of the long-range attack in seconds
+        this.rangeAttackStartTime = 0;  //Time when the current range attack started
+        this.isRangeAttacking = false;  //Flag to track if the range attack is active
         this.updateBoundingBox();
     };
     getPlayer() {
-        // Find any entity that's a player
+        // Find any entity thats a player
         return this.game.entities.find(entity => 
             entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kanji
         );
@@ -33,29 +45,26 @@ class LeviathDraconis {
     trackPlayerAndMove() {
         const TICK = this.game.clockTick;
         const player = this.getPlayer();
-    
+        
         const distanceX = player.box.x - this.box.x;
         const distanceY = player.box.y - this.box.y;
         const horizontalSpeed = 75;
         const jumpSpeed = -1030;
-    
-        // Move left or right, only if on the ground
+
         if (this.landed) {
-            if (Math.abs(distanceX) > 5) { //Small buffer so sprite doesnt jitter
+            if (Math.abs(distanceX) > 20) {
                 this.velocity.x = distanceX > 0 ? horizontalSpeed : -horizontalSpeed;
+                this.facing = distanceX > 0 ? "right" : "left";
             } else {
-                this.velocity.x = 0; //Stop when near the player
+                this.velocity.x = 0;
             }
-    
-            //Jump if the player is much higher and within range
-            if (distanceY < -60) { //Player is above
-                if (this.canJump()) { //Check if jumping is possible
-                    this.velocity.y = jumpSpeed;
-                    this.landed = false;
-                }
+
+            if (distanceY < -60 && this.canJump()) {
+                this.velocity.y = jumpSpeed;
+                this.landed = false;
             }
-            if (distanceY>5) {
-                this.timeAbovePlayer+=TICK;
+            if (distanceY > 5) {
+                this.timeAbovePlayer += TICK;
             }
         }
     }
@@ -85,6 +94,26 @@ class LeviathDraconis {
             }
             this.updateBoundingBox();
         });
+    };
+    takeDamage(amount) {
+        this.hitpoints -= amount;
+        if (this.hitpoints < 0) this.hitpoints = 0;
+    }
+    updateCloseAttack() {
+        const player = this.getPlayer();
+        const bossCenter = { x: this.box.x + this.box.width / 2, y: this.box.y + this.box.height / 2 };
+        const playerCenter = { x: player.box.x + player.box.width / 2, y: player.box.y + player.box.height / 2 };
+        
+        this.isCloseAttacking = getDistance(bossCenter, playerCenter) < 95; // Example threshold
+    };
+    updateRangeAttack() {
+        const currentTime = this.game.timer.gameTime;
+        if (currentTime - this.rangeAttackStartTime >= this.rangeAttackCooldown) {
+            this.isRangeAttacking = true;
+            this.rangeAttackStartTime = currentTime;
+        } else if (currentTime - this.rangeAttackStartTime >= this.rangeAttackDuration) {
+            this.isRangeAttacking = false;
+        }
     }
     updateBoundingBox() {
         this.box = new BoundingBox(this.x, this.y, 32, 64);
@@ -92,8 +121,18 @@ class LeviathDraconis {
     updateLastBB() {
         this.lastBox = this.box;
     };
+    updateAnimation() {
+        if (this.velocity.x > 0) {
+            this.animator = this.animationMap.get("runRight");
+        } else if (this.velocity.x < 0) {
+            this.animator = this.animationMap.get("runLeft");
+        } else {
+            this.animator = this.animationMap.get(this.facing === "right" ? "idleRight" : "idleLeft");
+        }
+    }
     update() {
         const TICK = this.game.clockTick;
+        //Wall boundaries
         if (this.x < 0) {
             this.x = 0;
         }
@@ -104,6 +143,9 @@ class LeviathDraconis {
         this.velocity.y += this.fallGrav * TICK;
         this.x += this.velocity.x * TICK;
         this.y += this.velocity.y * TICK;
+        this.updateAnimation();
+        this.updateCloseAttack();
+        this.updateRangeAttack();
         this.updateLastBB();
         this.updateBoundingBox();
         //Check if we have been stuck above player on platform for more than a second
@@ -113,13 +155,18 @@ class LeviathDraconis {
         } else {
             this.checkFloorCollision();
         }
+        if (this.hitpoints <= 0) {
+            this.defeated = true;
+        }
         this.healthbar.update();
     };
     draw(ctx) {
         this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
-        ctx.strokeStyle = "red";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        if (this.game.debugMode) {
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        }
         this.healthbar.draw(ctx);
     };
 }

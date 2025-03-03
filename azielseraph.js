@@ -13,11 +13,11 @@ class AzielSeraph {
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
         this.facing = "right";
-        this.hitpoints = 100;
-        this.maxhitpoints = 100;
+        this.hitpoints = 500;
+        this.maxhitpoints = 500;
         this.radius = 20;
         this.lastDamageTime = 0;
-        this.isAttacking = false;
+        this.isCloseAttacking = false;
         this.healthbar = new HealthBar(this);
         this.animationMap = new Map();
         this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/moveRightAziel.png`), 2, 0, 32, 32, 6, 0.1));
@@ -110,6 +110,12 @@ class AzielSeraph {
                 const timeLeft = Math.ceil(this.rangeAttackCooldown - (currentTime - this.lastRangeAttackTime));
                 console.log(`Long-range attack on cooldown. ${timeLeft}s left.`);
             }
+        }
+        //Boolean to check if aziel is close Attacking
+        if (this.game.closeAttack) {
+            this.isCloseAttacking = true;
+        } else {
+            this.isCloseAttacking = false;
         }
         // Handle the long-range attack duration
         if (this.isRangeAttacking) {

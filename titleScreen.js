@@ -76,7 +76,7 @@ class SelectPlayerScreen {
             this.hovering2 = true;
             if (this.game.closeAttack) {
                 this.removeFromWorld = true;
-                this.game.addEntity(new LevelManager(this.game, `grim`));
+                this.game.addEntity(new LevelManager(this.game, `grim`, levelOne));
             }
         } else {
             this.hovering2 = false;
@@ -88,7 +88,7 @@ class SelectPlayerScreen {
             this.hovering3 = true;
             if (this.game.closeAttack) {
                 this.removeFromWorld = true;
-                this.game.addEntity(new LevelManager(this.game, `kanji`));
+                this.game.addEntity(new LevelManager(this.game, `kanji`, levelOne));
             }
         } else {
             this.hovering3 = false;
@@ -100,7 +100,7 @@ class SelectPlayerScreen {
             this.hovering4 = true;
             if (this.game.closeAttack) {
                 this.removeFromWorld = true;
-                this.game.addEntity(new LevelManager(this.game, `aziel`));
+                this.game.addEntity(new LevelManager(this.game, `aziel`, levelOne));
             }
         } else {
             this.hovering4 = false;

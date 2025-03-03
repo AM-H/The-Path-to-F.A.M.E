@@ -147,6 +147,15 @@ ASSET_MANAGER.queueDownload(`./sprites/eclipser/laser.png`);
 
 //Levaith Draconis
 ASSET_MANAGER.queueDownload(`./sprites/leviathDraconis/LeviathDraconisIdleRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/leviathDraconis/LeviathDraconisIdleLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/leviathDraconis/LeviathDraconisRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/leviathDraconis/LeviathDraconisLeft.png`);
+
+//Chronos Veil
+ASSET_MANAGER.queueDownload(`./sprites/chronosVeil/ChronosVeilRight.png`)
+ASSET_MANAGER.queueDownload(`./sprites/chronosVeil/ChronosVeilLeft.png`)
+ASSET_MANAGER.queueDownload(`./sprites/chronosVeil/ChronosVeilLaserRight.png`)
+ASSET_MANAGER.queueDownload(`./sprites/chronosVeil/ChronosVeilLaserLeft.png`)
 
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");
