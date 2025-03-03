@@ -1,10 +1,9 @@
 class LevelManager {
-    constructor(game, player) {
+    constructor(game, player, level) {
         this.game = game;
         this.whichPlayer = player;
         this.boss = null;
-        //this.startLevelTransition(levelOne);
-        this.loadLevel(levelTwo);
+        this.startLevelTransition(level);
     };
     startLevelTransition(level) {
         const transition = new LevelTransition(this.game);
@@ -54,6 +53,10 @@ class LevelManager {
                 this.game.addEntity(new stormSpirit(this.game, spirit.x, spirit.speed));
             }
             ASSET_MANAGER.pauseBackgroundMusic();
+        } else if (level === levelFour) {
+            this.boss = new LeviathDraconis(this.game);
+            this.game.addEntity(this.boss);
+            this.game.addEntity(new ChronosVeil(this.game, this.boss));
         }
 
         // Add background and platforms
@@ -67,11 +70,21 @@ class LevelManager {
     };
 
     update() {
-        if (this.boss && this.boss.defeated) {
+        if (this.boss && this.boss instanceof Eclipser && this.boss.defeated) {
             this.game.entities.forEach(element => {
                 element.removeFromWorld = true;
             });
-            this.startLevelTransition(levelTwo);
+            this.game.addEntity(new LevelManager(this.game, this.whichPlayer, levelTwo));
+        } else if (this.boss && this.boss instanceof inferno && this.boss.defeated) {
+            this.game.entities.forEach(element => {
+                element.removeFromWorld = true;
+            });
+            this.game.addEntity(new LevelManager(this.game, this.whichPlayer, levelFour));
+        } else if (this.boss && this.boss instanceof LeviathDraconis && this.boss.defeated) {
+            this.game.entities.forEach(element => {
+                element.removeFromWorld = true;
+            });
+            this.game.addEntity(new LevelManager(this.game, this.whichPlayer, levelOne));
         }
 
         updateVolume();

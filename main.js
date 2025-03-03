@@ -17,7 +17,8 @@ ASSET_MANAGER.queueDownload(`./levelBackgrounds/playagainbutton.png`);
 ASSET_MANAGER.queueDownload(`./audio/YouSeeBIGGIRLT_T.mp3`);
 
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level2_background.png`);
-ASSET_MANAGER.queueDownload(`./levelBackgrounds/level3_background.png`)
+ASSET_MANAGER.queueDownload(`./levelBackgrounds/level3_background.png`);
+ASSET_MANAGER.queueDownload(`./levelBackgrounds/level4_background.png`);
 // ASSET_MANAGER.queueDownload(`./sprites/IdleLeft.png`);
 // ASSET_MANAGER.queueDownload(`./sprites/IdleRight.png`);
 // ASSET_MANAGER.queueDownload(`./sprites/runLeft.png`);
@@ -143,6 +144,18 @@ ASSET_MANAGER.queueDownload(`./sprites/eclipser/idleL.png`);
 ASSET_MANAGER.queueDownload(`./sprites/eclipser/walkR.png`);
 ASSET_MANAGER.queueDownload(`./sprites/eclipser/walkL.png`);
 ASSET_MANAGER.queueDownload(`./sprites/eclipser/laser.png`);
+
+//Levaith Draconis
+ASSET_MANAGER.queueDownload(`./sprites/leviathDraconis/LeviathDraconisIdleRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/leviathDraconis/LeviathDraconisIdleLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/leviathDraconis/LeviathDraconisRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/leviathDraconis/LeviathDraconisLeft.png`);
+
+//Chronos Veil
+ASSET_MANAGER.queueDownload(`./sprites/chronosVeil/ChronosVeilRight.png`)
+ASSET_MANAGER.queueDownload(`./sprites/chronosVeil/ChronosVeilLeft.png`)
+ASSET_MANAGER.queueDownload(`./sprites/chronosVeil/ChronosVeilLaserRight.png`)
+ASSET_MANAGER.queueDownload(`./sprites/chronosVeil/ChronosVeilLaserLeft.png`)
 
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");
