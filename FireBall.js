@@ -130,9 +130,8 @@ class FireBall {
         
         if (currentFrame) {
             try {
-                // CRITICAL FIX: Always make sure to restore the context after saving it
-                // This ensures we don't have any leftover transformations affecting other elements
-                
+               
+            
                 // Save context state before transformations
                 ctx.save();
                 
@@ -151,10 +150,10 @@ class FireBall {
                     this.visualHeight * this.visualScale
                 );
                 
-                // CRITICAL: Restore context to prevent screen rotation bugs
+               
                 ctx.restore();
             } catch (e) {
-                // If there was an error drawing, restore the context FIRST to prevent cascading issues
+                
                 ctx.restore();
                 
                 // Then draw the fallback without any transformations
