@@ -135,27 +135,6 @@ class Shizoku {
         );
     }
 
-    checkPlayerAttack() {
-        const player = this.getPlayer();
-        if (!player) return;
-        // Check for close attack collision
-        if (player.box && this.box.collide(player.box)) {
-            console.log(`HERE`);
-            if (player instanceof AzielSeraph || player instanceof HolyDiver) {
-                // Check for HolyDiver attack
-                //const holyDiver = this.game.entities.find(entity => entity instanceof HolyDiver);
-                if (player.box && this.box.collide(player.box) && this.game.closeAttack) {
-                    this.takeDamage(10);
-                }
-            } else if (player instanceof Grim) {
-                // Handle Grim's attack
-                if (player.game.closeAttack) {
-                    this.takeDamage(10);
-                }
-            }
-        }
-    }
-
     update() {
         const TICK = this.game.clockTick;
         const player = this.getPlayer();
@@ -241,7 +220,6 @@ class Shizoku {
         }
 
         this.damageCooldown -= TICK;
-        //this.checkPlayerAttack();
         this.healthbar.update();
     }
 

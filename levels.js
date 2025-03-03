@@ -56,8 +56,13 @@ var levelTwo = {
             bColor: `#37446e`
         }
     ],
-    phoenixes: [{ x: 221, y: 500, speed: 1}, {x: 43, y: 74, speed: 2}, { x: 20, y: 300, speed: 2.4}, { x: 222, y: 200, speed: 3}, { x: 500, y: 111, speed: 1.4}]
-
+    phoenixes: [
+        { x: gameWorld.width - 250, y: 100, speed: 100},
+        { x: gameWorld.width - 200, y: 130, speed: 130},
+        { x: gameWorld.width - 300, y: 150, speed: 120},
+        { x: gameWorld.width - 180, y: 180, speed: 110},
+        { x: gameWorld.width - 220, y: 200, speed: 145}
+    ]
 };
 
 var levelThree = {

@@ -70,7 +70,7 @@ class Grim {
         
         // Left movement
         if (this.game.left) {
-            this.x -= 400 * TICK;
+            this.x -= 400 * TICK; //change this back to 130
             if (this.facing !== "left") {
                 this.facing = "left";
                 this.animator = this.animationMap.get('runLeft');
@@ -79,7 +79,7 @@ class Grim {
         
         // Right movement
         if (this.game.right) {
-            this.x += 400 * TICK;
+            this.x += 400 * TICK; //change this back to 130
             if (this.facing !== "right") {
                 this.facing = "right";
                 this.animator = this.animationMap.get('runRight');
@@ -159,24 +159,20 @@ class Grim {
                         this.landed = true;
                         //console.log(`bottom collision`);
                     }
-                } else if (this.velocity.y < 0) {
-                    if ((entity instanceof Platform) && (this.lastBox.top) >= entity.box.bottom) {
-                        this.velocity.y = 300;
-                        this.y = entity.box.bottom;
-                        console.log(`top collision`);
-                    }
-                } else {
+                } else if (this.velocity.y > 0) {
                     this.landed = false;
                 }
                 if (this.game.right || this.game.left) { // Only check side collisions if moving horizontally
-                    if (this.lastBox.right <= entity.box.left && !(entity instanceof GrimAxe) && !(entity instanceof Bullet)) {// Collision from the left of platform
+                    if(!(entity instanceof inferno) && !(entity instanceof Eclipser)){
+                    if (this.lastBox.right <= entity.box.left && !(entity instanceof GrimAxe) && !(entity instanceof Bullet)  && !(entity instanceof FireBall)) {// Collision from the left of platform
                         console.log(`right collision`);
                         this.x = entity.box.left - this.box.width;
-                    } else if (this.lastBox.left >= entity.box.right && !(entity instanceof GrimAxe) && !(entity instanceof Bullet)) { // Collision from the right of platform
+                    } else if (this.lastBox.left >= entity.box.right && !(entity instanceof GrimAxe) && !(entity instanceof Bullet) && !(entity instanceof FireBall)) { // Collision from the right of platform
                         console.log(`left collision`);
                         this.x = entity.box.right;
                     }
                 }
+            }
             }
             this.updateBoundingBox();
         });
@@ -197,9 +193,9 @@ class Grim {
 
     draw(ctx) {
         if(this.facing === "left"){
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, true);
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, false, true); //change grim to be smaller or same size as level 2 boss
         }else{
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2); //change grim to be smaller or same size as level 2 boss
         }
         
         // Draw bounding box
