@@ -26,6 +26,8 @@ class LeviathDraconis {
         this.rangeAttackDuration = 0.8; //Duration of the long-range attack in seconds
         this.rangeAttackStartTime = 0;  //Time when the current range attack started
         this.isRangeAttacking = false;  //Flag to track if the range attack is active
+        this.damageCooldown = 0;
+        this.invincibilityTime = 0.5; // Time of invincibility after taking damage
         this.updateBoundingBox();
     };
     getPlayer() {
@@ -96,7 +98,10 @@ class LeviathDraconis {
         });
     };
     takeDamage(amount) {
-        this.hitpoints -= amount;
+        if (this.damageCooldown <= 0) {
+            this.hitpoints -= amount;
+            this.damageCooldown = this.invincibilityTime;
+        }
         if (this.hitpoints < 0) this.hitpoints = 0;
     }
     updateCloseAttack() {
@@ -108,6 +113,10 @@ class LeviathDraconis {
     };
     updateRangeAttack() {
         const currentTime = this.game.timer.gameTime;
+        //Ten second delay so Leviath Dracons does not immediately range attack
+        if (this.rangeAttackStartTime === 0) {
+            this.rangeAttackStartTime = currentTime + 10;
+        }
         if (currentTime - this.rangeAttackStartTime >= this.rangeAttackCooldown) {
             this.isRangeAttacking = true;
             this.rangeAttackStartTime = currentTime;
@@ -158,6 +167,7 @@ class LeviathDraconis {
         if (this.hitpoints <= 0) {
             this.defeated = true;
         }
+        if (this.damageCooldown > 0) this.damageCooldown -= TICK;
         this.healthbar.update();
     };
     draw(ctx) {
