@@ -278,7 +278,16 @@ class Eclipser {
             }
             return;
         }
-    
+        // Check if health is low and should spawn minions
+        const healthRatio = this.hitpoints / this.maxhitpoints;
+        if (healthRatio <= this.lowHealthThreshold && !this.hasSpawnedMinions) {
+            this.spawnMinions();
+        }
+
+        // Check if minions are dead and can spawn again
+        if (this.hasSpawnedMinions && this.areMinionsDead()) {
+            this.hasSpawnedMinions = true;  // Allow spawning again
+        }
         // Update timers
         if (this.laserTimer > 0) this.laserTimer -= TICK;
         if (this.damageCooldown > 0) this.damageCooldown -= TICK;

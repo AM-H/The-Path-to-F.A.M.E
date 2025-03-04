@@ -40,34 +40,40 @@ class ChronosVeil {
             this.laserBoxes.push(new BoundingBox(segmentX, segmentY, 15, 15));
         }
     }
-    checkBlock(blockers) {
-        return blockers.some(blocker => this.laserBoxes.some(laserBox => laserBox.collide(blocker.box)));
-    }
 
     applyRangeAttackDamage() {
         if (!this.leviath.isRangeAttacking) return;
-        const blocked = this.checkBlock(this.game.entities.filter(entity => entity instanceof HolyDiver || entity instanceof GrimAxe));
-
-        if (!blocked) {
+    
+        // Get blocking objects (Holy Diver or Grim's Axe)
+        const blockers = this.game.entities.filter(entity => entity instanceof HolyDiver || entity instanceof GrimAxe);
+    
+        // **Check if any blocker is actually hit by the laser**
+        const laserBlocked = blockers.some(blocker => 
+            this.laserBoxes.some(laserBox => laserBox.collide(blocker.box))
+        );
+    
+        // **Check if the player is actually blocking**
+        const player = this.getPlayer();
+        const playerIsBlocking = player.isCloseAttacking && laserBlocked; 
+    
+        if (!playerIsBlocking) {
+            // **Deal damage to the player if they are not blocking**
             this.game.entities.forEach(entity => {
-                if ((entity instanceof AzielSeraph || entity instanceof Grim) && this.laserBoxes.some(laserBox => laserBox.collide(entity.box))) {
+                if ((entity instanceof AzielSeraph || entity instanceof Grim) &&
+                    this.laserBoxes.some(laserBox => laserBox.collide(entity.box))) {
                     entity.takeDamage(3);
+                    console.log(`Chronos Veil's laser hits ${entity.constructor.name}! HP: ${entity.hitpoints}`);
                 }
             });
         }
     }
 
     applyCloseAttackDamage() {
-        if (!this.leviath.isCloseAttacking) return;
-        const blocked = this.checkBlock(this.game.entities.filter(entity => entity instanceof HolyDiver || entity instanceof GrimAxe));
-
-        if (!blocked) {
-            this.game.entities.forEach(entity => {
-                if ((entity instanceof AzielSeraph || entity instanceof Grim) && this.box.collide(entity.box)) {
-                    entity.takeDamage(5);
-                }
-            });
-        }
+        this.game.entities.forEach(entity => {
+            if ((entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kanji) && this.box.collide(entity.box)) {
+                entity.takeDamage(5);
+            }
+        });
     }
 
     update() {
