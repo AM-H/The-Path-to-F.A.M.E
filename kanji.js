@@ -14,6 +14,7 @@ class Kanji {
 
         setTimeout(() => { this.canAttack = true; }, 100);
         setTimeout(() => { this.canRangeAttack = true; }, 500);
+
         // Animation Map
         this.animationMap = new Map();
         this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/runRight.png`), 0, 0, 32, 32, 6, 0.2));
@@ -25,12 +26,11 @@ class Kanji {
         this.animationMap.set(`jumpLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/jumpLeft.png`), 0, 0, 32, 32, 2, 0.5));
         this.animationMap.set(`jumpRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kanji/jumpRight.png`), 0, 0, 32, 32, 2, 0.5));
 
-        // Set default animation
         this.animator = this.animationMap.get(`idleRight`);
 
         this.attacking = false;
         this.box = new BoundingBox(this.x, this.y, 48, 64);
-        this.attackBox = null; // Attack bounding box
+        this.attackBox = null;
         this.updateBoundingBox();
         this.landed = false;
         this.hitpoints = 100;
@@ -38,31 +38,23 @@ class Kanji {
         this.healthbar = new HealthBar(this);
         this.attackTimer = 0;
         this.attackDuration = 0;
-
+        this.friction = 800; // Friction to slow down knockback
+        this.knockbackTimer = 0; // Timer to track knockback duration
+        this.knockbackDuration = 0.3; // Duration knockback overrides input (adjustable)
     }
 
     performRangeAttack() {
         if (this.game.rangeAttack && this.canRangeAttack) {
-            // Get player center position
             const centerX = this.x + (this.box.width / 2);
             const centerY = this.y + (this.box.height / 2);
-
-            // Adjust projectile spawn position
             const projectileCenterX = centerX - 16;
             const projectileCenterY = centerY - 16;
 
-            // Calculate direction towards the mouse
             const deltaX = this.game.mouseX - centerX;
             const deltaY = this.game.mouseY - centerY;
             const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const direction = { x: deltaX / distance, y: deltaY / distance };
 
-            // Normalize direction vector
-            const direction = {
-                x: deltaX / distance,
-                y: deltaY / distance
-            };
-
-            // Create the projectile (RangeSlash)
             const slash = new RangeSlash(
                 this.game,
                 projectileCenterX,
@@ -70,25 +62,19 @@ class Kanji {
                 direction,
                 { x: this.velocity.x, y: this.velocity.y }
             );
-
-            this.game.addEntity(slash); // Add to game
-
-            // Set cooldown
+            this.game.addEntity(slash);
             this.canRangeAttack = false;
             setTimeout(() => { this.canRangeAttack = true; }, 500);
         }
     }
 
-
-
     updateBoundingBox() {
         this.box = new BoundingBox(this.x, this.y, 48, 64);
 
-        if (this.game.rangeAttack && this.canRangeAttack) { // Check input for ranged attack
+        if (this.game.rangeAttack && this.canRangeAttack) {
             this.performRangeAttack();
         }
 
-        // Set attack box if attacking
         if (this.attacking) {
             if (this.attackDirection === "right") {
                 this.attackBox = new BoundingBox(this.x + 50, this.y + 10, 40, 50);
@@ -96,15 +82,16 @@ class Kanji {
                 this.attackBox = new BoundingBox(this.x - 40, this.y + 10, 40, 50);
             }
         } else {
-            this.attackBox = null; // Remove hitbox if not attacking
+            this.attackBox = null;
         }
     }
 
     takeDamage(amount) {
         this.hitpoints -= amount;
-        if(this.hitpoints < 0) this.hitpoints = 0;
+        if (this.hitpoints < 0) this.hitpoints = 0;
         console.log(`Kanji takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
         this.healthbar.update();
+        this.knockbackTimer = this.knockbackDuration; // Start knockback timer when hit
     }
 
     updateLastBB() {
@@ -121,7 +108,13 @@ class Kanji {
             return;
         }
 
-        // Update facing direction even while attacking
+
+        // Update knockback timer
+        if (this.knockbackTimer > 0) {
+            this.knockbackTimer -= TICK;
+        }
+
+        // Update facing direction
         if (this.game.left) this.facing = "left";
         else if (this.game.right) this.facing = "right";
 
@@ -131,13 +124,10 @@ class Kanji {
             this.canAttack = false;
             this.attackDirection = this.facing;
             this.attackTimer = 0;
-
-            // Get the attack animation
             const attackAnim = this.animationMap.get(this.facing === "right" ? `attackRight` : `attackLeft`);
             this.attackDuration = attackAnim.frameCount * attackAnim.frameDuration;
         }
 
-        // Handle attack timer and state
         if (this.attacking) {
             this.attackTimer += TICK;
             if (this.attackTimer >= this.attackDuration) {
@@ -148,9 +138,8 @@ class Kanji {
             }
         }
 
-        // Update animations - modified to consider both attacking state and direction
+        // Update animations
         if (this.attacking) {
-            // Update attack animation based on current facing direction
             this.animator = this.animationMap.get(this.facing === "right" ? `attackRight` : `attackLeft`);
         } else if (!this.landed) {
             this.animator = this.animationMap.get(this.facing === "left" ? `jumpLeft` : `jumpRight`);
@@ -160,31 +149,15 @@ class Kanji {
             this.animator = this.animationMap.get(this.facing === "left" ? `idleLeft` : `idleRight`);
         }
 
-        // Movement - allow movement while attacking
-        if (this.game.left) this.x -= 130 * TICK;
-        if (this.game.right) this.x += 130 * TICK;
-
-        // Update attack box position based on current facing direction
-        if (this.attacking) {
-            if (this.facing === "right") {
-                this.attackBox = new BoundingBox(this.x + 50, this.y + 10, 40, 50);
-            } else {
-                this.attackBox = new BoundingBox(this.x - 40, this.y + 10, 40, 50);
-            }
-        } else {
-            this.attackBox = null;
-        }
+        // Apply velocity (including knockback) to position
+        this.x += this.velocity.x * TICK;
 
 
-        // Update animations
-        if (!this.attacking) {
-            if (!this.landed) {
-                this.animator = this.animationMap.get(this.facing === "left" ? `jumpLeft` : `jumpRight`);
-            } else if (this.game.left || this.game.right) {
-                this.animator = this.animationMap.get(this.facing === "left" ? `runLeft` : `runRight`);
-            } else {
-                this.animator = this.animationMap.get(this.facing === "left" ? `idleLeft` : `idleRight`);
-            }
+        // Apply input only if not in knockback state
+        if (this.knockbackTimer <= 0) {
+            if (this.game.left) this.velocity.x = -130;
+            else if (this.game.right) this.velocity.x = 130;
+            else this.velocity.x = 0; // Stop movement if no input
         }
 
         // Jump logic
@@ -194,27 +167,31 @@ class Kanji {
             this.landed = false;
         }
 
-        if (this.x < 0) this.x = 0;
-        if (this.x > gameWorld.width - 48) {
-            this.x = gameWorld.width - 48;
-        }
-
         // Gravity
         this.velocity.y += this.fallGrav * TICK;
         this.y += this.velocity.y * TICK;
 
+        // Boundary checks
+        if (this.x < 0) {
+            this.x = 0;
+            this.velocity.x = 0;
+        }
+        if (this.x > gameWorld.width - 48) {
+            this.x = gameWorld.width - 48;
+            this.velocity.x = 0;
+        }
+
         this.updateLastBB();
         this.updateBoundingBox();
 
-        // Collision detection (for damage)
+        // Collision detection
         this.game.entities.forEach(entity => {
-            if ((entity instanceof Eclipser || entity instanceof Drone)  && this.attackBox && this.attackBox.collide(entity.box) && this.game.closeAttack) {
-                if(entity instanceof Eclipser){
+            if ((entity instanceof Eclipser || entity instanceof Drone || entity instanceof  Shizoku) && this.attackBox && this.attackBox.collide(entity.box) && this.game.closeAttack) {
+                if (entity instanceof Eclipser || entity instanceof Shizoku) {
                     entity.takeDamage(50);
-                }else if(entity instanceof  Drone){
+                } else if (entity instanceof Drone) {
                     entity.takeDamage(20);
                 }
-
             }
 
             if (entity.box && this.box.collide(entity.box)) {
@@ -230,17 +207,18 @@ class Kanji {
                 }
 
                 // Horizontal collision
-                if (this.game.right || this.game.left) {
-                    if (this.lastBox.right <= entity.box.left) {
-                        this.x = entity.box.left - this.box.width;
-                    } else if (this.lastBox.left >= entity.box.right) {
-                        this.x = entity.box.right;
-                    }
+                if (this.velocity.x > 0 && this.lastBox.right <= entity.box.left) {
+                    this.x = entity.box.left - this.box.width;
+                    this.velocity.x = 0;
+                } else if (this.velocity.x < 0 && this.lastBox.left >= entity.box.right) {
+                    this.x = entity.box.right;
+                    this.velocity.x = 0;
                 }
             }
             this.updateBoundingBox();
         });
 
+        this.healthbar.update();
     }
 
     draw(ctx) {
@@ -248,22 +226,19 @@ class Kanji {
             console.log("attacking left");
             this.animator.drawFrame(this.game.clockTick, ctx, this.x - 38, this.y - 4, 2);
         } else {
-            if(this.facing === "left"){
+            if (this.facing === "left") {
                 this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, false, true);
-            }else{
+            } else {
                 this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
             }
-
         }
 
-        // Draw attack box (for debugging)
         if (this.attackBox) {
             ctx.strokeStyle = "blue";
             ctx.lineWidth = 2;
             ctx.strokeRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
         }
 
-        // Draw bounding box
         ctx.strokeStyle = "red";
         ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         this.healthbar.draw(ctx);

@@ -35,6 +35,7 @@ ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/runRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/runLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/attackRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/attackLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/knockBack.png`);
 
 // fire phoenixes
 ASSET_MANAGER.queueDownload(`./sprites/phoenixes/IdleRight.png`);
