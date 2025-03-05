@@ -28,6 +28,9 @@ class LeviathDraconis {
         this.isRangeAttacking = false;  //Flag to track if the range attack is active
         this.damageCooldown = 0;
         this.invincibilityTime = 0.5; // Time of invincibility after taking damage
+        //time stopping range
+        this.timeStopEffectActive = true;
+        this.timeStopRange = 100; //If player within 100 pixels of leviath Draconis, they stop moving
         this.updateBoundingBox();
     };
     getPlayer() {
@@ -176,6 +179,15 @@ class LeviathDraconis {
             ctx.strokeStyle = "red";
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        }
+        if (this.timeStopEffectActive) {
+            ctx.beginPath();
+            ctx.arc(this.x + 16, this.y + 32, this.timeStopRange, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(0, 0, 255, 0.15)";
+            ctx.fill();
+            ctx.strokeStyle = "blue";
+            ctx.lineWidth = 2;
+            ctx.stroke();
         }
         this.healthbar.draw(ctx);
     };
