@@ -15,8 +15,8 @@ class stormSpirit{
 
         // Position setup
         this.x = x;
-        const groundHeight = gameWorld.height - 70;
-        this.y = groundHeight - 64;
+        const groundHeight = gameWorld.height;
+        this.y = groundHeight + 70;
 
         // Basic properties
         this.velocity = { x: 0, y: 0 };
@@ -61,7 +61,7 @@ class stormSpirit{
         const xOffset = (this.width - this.boxWidth) / 2;
         this.box = new BoundingBox(
             this.x + xOffset,
-            this.y,
+            this.y - 66,
             this.boxWidth,
             this.boxHeight
         );
@@ -274,9 +274,11 @@ class stormSpirit{
         }
 
         // Debug bounding box
-        ctx.strokeStyle = `red`;
-        ctx.lineWidth = 2;
-        ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        if (this.game.debugMode) {
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        }
 
 
 

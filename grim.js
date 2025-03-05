@@ -20,8 +20,8 @@ class Grim {
         
         // Create animation map for Grim's animations
         this.animationMap = new Map();
-        this.animationMap.set('runRight', new Animator(ASSET_MANAGER.getAsset('./sprites/GrimRunningR.png'), 13, 16, 48, 32, 6, 0.2));
-        this.animationMap.set('runLeft', new Animator(ASSET_MANAGER.getAsset('./sprites/GrimRunningL.png'), 3.01, 16, 48, 32, 6, 0.2));
+        this.animationMap.set('runRight', new Animator(ASSET_MANAGER.getAsset('./sprites/GrimRunningR.png'), 13, 16, 48, 32, 8, 0.2));
+        this.animationMap.set('runLeft', new Animator(ASSET_MANAGER.getAsset('./sprites/GrimRunningL.png'), 3.01, 16, 48, 32, 8, 0.2));
         this.animationMap.set('idleRight', new Animator(ASSET_MANAGER.getAsset('./sprites/GrimIdleR.png'), 0, 16, 42, 32, 5, 0.2));
         this.animationMap.set('idleLeft', new Animator(ASSET_MANAGER.getAsset('./sprites/GrimIdleL.png'), 5, 16, 48, 32, 5, 0.2));
         
@@ -36,9 +36,14 @@ class Grim {
     }
 
     takeDamage(amount) {
-        this.hitpoints -= amount;
-        if(this.hitpoints < 0) this.hitpoints = 0;
-        console.log(`Grim takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+        // Skip damage if invincible
+        if (!this.game.invincibleMode) {
+            this.hitpoints -= amount;
+            if (this.hitpoints < 0) this.hitpoints = 0;
+            console.log(`Grim takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+        } else {
+            console.log(`Damage blocked by invincibility!`);
+        }
     }
 
     updateBoundingBox() {
@@ -65,7 +70,7 @@ class Grim {
         
         // Left movement
         if (this.game.left) {
-            this.x -= 250 * TICK;
+            this.x -= 130 * TICK;
             if (this.facing !== "left") {
                 this.facing = "left";
                 this.animator = this.animationMap.get('runLeft');
@@ -74,7 +79,7 @@ class Grim {
         
         // Right movement
         if (this.game.right) {
-            this.x += 250 * TICK;
+            this.x += 130 * TICK;
             if (this.facing !== "right") {
                 this.facing = "right";
                 this.animator = this.animationMap.get('runRight');
@@ -118,6 +123,7 @@ class Grim {
             this.canShoot = false;
         }
 
+
         // Reset shooting capability
         if (!this.game.rangeAttack) {
             this.canShoot = true;
@@ -146,27 +152,31 @@ class Grim {
         // Collision detection
         this.game.entities.forEach(entity => {
             if (entity.box && this.box.collide(entity.box)) {
-                // Platform collisions
-                if (entity instanceof Platform) {
-                    if (this.velocity.y > 0 && this.lastBox.bottom <= entity.box.top) {
+                if (this.velocity.y > 0) {
+                    if ((entity instanceof Platform) && (this.lastBox.bottom) <= entity.box.top) {
                         this.velocity.y = 0;
-                        this.y = entity.box.top - 64;
+                        this.y = entity.box.top-64;
                         this.landed = true;
-                    } else if (this.velocity.y < 0 && this.lastBox.top >= entity.box.bottom) {
+                        //console.log(`bottom collision`);
+                    }
+                } else if (this.velocity.y < 0) {
+                    if ((entity instanceof Platform) && (this.lastBox.top) >= entity.box.bottom) {
                         this.velocity.y = 300;
                         this.y = entity.box.bottom;
+                        console.log(`top collision`);
                     }
-
-                    // Horizontal collision
-                    if (this.game.right || this.game.left) {
-                        if (this.lastBox.right <= entity.box.left) {
-                            this.x = entity.box.left - this.box.width;
-                        } else if (this.lastBox.left >= entity.box.right) {
-                            this.x = entity.box.right;
-                        }
+                } else {
+                    this.landed = false;
+                }
+                if (this.game.right || this.game.left) { // Only check side collisions if moving horizontally
+                    if (this.lastBox.right <= entity.box.left && !(entity instanceof GrimAxe) && !(entity instanceof Bullet)) {// Collision from the left of platform
+                        console.log(`right collision`);
+                        this.x = entity.box.left - this.box.width;
+                    } else if (this.lastBox.left >= entity.box.right && !(entity instanceof GrimAxe) && !(entity instanceof Bullet)) { // Collision from the right of platform
+                        console.log(`left collision`);
+                        this.x = entity.box.right;
                     }
                 }
-
             }
             this.updateBoundingBox();
         });
@@ -193,10 +203,12 @@ class Grim {
         }
         
         // Draw bounding box
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = "red";
-        ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
-        
+        if (this.game.debugMode) {
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        }
+
         // Draw healthbar
         this.healthbar.draw(ctx);
     }

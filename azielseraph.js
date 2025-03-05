@@ -2,22 +2,22 @@ class AzielSeraph {
     constructor(game) {
         this.game = game;
         this.removeFromWorld = false;
-        this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 5, .35,);
-        this.rangeAttackCooldown = 10;  //Cooldown in seconds
+        this.animator = new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 5, .35);
+        this.rangeAttackCooldown = 5;  //Cooldown in seconds
         this.rangeAttackDuration = 0.8; //Duration of the long-range attack in seconds
         this.rangeAttackStartTime = 0;  //Time when the current range attack started
         this.lastRangeAttackTime = -this.rangeAttackCooldown;  // Instant availability at the start
         this.isRangeAttacking = false;  //Flag to track if the range attack is active
-        this.x = 0;
-        this.y = 500;
+        this.x = 50;
+        this.y = 50;
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
         this.facing = "right";
-        this.hitpoints = 100;
-        this.maxhitpoints = 100;
+        this.hitpoints = 500;
+        this.maxhitpoints = 500;
         this.radius = 20;
         this.lastDamageTime = 0;
-        this.isAttacking = false;
+        this.isCloseAttacking = false;
         this.healthbar = new HealthBar(this);
         this.animationMap = new Map();
         this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/moveRightAziel.png`), 2, 0, 32, 32, 6, 0.1));
@@ -29,19 +29,30 @@ class AzielSeraph {
         this.landed = false;
 
     };
+
     updateBoundingBox() {
         this.box = new BoundingBox(this.x, this.y, 32, 64);
     };
+
     updateLastBB() {
         this.lastBox = this.box;
     };
+    
     takeDamage(amount) {
-        this.hitpoints -= amount;
-        if (this.hitpoints < 0) this.hitpoints = 0; // Prevent negative HP
-    }    
+        // Skip damage if invincible
+        if (!this.game.invincibleMode) {
+            this.hitpoints -= amount;
+            if (this.hitpoints < 0) this.hitpoints = 0;
+            console.log(`Aziel takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+        } else {
+            console.log(`Damage blocked by invincibility!`);
+        }
+    }
+       
     update () {
         const TICK = this.game.clockTick;
         const currentTime = this.game.timer.gameTime;
+        //console.log(`x value: ` + this.x + `y value: ` + this.y);
 
         if (this.hitpoints <= 0) {
             this.hitpoints = 0;
@@ -85,8 +96,8 @@ class AzielSeraph {
         if (this.x < 0) {
             this.x = 0;
         }
-        if (this.x > gameWorld.width-16) {
-            this.x = gameWorld.width-16;
+        if (this.x > gameWorld.width-this.box.width) {
+            this.x = gameWorld.width-this.box.width;
         }
 
         if (this.game.rangeAttack) {
@@ -99,6 +110,12 @@ class AzielSeraph {
                 const timeLeft = Math.ceil(this.rangeAttackCooldown - (currentTime - this.lastRangeAttackTime));
                 console.log(`Long-range attack on cooldown. ${timeLeft}s left.`);
             }
+        }
+        //Boolean to check if aziel is close Attacking
+        if (this.game.closeAttack) {
+            this.isCloseAttacking = true;
+        } else {
+            this.isCloseAttacking = false;
         }
         // Handle the long-range attack duration
         if (this.isRangeAttacking) {
@@ -121,24 +138,11 @@ class AzielSeraph {
                         this.y = entity.box.top-64;
                         this.landed = true;
                         //console.log(`bottom collision`);
-                    }
-                } else if (this.velocity.y < 0) {
-                    if ((entity instanceof Platform) && (this.lastBox.top) >= entity.box.bottom) {
-                        this.velocity.y = 300;
-                        this.y = entity.box.bottom;
-                        console.log(`top collision`);
+                    } else {
+                        this.landed = false;
                     }
                 } else {
                     this.landed = false;
-                }
-                if (this.game.right || this.game.left) { // Only check side collisions if moving horizontally
-                    if (this.lastBox.right <= entity.box.left && !(entity instanceof HolyDiver)) {// Collision from the left of platform
-                        console.log(`right collision`);
-                        this.x = entity.box.left - this.box.width;
-                    } else if (this.lastBox.left >= entity.box.right && !(entity instanceof HolyDiver)) { // Collision from the right of platform
-                        console.log(`left collision`);
-                        this.x = entity.box.right;
-                    }
                 }
             }
             this.updateBoundingBox();
@@ -148,9 +152,13 @@ class AzielSeraph {
     };
     draw(ctx) {
         this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = "red";
-        ctx.strokeRect(this.box.x,this.box.y, this.box.width, this.box.height);
+        
+        if (this.game.debugMode) {
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        }
+
         this.healthbar.draw(ctx);
     };
 };
