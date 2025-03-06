@@ -29,7 +29,7 @@ var levelTwo = {
             y: gameWorld.height - 70,
             width: gameWorld.width,
             height: 70,
-            bColor: `#37446e`
+            bColor: `#211D25`
         },
           // Left elevated platform (moved more left)
           {
@@ -37,7 +37,7 @@ var levelTwo = {
             y: gameWorld.height/1.96,
             width: gameWorld.width/4,
             height: 30,
-            bColor: `#CCE2E1`
+            bColor: `#616968`
         },
         // Middle platform
         {
@@ -45,7 +45,7 @@ var levelTwo = {
             y: gameWorld.height/1.38,
             width: gameWorld.width/4,
             height: 30,
-            bColor: `#CCE2E1`
+            bColor: `#616968`
         },
         // Right elevated platform (moved more right)
         {
@@ -53,7 +53,7 @@ var levelTwo = {
             y: gameWorld.height/1.96,
             width: gameWorld.width/4,
             height: 30,
-            bColor: `#CCE2E1`
+            bColor: `#616968`
         }
     ],
     phoenixes: [
