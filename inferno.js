@@ -207,7 +207,7 @@ class inferno {
         
         const distanceX = player.box.x - this.box.x;
         const distanceY = player.box.y - this.box.y;
-        const jumpSpeed = -1030;
+        const jumpSpeed = -1130;
         const absoluteDistanceX = Math.abs(distanceX);
     
         // Handle attack cooldown

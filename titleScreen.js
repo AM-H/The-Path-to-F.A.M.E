@@ -118,7 +118,7 @@ class SelectPlayerScreen {
         if (this.hovering2) {
             ctx.strokeStyle = `#fafad4`;
             ctx.lineWidth = 6;
-            ctx.strokeRect(this.player2.x, this.player2.y, 32, 64);
+            ctx.strokeRect(this.player2.x, this.player2.y, 50, 64);
         }
 
         if (this.hovering3) {
