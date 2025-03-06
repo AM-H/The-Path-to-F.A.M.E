@@ -24,6 +24,9 @@ class LevelManager {
             const grim = new Grim(this.game);
             this.game.addEntity(grim);
             this.game.addEntity(new GrimAxe(this.game, grim));
+        } else if(this.whichPlayer == `kyra`){
+            const kyra = new Kyra(this.game);
+            this.game.addEntity(kyra);
         }
         if(level == levelOne) {
             this.boss = new Eclipser(this.game);

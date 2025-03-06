@@ -6,13 +6,17 @@ class Animator {
         this.totalTime = frameCount * frameDuration;
     }
 
-    drawFrame(tick, ctx, x, y, scale, vertical=false) {
+    drawFrame(tick, ctx, x, y, scale, vertical=false, reverse=false) {
         this.elapsedTime += tick;
         if (this.elapsedTime > this.totalTime) {
             this.elapsedTime -= this.totalTime;
         }
 
         let frame = this.currentFrame();
+        if (reverse) {
+            frame = this.frameCount - 1 - frame; // Reverse the frame order
+        }
+
 
         let frameX, frameY;
 
@@ -25,6 +29,9 @@ class Animator {
             frameX = this.xStart + this.width * frame;
             frameY = this.yStart;
         }
+
+
+
 
 
         ctx.drawImage(

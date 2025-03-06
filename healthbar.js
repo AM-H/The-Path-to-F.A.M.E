@@ -14,7 +14,7 @@ class HealthBar {
         const ratio = Math.max(0, Math.min(1, this.agent.hitpoints / this.agent.maxhitpoints));
 
         // Handle player characters
-        if (this.agent instanceof AzielSeraph || this.agent instanceof Grim || this.agent instanceof Kanji) {
+        if (this.agent instanceof AzielSeraph || this.agent instanceof Grim || this.agent instanceof Kanji || this.agent instanceof Kyra) {
             ctx.fillStyle = "#3a3a3a";  // Dark gray
             ctx.fillRect(10, 10, 200, 30);
 
