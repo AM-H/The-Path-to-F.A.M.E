@@ -71,12 +71,12 @@ class SelectPlayerScreen {
 
     update() {
         // Check hover for Kyra (player1)
-        if ((this.game.mouseX > this.player1.x) && this.game.mouseX < this.player1.x+32 && 
+        if ((this.game.mouseX > this.player1.x) && this.game.mouseX < this.player1.x+64 && 
             this.game.mouseY > this.player1.y && this.game.mouseY < this.player1.y+64) {
             this.hovering1 = true;
             if (this.game.closeAttack) {
                 this.removeFromWorld = true;
-                this.game.addEntity(new LevelManager(this.game, `kyra`));
+                this.game.addEntity(new LevelManager(this.game, `kyra`, levelOne));
             }
         } else {
             this.hovering1 = false;
@@ -130,7 +130,7 @@ class SelectPlayerScreen {
         if (this.hovering1) {
             ctx.strokeStyle = `#fafad4`;
             ctx.lineWidth = 6;
-            ctx.strokeRect(this.player1.x, this.player1.y, 64, 64);
+            ctx.strokeRect(this.player1.x, this.player1.y, 32, 64);
         }
 
         if (this.hovering2) {
