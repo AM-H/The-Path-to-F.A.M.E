@@ -45,7 +45,7 @@ class SelectPlayerScreen {
         ASSET_MANAGER.autoRepeat(`./audio/YouSeeBIGGIRLT_T.mp3`);
         this.spritesheet = ASSET_MANAGER.getAsset(`./levelBackgrounds/SelectPlayerScreen.png`);
         this.player1 = {
-            idle: new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleRightKyra.png`), 0, 0, 96, 40, 5, 0.35),
+            idle: new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleRightKyra.png`), 33, 0, 96, 38, 5, 0.35),
             x: (gameWorld.width/5) / 2,
             y: (gameWorld.height/8)*6
         };
@@ -72,7 +72,7 @@ class SelectPlayerScreen {
     update() {
         // Check hover for Kyra (player1)
         if ((this.game.mouseX > this.player1.x) && this.game.mouseX < this.player1.x+64 && 
-            this.game.mouseY > this.player1.y && this.game.mouseY < this.player1.y+64) {
+            this.game.mouseY > this.player1.y && this.game.mouseY < this.player1.y+61) {
             this.hovering1 = true;
             if (this.game.closeAttack) {
                 this.removeFromWorld = true;
@@ -95,7 +95,7 @@ class SelectPlayerScreen {
         }
 
         // Check hover for Kanji (player3)
-        if ((this.game.mouseX > this.player3.x) && this.game.mouseX < this.player3.x+32 &&
+        if ((this.game.mouseX > this.player3.x) && this.game.mouseX < this.player3.x+64 &&
             this.game.mouseY > this.player3.y && this.game.mouseY < this.player3.y+64) {
             this.hovering3 = true;
             if (this.game.closeAttack) {
@@ -130,7 +130,7 @@ class SelectPlayerScreen {
         if (this.hovering1) {
             ctx.strokeStyle = `#fafad4`;
             ctx.lineWidth = 6;
-            ctx.strokeRect(this.player1.x, this.player1.y, 32, 64);
+            ctx.strokeRect(this.player1.x, this.player1.y, 58, 76);
         }
 
         if (this.hovering2) {

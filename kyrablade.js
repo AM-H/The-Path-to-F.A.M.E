@@ -6,7 +6,7 @@ class Kyra {
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
         this.facing = "right";
-        this.landed = true;  // Added to track if character is on ground
+        this.landed = false;  // Added to track if character is on ground
 
         this.attackDirection = null;
         this.removeFromWorld = false;
@@ -16,10 +16,10 @@ class Kyra {
 
         // Animation Map (keep your existing animations)
         this.animationMap = new Map();
-        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/RunRightKyra.png`), 0, 0, 96, 48, 4, 0.2));
-        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/RunLeftKyra.png`), 0, 0, 96, 48, 4, 0.2));
-        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleRightKyra.png`), 0, 0, 96, 40, 5, 0.35));
-        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleLeftKyra.png`), 0, 0, 96, 40, 5, 0.35));
+        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/RunRightKyra.png`), 0, 8, 96, 48, 4, 0.2));
+        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/RunLeftKyra.png`), 0, 8, 95, 48, 4, 0.2));
+        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleRightKyra.png`), 0, 0, 96, 38, 5, 0.35));
+        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleLeftKyra.png`), 0, 0, 96, 38, 5, 0.35));
         this.animationMap.set(`attackRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/AttackRightKyra.png`), 0, 0, 96, 40, 5, 0.07));
         this.animationMap.set(`attackLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/AttackLeftKyra.png`), 0, 0, 96, 40, 5, 0.07));
 
@@ -27,7 +27,7 @@ class Kyra {
         this.animator = this.animationMap.get(`idleRight`);
 
         this.attacking = false;
-        this.box = new BoundingBox(this.x, this.y, 40, 70);
+        this.box = new BoundingBox(this.x+80, this.y+10, 40, 61);
         this.attackBox = null;
         this.updateBoundingBox();
         this.hitpoints = 100;
@@ -38,7 +38,7 @@ class Kyra {
     }
 
     updateBoundingBox() {
-        this.box = new BoundingBox(this.x, this.y, 40, 70);
+        this.box = new BoundingBox(this.x+80, this.y+10, 40, 61);
 
         if (this.attacking) {
             if (this.attackDirection === "right") {
@@ -121,15 +121,9 @@ class Kyra {
         } else if (this.game.left || this.game.right) {
             this.animator = this.animationMap.get(this.facing === "left" ? `runLeft` : `runRight`);
             // Only adjust height when running on ground
-            if (this.landed) {
-                this.y = 610; // Adjust this value as needed to raise the character
-            }
         } else {
             this.animator = this.animationMap.get(this.facing === "left" ? `idleLeft` : `idleRight`);
             // Only adjust height when idle on ground
-            if (this.landed) {
-                this.y = 620; // Reset to original height when idle
-            }
         }
 
         // Horizontal Movement
@@ -155,35 +149,13 @@ class Kyra {
                 }
             }
 
-            // if (entity.box && this.box.collide(entity.box)) {
-            //     // Landing on platforms
-            //     if (this.velocity.y > 0 && entity instanceof Platform && (this.lastBox.bottom <= entity.box.top)) {
-            //         this.velocity.y = 0;
-            //         this.y = entity.box.top - 64;
-            //         this.landed = true;
-            //     } 
-            //     // Hitting ceiling
-            //     else if (this.velocity.y < 0 && entity instanceof Platform && (this.lastBox.top >= entity.box.bottom)) {
-            //         this.velocity.y = 300;
-            //         this.y = entity.box.bottom;
-            //     } 
-
-            //     // Horizontal collision
-            //     if ((this.game.right || this.game.left) && !(entity instanceof Bullet)) {
-            //         if (this.lastBox.right <= entity.box.left) {
-            //             this.x = entity.box.left - this.box.width;
-            //         } else if (this.lastBox.left >= entity.box.right) {
-            //             this.x = entity.box.right;
-            //         }
-            //     }
-            // }
 
             //collision with floor and platforms:
             if (entity.box && this.box.collide(entity.box)) {
                 if (this.velocity.y > 0) {
                     if ((entity instanceof Platform) && (this.lastBox.bottom) <= entity.box.top) {
                         this.velocity.y = 0;
-                        this.y = entity.box.top-96;
+                        this.y = entity.box.top-71;
                         this.landed = true;
                         //console.log(`bottom collision`);
                     } else {
@@ -195,26 +167,28 @@ class Kyra {
             }
             this.updateBoundingBox();
         });
-        //     this.updateBoundingBox();
-        // });
         this.healthbar.update();
     }
 
     draw(ctx) {
-        if (this.attacking && this.facing === "left") {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x - 38, this.y - 4, 2);
+        if (this.facing === "left" && !this.game.left && !this.game.right) {
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x + 20, this.y + 3, 1.8);
+        } else if (this.facing == "right" && this.game.right) {
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x+14, this.y+3, 1.6);
+        } else if (this.facing == "left" && this.game.left) {
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x + 23, this.y + 4, 1.6);
         } else {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x+10, this.y+3, 1.8);
         }
 
         // Debugging: Draw bounding boxes
         if (this.game.debugMode) {
             ctx.strokeStyle = "red";
             ctx.lineWidth = 2;
-            ctx.strokeRect(this.box.x + 80, this.box.y + 16, this.box.width, this.box.height);
+            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
             if (this.attackBox) {
                 ctx.strokeStyle = "blue";
-                ctx.lineWidth = 2;s
+                ctx.lineWidth = 2;
                 ctx.strokeRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
             }
         }
