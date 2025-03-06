@@ -55,6 +55,9 @@ class Grim {
     }
 
     update() {
+        if (this.game.isTimeStopped == true && getDistance(this, this.getLeviath()) <= 95) {
+            return;
+        }
         const TICK = this.game.clockTick;
         
         // Check if Grim is dead

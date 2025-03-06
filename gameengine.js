@@ -31,6 +31,7 @@ class GameEngine {
 
         this.isGameOver = false;
 
+        this.isTimeStopped = false;
 
         // Options and the Details
         this.options = options || {

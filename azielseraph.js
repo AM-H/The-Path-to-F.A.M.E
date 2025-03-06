@@ -29,6 +29,11 @@ class AzielSeraph {
         this.landed = false;
 
     };
+    getLeviath() {
+        return this.game.entities.find(entity => 
+            entity instanceof LeviathDraconis
+        );
+    };
 
     updateBoundingBox() {
         this.box = new BoundingBox(this.x, this.y, 32, 64);
@@ -50,6 +55,9 @@ class AzielSeraph {
     }
        
     update () {
+        if (this.game.isTimeStopped == true && getDistance(this, this.getLeviath()) <= 95) {
+            return;
+        }
         const TICK = this.game.clockTick;
         const currentTime = this.game.timer.gameTime;
         //console.log(`x value: ` + this.x + `y value: ` + this.y);

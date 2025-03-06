@@ -29,8 +29,11 @@ class LeviathDraconis {
         this.damageCooldown = 0;
         this.invincibilityTime = 0.5; // Time of invincibility after taking damage
         //time stopping range
-        this.timeStopEffectActive = true;
-        this.timeStopRange = 100; //If player within 100 pixels of leviath Draconis, they stop moving
+        this.isTimeStopped = false;
+        this.timeStopRange = 95; //If player within 100 pixels of leviath Draconis, they stop moving
+        this.timeStopStart = 0;
+        this.timeStopLength = 3;
+        this.timeStopCooldown = 20;
         this.updateBoundingBox();
     };
     getPlayer() {
@@ -53,7 +56,7 @@ class LeviathDraconis {
         
         const distanceX = player.box.x - this.box.x;
         const distanceY = player.box.y - this.box.y;
-        const horizontalSpeed = 75;
+        const horizontalSpeed = 65;
         const jumpSpeed = -1030;
 
         if (this.landed) {
@@ -141,7 +144,23 @@ class LeviathDraconis {
         } else {
             this.animator = this.animationMap.get(this.facing === "right" ? "idleRight" : "idleLeft");
         }
-    }
+    };
+    updateTimeStop() {
+        const TICK = this.game.clockTick;
+        if (this.timeStopCooldown <=20 ) {
+            this.timeStopCooldown-=TICK;
+        }
+        if (this.timeStopCooldown <= 0) {
+            this.isTimeStopped = true;
+            this.timeStopStart+=TICK
+        }
+        if (this.timeStopStart>=this.timeStopLength) {
+            this.isTimeStopped = false;
+            this.timeStopStart = 0;
+            this.timeStopCooldown = 20;
+        }
+        this.game.isTimeStopped = this.isTimeStopped;
+    };
     update() {
         const TICK = this.game.clockTick;
         //Wall boundaries
@@ -158,6 +177,7 @@ class LeviathDraconis {
         this.updateAnimation();
         this.updateCloseAttack();
         this.updateRangeAttack();
+        this.updateTimeStop();
         this.updateLastBB();
         this.updateBoundingBox();
         //Check if we have been stuck above player on platform for more than a second
@@ -180,7 +200,7 @@ class LeviathDraconis {
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }
-        if (this.timeStopEffectActive) {
+        if (this.isTimeStopped) {
             ctx.beginPath();
             ctx.arc(this.x + 16, this.y + 32, this.timeStopRange, 0, Math.PI * 2);
             ctx.fillStyle = "rgba(0, 0, 255, 0.15)";
