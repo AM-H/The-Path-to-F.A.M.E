@@ -46,7 +46,7 @@ class SelectPlayerScreen {
         this.spritesheet = ASSET_MANAGER.getAsset(`./levelBackgrounds/SelectPlayerScreen.png`);
         this.player1 = {
             idle: new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleRightKyra.png`), 33, 0, 96, 38, 5, 0.35),
-            x: (gameWorld.width/5) / 2,
+            x: (gameWorld.width/5),
             y: (gameWorld.height/8)*6
         };
         this.player2 = {
@@ -61,7 +61,7 @@ class SelectPlayerScreen {
         };
         this.player4 = {
             idle: new Animator(ASSET_MANAGER.getAsset(`./sprites/IdleRightAziel.png`), 13, 0, 32, 32, 5, .35),
-            x: (gameWorld.width)-(gameWorld.width/5),
+            x: (gameWorld.width/5)*4,
             y: (gameWorld.height/8)*6
         };
         this.removeFromWorld = false;

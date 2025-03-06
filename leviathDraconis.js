@@ -30,10 +30,12 @@ class LeviathDraconis {
         this.invincibilityTime = 0.5; // Time of invincibility after taking damage
         //time stopping range
         this.isTimeStopped = false;
-        this.timeStopRange = 95; //If player within 100 pixels of leviath Draconis, they stop moving
+        this.timeStopRange = 95; //If player within 95 pixels of leviath Draconis, they stop moving
         this.timeStopStart = 0;
-        this.timeStopLength = 3;
+        this.timeStopLength = 4;
         this.timeStopCooldown = 20;
+        //Sound for timestop
+        this.timeStopSoundPlayed = false;
         this.updateBoundingBox();
     };
     getPlayer() {
@@ -114,8 +116,7 @@ class LeviathDraconis {
         const player = this.getPlayer();
         const bossCenter = { x: this.box.x + this.box.width / 2, y: this.box.y + this.box.height / 2 };
         const playerCenter = { x: player.box.x + player.box.width / 2, y: player.box.y + player.box.height / 2 };
-        
-        this.isCloseAttacking = getDistance(bossCenter, playerCenter) < 95; // Example threshold
+        this.isCloseAttacking = getDistance(bossCenter, playerCenter) < 200; //Distance to active close Attack, not neccesarily range of attack
     };
     updateRangeAttack() {
         const currentTime = this.game.timer.gameTime;
@@ -153,11 +154,17 @@ class LeviathDraconis {
         if (this.timeStopCooldown <= 0) {
             this.isTimeStopped = true;
             this.timeStopStart+=TICK
+            if (!this.timeStopSoundPlayed) {
+                ASSET_MANAGER.getAsset(`./audio/stopTime.mp3`).volume = 0.4;
+                ASSET_MANAGER.playAsset(`./audio/stopTime.mp3`);
+                this.timeStopSoundPlayed = true;
+            }
         }
         if (this.timeStopStart>=this.timeStopLength) {
             this.isTimeStopped = false;
             this.timeStopStart = 0;
             this.timeStopCooldown = 20;
+            this.timeStopSoundPlayed = false; // Reset flag so it can play again next time
         }
         this.game.isTimeStopped = this.isTimeStopped;
     };
