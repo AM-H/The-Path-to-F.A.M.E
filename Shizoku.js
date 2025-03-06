@@ -2,7 +2,7 @@ class Shizoku {
     constructor(game) {
         this.game = game;
 
-        // Load animations (unchanged)
+        // Load animations
         this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/Shizoku/IdleRight.png`), 0, -11, 80, 64, 9, 0.3);
         this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/Shizoku/IdleLeft.png`), 0, -11, 80, 64, 9, 0.3);
         this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/Shizoku/runRight.png`), 0, -11, 80, 64, 6, 0.35);
@@ -38,7 +38,6 @@ class Shizoku {
         // Combat ranges
         this.attackRange = 50;
         this.chaseRange = 500;
-        this.minDistance = 50; // Minimum distance to maintain from player
 
         // Initialize bounding boxes
         this.updateBoundingBox();
@@ -60,11 +59,15 @@ class Shizoku {
         this.attackBoxWidth = 20;
         this.attackBoxHeight = 20;
         this.attackBox = null;
-        this.attackDuration = 0.2;
+        this.attackDuration = 1.0;
         this.attackTimer = 0;
-        this.attackCooldown = 1.0;
+        this.attackCooldown = 0.8;
         this.attackCooldownTimer = 0;
         this.hasDealtDamage = false;
+
+        // Falling when stuck above player
+        this.timeAbovePlayer = 0;
+        this.maxTimeAbovePlayer = 0.5;
     }
 
     update() {
@@ -84,7 +87,10 @@ class Shizoku {
         if (this.attackCooldownTimer > 0) this.attackCooldownTimer -= TICK;
         if (this.attackTimer > 0) this.attackTimer -= TICK;
 
-        // Check if jumping is needed
+        // Check vertical difference for falling when player is below
+        const playerCenterY = player.box.y + player.box.height / 2;
+        const shouldFall = playerCenterY > this.y + 50;
+
         if (this.shouldJump(player) && this.jumpCooldown <= 0) {
             let targetX = player.x;
             let targetY = player.y;
@@ -102,8 +108,6 @@ class Shizoku {
 
         const distToPlayer = Math.abs(this.x + this.width / 2 - (player.x + player.box.width / 2));
         const moveDir = player.x > this.x ? 1 : -1;
-        const currentPlatform = this.getCurrentPlatform();
-        const playerPlatform = this.getPlayerPlatform(player);
 
         if (this.landed) {
             if (distToPlayer < this.attackRange && this.attackCooldownTimer <= 0) {
@@ -113,47 +117,48 @@ class Shizoku {
                 this.attackCooldownTimer = this.attackCooldown;
                 if (this.attackTimer === this.attackDuration) {
                     const dx = player.x - this.x;
-                    this.facing = Math.abs(dx) < 5 ? this.facing : (dx > 0 ? 1 : -1);
+                    this.facing = dx > 0 ? 1 : -1; // Simplified facing logic
                 }
                 this.hasDealtDamage = false;
-                const attackOffsetX = this.facing === 1 ? this.boxWidth : -this.attackBoxWidth;
+                // Adjust attack box positioning
+                const attackOffsetX = this.facing === 1 ? this.boxWidth + 5 : -this.attackBoxWidth - 5; // Ensure reach when facing right
                 this.attackBox = new BoundingBox(
                     this.x + attackOffsetX,
                     this.y + (this.boxHeight - this.attackBoxHeight) / 2,
                     this.attackBoxWidth,
                     this.attackBoxHeight
                 );
-                if (this.debug) console.log(`Punch attack initiated, facing: ${this.facing}`);
+                if (this.debug) console.log(`Punch attack initiated, facing: ${this.facing}, attackBox: (${this.attackBox.x}, ${this.attackBox.y})`);
             } else if (distToPlayer < this.chaseRange && this.state !== "attacking") {
                 if (this.state !== 'chasing' || Math.abs(this.velocity.x) < 1) {
                     this.state = `chasing`;
                 }
-                const speedMultiplier = (currentPlatform && playerPlatform && currentPlatform === playerPlatform) ? 1.5 : 1;
-                // Only move if outside minDistance (50 pixels)
-                if (distToPlayer > this.minDistance) {
-                    this.velocity.x = this.moveSpeed * moveDir * speedMultiplier;
-                    this.x += this.velocity.x * TICK;
-                    // Stop moving closer if within minDistance
-                    const newDistToPlayer = Math.abs(this.x + this.width / 2 - (player.x + player.box.width / 2));
-                    if (newDistToPlayer < this.minDistance) {
-                        this.x = player.x + (moveDir > 0 ? -this.minDistance : this.minDistance) - this.width / 2;
-                        this.velocity.x = 0;
-                    }
-                } else {
-                    this.velocity.x = 0; // Stop if already within 50 pixels
-                }
-                this.facing = moveDir;
+                const speedMultiplier = (this.getCurrentPlatform() && this.getPlayerPlatform(player) && this.getCurrentPlatform() === this.getPlayerPlatform(player)) ? 1.5 : 1;
+                // Simplified chasing logic to always move toward player
+                const dx = player.x + (player.box.width / 2) - (this.x + this.width / 2);
+                this.velocity.x = Math.min(Math.max(dx * speedMultiplier, -this.moveSpeed), this.moveSpeed);
+                this.x += this.velocity.x * TICK;
+                this.facing = dx > 0 ? 1 : -1;
+                if (this.debug) console.log(`Chasing player, dx: ${dx}, velocity.x: ${this.velocity.x}, facing: ${this.facing}`);
             } else if (this.state !== "attacking") {
                 this.state = `idle`;
                 this.velocity.x = 0;
+            }
+
+            // Track time above player
+            if (player.box.y < this.y - 5) {
+                this.timeAbovePlayer += TICK;
+            } else {
+                this.timeAbovePlayer = 0;
             }
         }
 
         if (this.state === `attacking` && this.attackTimer > 0) {
             this.velocity.x = 0;
             if (player.box && this.attackBox && this.attackBox.collide(player.box) && !this.hasDealtDamage) {
-                player.takeDamage(3);
+                player.takeDamage(3, this);
                 this.hasDealtDamage = true;
+                if (this.debug) console.log(`Player hit by Shizoku punch! Damage dealt: 3`);
             }
         } else if (this.state === `attacking` && this.attackTimer <= 0) {
             this.state = `idle`;
@@ -162,6 +167,7 @@ class Shizoku {
             if (this.debug) console.log("Attack ended, attackBox cleared");
         }
 
+        // Apply gravity every frame
         this.velocity.y += this.fallGrav * TICK;
         this.y += this.velocity.y * TICK;
         if (!this.landed) {
@@ -176,7 +182,7 @@ class Shizoku {
             if (entity instanceof Platform) {
                 this.updateBoundingBox();
                 if (this.box.collide(entity.box)) {
-                    if (this.velocity.y >= 0 && this.lastBox.bottom <= entity.box.top + 5) {
+                    if (this.velocity.y >= 0 && this.lastBox.bottom <= entity.box.top + 5 && !shouldFall) {
                         this.y = entity.box.top - this.boxHeight;
                         this.velocity.y = 0;
                         if (!this.landed) justLanded = true;
@@ -186,13 +192,7 @@ class Shizoku {
                             this.state = "idle";
                         }
                         if (this.debug) console.log("Landed on platform at y:", this.y);
-                    } else if (this.velocity.x > 0 && this.lastBox.right <= entity.box.left) {
-                        this.x = entity.box.left - this.boxWidth;
-                        this.velocity.x = 0;
-                    } else if (this.velocity.x < 0 && this.lastBox.left >= entity.box.right) {
-                        this.x = entity.box.right;
-                        this.velocity.x = 0;
-                    }
+                     }
                 }
             }
         });
@@ -211,6 +211,19 @@ class Shizoku {
             }
             this.updateBoundingBox();
             if (this.debug) console.log("Reset to ground level at y:", this.y);
+        }
+
+        // Trigger falling if player is below or stuck above too long
+        if (shouldFall && this.landed) {
+            this.landed = false;
+            this.state = "jumping";
+            if (this.debug) console.log("Falling to lower platform or ground to chase player");
+        }
+        if (this.timeAbovePlayer > this.maxTimeAbovePlayer && this.landed) {
+            this.landed = false;
+            this.state = "jumping";
+            this.timeAbovePlayer = 0;
+            if (this.debug) console.log("Falling due to being stuck above player too long");
         }
 
         if (this.x < 0) {
@@ -239,25 +252,25 @@ class Shizoku {
             if (this.facing === 1) {
                 this.attackRightAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale);
             } else {
-                this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale);
+                this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale, false, true);
             }
-        } else if (this.state === `jumping`) {
+        } else if (this.landed && Math.abs(this.velocity.x) > 0) {
             if (this.facing === 1) {
                 this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale);
             } else {
-                this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale);
+                this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale, false, true);
             }
-        } else if (this.state === `chasing` && this.landed) {
+        } else if (this.state === `jumping` || !this.landed) {
             if (this.facing === 1) {
                 this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale);
             } else {
-                this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale);
+                this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale, false, true);
             }
         } else {
             if (this.facing === 1) {
                 this.idleRightAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale);
             } else {
-                this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale);
+                this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x + xOffset, this.y + yOffset, scale, false, true);
             }
         }
 

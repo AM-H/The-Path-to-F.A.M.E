@@ -38,9 +38,9 @@ class Kanji {
         this.healthbar = new HealthBar(this);
         this.attackTimer = 0;
         this.attackDuration = 0;
-        this.friction = 800; // Friction to slow down knockback
-        this.knockbackTimer = 0; // Timer to track knockback duration
-        this.knockbackDuration = 0.3; // Duration knockback overrides input (adjustable)
+        this.friction = 800; // Friction for stormSpirit knockback
+        this.knockbackTimer = 0; // Timer for knockback duration
+        this.knockbackDuration = 0.3; // Duration knockback overrides input
     }
 
     performRangeAttack() {
@@ -86,12 +86,19 @@ class Kanji {
         }
     }
 
-    takeDamage(amount) {
+    takeDamage(amount, attacker) { // Added attacker parameter
         this.hitpoints -= amount;
         if (this.hitpoints < 0) this.hitpoints = 0;
         console.log(`Kanji takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
         this.healthbar.update();
-        this.knockbackTimer = this.knockbackDuration; // Start knockback timer when hit
+
+        // Apply knockback only if attacker is stormSpirit
+        if (attacker instanceof stormSpirit) {
+            this.knockbackTimer = this.knockbackDuration;
+            this.velocity.x = attacker.facing * attacker.knockbackForce; // Use stormSpirit's knockbackForce
+            if (this.game.debug) console.log(`Knockback applied to Kanji: ${this.velocity.x}`);
+        }
+        // No knockback for Shizoku or other entities
     }
 
     updateLastBB() {
@@ -108,10 +115,17 @@ class Kanji {
             return;
         }
 
-
-        // Update knockback timer
+        // Update knockback timer (relevant for stormSpirit)
         if (this.knockbackTimer > 0) {
             this.knockbackTimer -= TICK;
+            // Apply friction during knockback when no input
+            if (!this.game.left && !this.game.right) {
+                if (this.velocity.x > 0) {
+                    this.velocity.x = Math.max(0, this.velocity.x - this.friction * TICK);
+                } else if (this.velocity.x < 0) {
+                    this.velocity.x = Math.min(0, this.velocity.x + this.friction * TICK);
+                }
+            }
         }
 
         // Update facing direction
@@ -149,11 +163,10 @@ class Kanji {
             this.animator = this.animationMap.get(this.facing === "left" ? `idleLeft` : `idleRight`);
         }
 
-        // Apply velocity (including knockback) to position
+        // Apply velocity to position
         this.x += this.velocity.x * TICK;
 
-
-        // Apply input only if not in knockback state
+        // Apply input only if not in knockback state (from stormSpirit)
         if (this.knockbackTimer <= 0) {
             if (this.game.left) this.velocity.x = -130;
             else if (this.game.right) this.velocity.x = 130;
@@ -184,29 +197,28 @@ class Kanji {
         this.updateLastBB();
         this.updateBoundingBox();
 
-        // Collision detection
+        // Collision detection (only with platforms)
         this.game.entities.forEach(entity => {
-            if ((entity instanceof Eclipser || entity instanceof Drone || entity instanceof  Shizoku) && this.attackBox && this.attackBox.collide(entity.box) && this.game.closeAttack) {
-                if (entity instanceof Eclipser || entity instanceof Shizoku) {
+            if ((entity instanceof Eclipser || entity instanceof Drone || entity instanceof Shizoku || entity instanceof stormSpirit) && this.attackBox && this.attackBox.collide(entity.box) && this.game.closeAttack) {
+                if (entity instanceof Eclipser || entity instanceof Shizoku || entity instanceof stormSpirit) {
                     entity.takeDamage(50);
                 } else if (entity instanceof Drone) {
                     entity.takeDamage(20);
                 }
             }
 
-            if (entity.box && this.box.collide(entity.box)) {
-                if (this.velocity.y > 0 && entity instanceof Platform && (this.lastBox.bottom <= entity.box.top)) {
+            if (entity instanceof Platform && this.box.collide(entity.box)) {
+                if (this.velocity.y > 0 && this.lastBox.bottom <= entity.box.top) {
                     this.velocity.y = 0;
                     this.y = entity.box.top - 64;
                     this.landed = true;
-                } else if (this.velocity.y < 0 && entity instanceof Platform && (this.lastBox.top >= entity.box.bottom)) {
+                } else if (this.velocity.y < 0 && this.lastBox.top >= entity.box.bottom) {
                     this.velocity.y = 300;
                     this.y = entity.box.bottom;
                 } else {
                     this.landed = false;
                 }
 
-                // Horizontal collision
                 if (this.velocity.x > 0 && this.lastBox.right <= entity.box.left) {
                     this.x = entity.box.left - this.box.width;
                     this.velocity.x = 0;
@@ -215,9 +227,9 @@ class Kanji {
                     this.velocity.x = 0;
                 }
             }
-            this.updateBoundingBox();
         });
 
+        this.updateBoundingBox();
         this.healthbar.update();
     }
 

@@ -127,8 +127,8 @@ var levelThree = {
         },
         // New Platform 4: Lower-middle stepping stone
         {
-            x: gameWorld.width / 2 - gameWorld.width / 12, // ~426px, slightly left of center
-            y: gameWorld.height / 1.2, // ~600px, close to ground
+            x: gameWorld.width / 2 - gameWorld.width / 13, // ~426px, slightly left of center
+            y: gameWorld.height / 1.35, // ~600px, close to ground
             width: gameWorld.width / 6, // ~213px
             height: 30,
             bColor: `#416859`
