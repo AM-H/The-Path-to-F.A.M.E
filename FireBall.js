@@ -25,7 +25,7 @@ class FireBall {
                 if (img) {
                     this.spritesheet.push(img);
                 } else {
-                    console.warn(`FireBall: Image not found for path ${path}`);
+                    //console.warn(`FireBall: Image not found for path ${path}`);
                     // Use a fallback if specific image isn't found
                     const fallbackImg = new Image();
                     fallbackImg.src = path; // Try to load it anyway
@@ -33,7 +33,7 @@ class FireBall {
                 }
             }
         } catch (e) {
-            console.error("Error loading FireBall sprites:", e.message);
+            //console.error("Error loading FireBall sprites:", e.message);
             // Create at least one fallback image
             this.spritesheet = [null];
             this.frameCount = 1;

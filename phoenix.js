@@ -3,10 +3,10 @@ class Phoenix {
         this.game = game;
         
         // Load animations - keeping the Phoenix animations
-        this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/phoenixes/IdleRight.png`), 0, 0, 128, 128, 6, 0.5);
-        this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/phoenixes/IdleLeft.png`), 0, 0, 128, 128, 6, 0.5);
+        this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/phoenixes/IdleRight.png`), 0, 0, 128, 128, 6, 0.1);
+        this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/phoenixes/IdleLeft.png`), 0, 0, 128, 128, 6, 0.1);
         
-        // Position setup - typically at the top for drone-like behavior
+        // Position setup 
         this.x = x;
         this.y = y;
         
@@ -16,11 +16,11 @@ class Phoenix {
         this.height = 70;
         
         // Bounding box
-        this.boxWidth = 50;
-        this.boxHeight = 50;
+        this.boxWidth = 32;
+        this.boxHeight = 40;
         this.updateBoundingBox();
         
-        // Movement properties - like Drone
+        // Movement properties 
         this.moveSpeed = speed || 100;
         this.followRange = 600;
         this.attackRange = 200;
@@ -54,7 +54,7 @@ class Phoenix {
             entity instanceof AzielSeraph || 
             entity instanceof Grim || 
             entity instanceof Kanji ||
-            entity instanceof HolyDiver
+            entity instanceof KyraBlade
         );
     }
     
@@ -133,9 +133,9 @@ class Phoenix {
     draw(ctx) {
         // Draw the Phoenix based on facing direction
         if (this.facing === 1) {
-            this.idleRightAnim.drawFrame(this.game.clockTick, ctx, this.x - 24, this.y - 30, 1.12);
+            this.idleRightAnim.drawFrame(this.game.clockTick, ctx, this.x , this.y -11 ,  0.85);
         } else {
-            this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x - 24, this.y-30, 1.12, false, true);
+            this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y -11, 0.85, false, true);
         }
         
         // Debug bounding box

@@ -3,12 +3,12 @@ class inferno {
         this.game = game;
 
         // Load animations
-        this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/IdleRight.png`), -55, 11, 150, 64, 8, 0.6);
-        this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/IdleLeft.png`), -55, 11, 150, 64, 8, 0.6);
-        this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/runRight.png`), -55, 11, 150, 64, 8, 0.6);
-        this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/runLeft.png`), -55, 11, 150, 64, 8, 0.6);
-        this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/attackRight.png`),-28, 11, 150, 64, 8, 1);
-        this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/attackLeft.png`), -28, 11, 150, 64, 8, 1);
+        this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/IdleRight.png`), -55, 11, 150, 64, 8, 0.09);
+        this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/IdleLeft.png`), -55, 11, 150, 64, 8, 0.09);
+        this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/runRight.png`), -55, 11, 150, 64, 8, 0.09);
+        this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/runLeft.png`), -55, 11, 150, 64, 8, 0.09);
+        this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/attackRight.png`),-28, 11, 150, 64, 8, 0.08);
+        this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/attackLeft.png`), -28, 11, 150, 64, 8, 0.08);
 
         // Position setup - start on right side
         this.x = gameWorld.width - 200;
@@ -18,7 +18,7 @@ class inferno {
         // Basic properties
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
-        this.moveSpeed = 75; // Similar to LeviathDraconis horizontal speed
+        this.moveSpeed = 175; 
         this.landed = true;
 
         // Sprite dimensions
@@ -34,18 +34,32 @@ class inferno {
         this.jumpPhase = 'none';
         this.isOnPlatform = false;
         
-        // LeviathDraconis-like properties
+        
         this.timeAbovePlayer = 0;
-        this.maxTimeAbovePlayer = 0.5; // Max time that the boss can be above player
+        this.maxTimeAbovePlayer = 1.0; // Increased to 1 second from 0.5
         this.isCloseAttacking = false;
+        this.isPhasing = false; // Flag to track when we're phasing through platforms
+        this.phasingTime = 0;   // Track how long we've been phasing
+        this.maxPhasingTime = 1.5; // Maximum phasing duration in seconds
 
         // Combat ranges
-        this.attackRange = 95; // Similar to LeviathDraconis close attack distance
+        this.attackRange = 95; 
         this.chaseRange = 400; // Distance to player when boss will start chasing
+        this.attackDistance = 40; // Distance to maintain when attacking
+
+        // Attack properties
+        this.attackBoxWidth = 70; // Width of attack hit box
+        this.attackBoxHeight = 40; // Height of attack hit box
+        this.attackDuration = 0; // Track attack animation
+        this.attackAnimationDuration = 0.8; // Total duration of attack animation
+        this.attackCooldown = 0; // Cooldown between attacks
 
         // Initialize bounding boxes
         this.updateBoundingBox();
         this.lastBox = this.box;
+        
+        // Initialize attack box (will be updated during attacks)
+        this.attackBox = null;
 
         // Healthbar
         this.hitpoints = 150;
@@ -65,10 +79,53 @@ class inferno {
             this.boxWidth,
             this.boxHeight
         );
+        
+        // Store the top, bottom, left, right properties for easier collision detection
+        this.box.top = this.box.y;
+        this.box.bottom = this.box.y + this.box.height;
+        this.box.left = this.box.x;
+        this.box.right = this.box.x + this.box.width;
+    }
+    
+    updateAttackBox() {
+        // Only create attack box during attack state
+        if (this.state === 'attacking') {
+            let xOffset;
+            // Position attack box based on facing direction
+            if (this.facing === 1) { // Facing right
+                xOffset = this.box.x + this.boxWidth; // Position at right edge of boss
+            } else { // Facing left
+                xOffset = this.box.x - this.attackBoxWidth; // Position at left edge of boss
+            }
+            
+            // Y position centered vertically with boss
+            const yOffset = this.box.y + (this.boxHeight / 2) - (this.attackBoxHeight / 2);
+            
+            this.attackBox = new BoundingBox(
+                xOffset,
+                yOffset,
+                this.attackBoxWidth,
+                this.attackBoxHeight
+            );
+        } else {
+            this.attackBox = null;
+        }
     }
 
     updateLastBB() {
-        this.lastBox = this.box;
+        // Create a deep copy of the box with all properties
+        this.lastBox = new BoundingBox(
+            this.box.x,
+            this.box.y,
+            this.box.width,
+            this.box.height
+        );
+        
+        // Copy edge properties
+        this.lastBox.top = this.box.top;
+        this.lastBox.bottom = this.box.bottom;
+        this.lastBox.left = this.box.left;
+        this.lastBox.right = this.box.right;
     }
 
     getPlayerPlatform(player) {
@@ -101,17 +158,47 @@ class inferno {
         return currentPlatform;
     }
     
-    // Check if boss can jump onto a platform (similar to LeviathDraconis)
+    // Check if boss can jump onto a platform 
     canJump() {
+        // Get player's platform if any
+        const player = this.getPlayer();
+        const playerPlatform = player ? this.getPlayerPlatform(player) : null;
+        
+        // Try to jump to player's platform if player is on one
+        if (playerPlatform && playerPlatform.box.y < this.box.y) {
+            const horizontalDistance = Math.abs(player.box.x - this.box.x);
+            // If close enough horizontally and player is above, prioritize jumping to that platform
+            if (horizontalDistance < 200) {
+                return true;
+            }
+        }
+        
+        // Otherwise look for any nearby platform above
         return this.game.entities.some(entity => 
             entity instanceof Platform &&
             entity.box.y < this.box.y && // The platform is above
-            ((Math.abs(entity.box.left - this.box.left) < 64) || 
-             (Math.abs(entity.box.right - this.box.right) < 64)) // platform within reach horizontally
+            ((Math.abs(entity.box.left - this.box.left) < 100) || 
+             (Math.abs(entity.box.right - this.box.right) < 100)) // platform within reach horizontally
         );
     }
     
-    // Track player and move (similar to LeviathDraconis)
+    // Check if boss should start phasing through platforms
+    shouldStartPhasing(player) {
+        if (!player || this.isPhasing) return false;
+        
+        // Check if boss is on a platform
+        const currentPlatform = this.getCurrentPlatform();
+        if (!currentPlatform) return false;
+        
+        // Check if player is below the boss
+        const distanceY = player.box.y - this.box.y;
+        const distanceX = Math.abs(player.box.x - this.box.x);
+        
+        // Boss is above player and accumulated enough time above
+        return (distanceY > 20) && (distanceX < 150) && (this.timeAbovePlayer >= this.maxTimeAbovePlayer);
+    }
+    
+    // Track player and move 
     trackPlayerAndMove() {
         const TICK = this.game.clockTick;
         const player = this.getPlayer();
@@ -121,43 +208,100 @@ class inferno {
         const distanceX = player.box.x - this.box.x;
         const distanceY = player.box.y - this.box.y;
         const jumpSpeed = -1030;
-
-        if (this.landed) {
-            // Horizontal movement
-            if (Math.abs(distanceX) > 20) {
-                this.velocity.x = distanceX > 0 ? this.moveSpeed : -this.moveSpeed;
-                this.facing = distanceX > 0 ? 1 : -1;
-                this.state = 'chasing';
-            } else {
-                this.velocity.x = 0;
-                this.state = 'idle';
+        const absoluteDistanceX = Math.abs(distanceX);
+    
+        // Handle attack cooldown
+        if (this.attackCooldown > 0) {
+            this.attackCooldown -= TICK;
+        }
+    
+        // Handle phasing time tracking
+        if (this.isPhasing) {
+            this.phasingTime += TICK;
+            if (this.phasingTime >= this.maxPhasingTime) {
+                this.isPhasing = false;
+                this.phasingTime = 0;
+                this.timeAbovePlayer = 0;
             }
-
-            // Vertical movement - jump if player is above
-            if (distanceY < -60 && this.canJump()) {
-                this.velocity.y = jumpSpeed;
+        }
+    
+        // Track time spent above player when player is below
+        if (distanceY > 20) {
+            this.timeAbovePlayer += TICK;
+            if (this.shouldStartPhasing(player)) {
+                this.isPhasing = true;
+                this.phasingTime = 0;
                 this.landed = false;
-                this.jumpPhase = 'jumping';
+                console.log("Boss is phasing through platform");
             }
-            
-            // Track time spent above player
-            if (distanceY > 5) {
-                this.timeAbovePlayer += TICK;
-            }
-            
-            // Check for close attack
-            if (Math.abs(distanceX) < this.attackRange && Math.abs(distanceY) < this.attackRange) {
+        } else {
+            this.timeAbovePlayer = 0;
+        }
+    
+        // If not phasing, handle landing state for normal movement
+        if (!this.isPhasing && this.landed) {
+            // Attack state handling
+            if (this.state === 'attacking') {
+                this.attackDuration += TICK;
+                if (this.attackDuration >= this.attackAnimationDuration) {
+                    this.state = 'idle';
+                    this.attackDuration = 0;
+                    this.attackCooldown = 1;
+                    this.isCloseAttacking = false;
+                }
+                this.velocity.x = 0; // Stop movement during attack
+            } 
+            // Check for attack conditions
+            else if (absoluteDistanceX < this.attackRange && 
+                     Math.abs(distanceY) < this.attackRange && 
+                     this.attackCooldown <= 0) {
                 this.state = 'attacking';
                 this.isCloseAttacking = true;
-                
-                // Deal damage to player when in attack range
+                this.attackDuration = 0;
+                if (absoluteDistanceX < this.attackDistance) {
+                    const pushDistance = (this.attackDistance - absoluteDistanceX) * (distanceX > 0 ? -1 : 1);
+                    this.x += pushDistance;
+                }
                 if (player.takeDamage && this.damageCooldown <= 0) {
                     player.takeDamage(10);
                     this.damageCooldown = 0.5;
                 }
-            } else {
-                this.isCloseAttacking = false;
             }
+            // Chase logic, including edge cases
+            else {
+                // Always chase if player is outside attack range, even at edges
+                if (absoluteDistanceX > this.attackDistance) {
+                    this.velocity.x = distanceX > 0 ? this.moveSpeed : -this.moveSpeed;
+                    this.facing = distanceX > 0 ? 1 : -1;
+                    this.state = 'chasing';
+                } else if (absoluteDistanceX < this.attackDistance) {
+                    // Push back to maintain attack distance if too close
+                    this.velocity.x = distanceX > 0 ? -this.moveSpeed : this.moveSpeed;
+                    this.state = 'chasing';
+                } else {
+                    this.velocity.x = 0;
+                    this.state = 'idle';
+                }
+    
+                // Vertical movement - jump if player is above
+                if (distanceY < -60 && this.canJump() && this.state !== 'attacking') {
+                    this.velocity.y = jumpSpeed;
+                    this.landed = false;
+                    this.jumpPhase = 'jumping';
+                    const playerPlatform = this.getPlayerPlatform(player);
+                    if (playerPlatform) {
+                        const platformCenter = playerPlatform.x + (playerPlatform.width / 2);
+                        const bossCenter = this.box.x + (this.boxWidth / 2);
+                        this.velocity.x = platformCenter > bossCenter ? 
+                            this.moveSpeed * 1.5 : -this.moveSpeed * 1.5;
+                    }
+                }
+            }
+        } else {
+            // In air or phasing, continue tracking player horizontally
+            this.velocity.x = distanceX > 0 ? this.moveSpeed : -this.moveSpeed;
+            this.facing = distanceX > 0 ? 1 : -1;
+            this.state = 'chasing';
         }
     }
 
@@ -179,39 +323,41 @@ class inferno {
     update() {
         const TICK = this.game.clockTick;
         const player = this.getPlayer();
-
+    
         if (this.hitpoints <= 0) {
             this.defeated = true;
             this.removeFromWorld = true;
             console.log("Boss defeated!");
             return;
         }
-
+    
         if (!player) return;
-
-        // Use LeviathDraconis-like tracking and movement
+    
         this.trackPlayerAndMove();
-
+    
         // Apply gravity and movement
         this.velocity.y += this.fallGrav * TICK;
         this.y += this.velocity.y * TICK;
         this.x += this.velocity.x * TICK;
-
-        // Check if we've been stuck above player on platform for too long
-        if (this.timeAbovePlayer > this.maxTimeAbovePlayer) {
-            this.landed = false;
-            this.timeAbovePlayer = 0;
+    
+        // Boundary checks (only clamp if not chasing)
+        if (this.state !== 'chasing') {
+            if (this.x < 0) this.x = 0;
+            if (this.x > gameWorld.width - this.width) {
+                this.x = gameWorld.width - this.width;
+            }
         }
-
+    
         this.updateLastBB();
         this.updateBoundingBox();
-
-        // Platform and ground collisions
+        this.updateAttackBox();
+    
+        // Handle platform collisions and ground detection
         let isOnGround = false;
         this.game.entities.forEach(entity => {
             if (entity instanceof Platform) {
                 if (this.box.collide(entity.box)) {
-                    if (this.velocity.y > 0 && this.lastBox.bottom <= entity.box.top) {
+                    if (!this.isPhasing && this.velocity.y > 0 && this.lastBox.bottom <= entity.box.top + 5) {
                         this.velocity.y = 0;
                         this.y = entity.box.top - this.boxHeight;
                         this.landed = true;
@@ -221,22 +367,23 @@ class inferno {
                 }
             }
         });
-
-        // Ground level check
+    
         const groundLevel = gameWorld.height - 70;
         if (!isOnGround && this.y + this.boxHeight > groundLevel) {
             this.y = groundLevel - this.boxHeight;
             this.velocity.y = 0;
             this.landed = true;
             this.jumpPhase = 'none';
+            this.isPhasing = false;
         }
-
-        // Screen boundaries
-        if (this.x < 0) this.x = 0;
-        if (this.x > gameWorld.width - this.width) {
-            this.x = gameWorld.width - this.width;
+    
+        if (this.attackBox && player && this.state === 'attacking') {
+            if (this.attackBox.collide(player.box) && this.damageCooldown <= 0) {
+                player.takeDamage(10);
+                this.damageCooldown = 0.5;
+            }
         }
-
+    
         this.damageCooldown -= TICK;
         this.healthbar.update();
     }
@@ -245,7 +392,7 @@ class inferno {
         // Draw the appropriate animation based on state and direction
         if (this.state === 'attacking') {
             if (this.facing === -1) {
-                this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.25, false, true);
+                this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x + 30, this.y, 1.25, false, true);
             } else {
                 this.attackRightAnim.drawFrame(this.game.clockTick, ctx, this.x + 48, this.y, 1.25);
             }
@@ -263,11 +410,35 @@ class inferno {
             }
         }
         
-        // Debug bounding box
+        // Debug bounding boxes
         if (this.game.debugMode) {
+            // Draw character box in red
             ctx.strokeStyle = "red";
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+            
+            // Draw attack box in yellow when attacking
+            if (this.attackBox) {
+                ctx.strokeStyle = "yellow";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
+                
+                // Optional: Show attack area with semi-transparent fill
+                ctx.fillStyle = "rgba(255, 255, 0, 0.3)";
+                ctx.fillRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
+            }
+            
+            // Show phasing indicator when phasing through platforms
+            if (this.isPhasing) {
+                ctx.fillStyle = "rgba(255, 0, 255, 0.6)";
+                ctx.fillRect(this.box.x - 10, this.box.y - 20, this.boxWidth + 20, 10);
+                
+                // Show phasing duration
+                const progressWidth = (this.phasingTime / this.maxPhasingTime) * (this.boxWidth + 20);
+                ctx.fillStyle = "rgba(255, 128, 0, 0.8)";
+                ctx.fillRect(this.box.x - 10, this.box.y - 20, progressWidth, 10);
+            }
+        
         }
         
         this.healthbar.draw(ctx);

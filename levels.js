@@ -37,7 +37,7 @@ var levelTwo = {
             y: gameWorld.height/1.96,
             width: gameWorld.width/4,
             height: 30,
-            bColor: `#37446e`
+            bColor: `#CCE2E1`
         },
         // Middle platform
         {
@@ -45,7 +45,7 @@ var levelTwo = {
             y: gameWorld.height/1.38,
             width: gameWorld.width/4,
             height: 30,
-            bColor: `#37446e`
+            bColor: `#CCE2E1`
         },
         // Right elevated platform (moved more right)
         {
@@ -53,7 +53,7 @@ var levelTwo = {
             y: gameWorld.height/1.96,
             width: gameWorld.width/4,
             height: 30,
-            bColor: `#37446e`
+            bColor: `#CCE2E1`
         }
     ],
     phoenixes: [
