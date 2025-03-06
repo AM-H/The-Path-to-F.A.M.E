@@ -38,6 +38,7 @@ class Shizoku {
         // Combat ranges
         this.attackRange = 50;
         this.chaseRange = 500;
+        this.minDistance = 50; // Minimum distance to maintain from player
 
         // Initialize bounding boxes
         this.updateBoundingBox();
@@ -83,6 +84,7 @@ class Shizoku {
         if (this.attackCooldownTimer > 0) this.attackCooldownTimer -= TICK;
         if (this.attackTimer > 0) this.attackTimer -= TICK;
 
+        // Check if jumping is needed
         if (this.shouldJump(player) && this.jumpCooldown <= 0) {
             let targetX = player.x;
             let targetY = player.y;
@@ -109,10 +111,9 @@ class Shizoku {
                 this.velocity.x = 0;
                 this.attackTimer = this.attackDuration;
                 this.attackCooldownTimer = this.attackCooldown;
-                // Only update facing when starting the attack, not mid-attack
                 if (this.attackTimer === this.attackDuration) {
                     const dx = player.x - this.x;
-                    this.facing = Math.abs(dx) < 5 ? this.facing : (dx > 0 ? 1 : -1); // Threshold of 5 units
+                    this.facing = Math.abs(dx) < 5 ? this.facing : (dx > 0 ? 1 : -1);
                 }
                 this.hasDealtDamage = false;
                 const attackOffsetX = this.facing === 1 ? this.boxWidth : -this.attackBoxWidth;
@@ -128,8 +129,19 @@ class Shizoku {
                     this.state = `chasing`;
                 }
                 const speedMultiplier = (currentPlatform && playerPlatform && currentPlatform === playerPlatform) ? 1.5 : 1;
-                this.velocity.x = this.moveSpeed * moveDir * speedMultiplier;
-                this.x += this.velocity.x * TICK;
+                // Only move if outside minDistance (50 pixels)
+                if (distToPlayer > this.minDistance) {
+                    this.velocity.x = this.moveSpeed * moveDir * speedMultiplier;
+                    this.x += this.velocity.x * TICK;
+                    // Stop moving closer if within minDistance
+                    const newDistToPlayer = Math.abs(this.x + this.width / 2 - (player.x + player.box.width / 2));
+                    if (newDistToPlayer < this.minDistance) {
+                        this.x = player.x + (moveDir > 0 ? -this.minDistance : this.minDistance) - this.width / 2;
+                        this.velocity.x = 0;
+                    }
+                } else {
+                    this.velocity.x = 0; // Stop if already within 50 pixels
+                }
                 this.facing = moveDir;
             } else if (this.state !== "attacking") {
                 this.state = `idle`;

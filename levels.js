@@ -69,41 +69,76 @@ var levelThree = {
         path: `./levelBackgrounds/level3_background.png`
     },
     platform: [
-        // Ground platform
+        // Ground platform (unchanged)
         {
             x: 0,
-            y: gameWorld.height - 140,
+            y: gameWorld.height - 100,
             width: gameWorld.width,
-            height: 140,
-            bColor: `#c4cddc`
+            height: 100,
+            bColor: `#416859`
         },
-        // Left elevated platform (moved more left)
+        // Left elevated platform (unchanged, moved more left)
         {
-            x: gameWorld.width/20,  // Changed from width/6 to width/12 to move it more left
-            y: gameWorld.height/1.50,
-            width: gameWorld.width/6,
+            x: gameWorld.width / 20, // ~64px if width=1280
+            y: gameWorld.height / 1.4, // ~480px if height=720
+            width: gameWorld.width / 6, // ~213px
             height: 30,
-            bColor: `#37446e`
+            bColor: `#416859`
         },
-        // Middle platform
+        // Middle platform (unchanged)
         {
-            x: gameWorld.width/4,
-            y: gameWorld.height/1.96,
-            width: gameWorld.width/4,
+            x: gameWorld.width / 3, // ~320px
+            y: gameWorld.height / 1.76, // ~367px
+            width: gameWorld.width / 5, // ~320px
             height: 30,
-            bColor: `#37446e`
+            bColor: `#416859`
         },
-        // Right elevated platform (moved more right)
+        // Right elevated platform (unchanged, moved more right)
         {
-            x: gameWorld.width - (gameWorld.width/10) - gameWorld.width/4,  // Adjusted to move it more right
-            y: gameWorld.height/1.50,
-            width: gameWorld.width/4,
+            x: gameWorld.width - (gameWorld.width / 10) - gameWorld.width / 4, // ~832px
+            y: gameWorld.height / 1.50, // ~480px
+            width: gameWorld.width / 5, // ~320px
             height: 30,
-            bColor: `#37446e`
+            bColor: `#416859`
+        },
+        // New Platform 1: Upper-left floating platform
+        {
+            x: gameWorld.width / 12, // ~106px, slightly right of left platform
+            y: gameWorld.height / 2, // ~240px, higher up
+            width: gameWorld.width / 8, // ~160px, smaller
+            height: 30,
+            bColor: `#416859`
+        },
+        // New Platform 2: Upper-middle floating platform
+        {
+            x: gameWorld.width / 2 - gameWorld.width / 8, // ~480px, centered
+            y: gameWorld.height / 3, // ~180px, near top
+            width: gameWorld.width / 5, // ~320px
+            height: 30,
+            bColor: `#416859`
+        },
+        // New Platform 3: Upper-right floating platform
+        {
+            x: gameWorld.width - (gameWorld.width / 6), // ~1066px, near right edge
+            y: gameWorld.height / 2, // ~240px, higher up
+            width: gameWorld.width / 6, // ~213px
+            height: 30,
+            bColor: `#416859`
+        },
+        // New Platform 4: Lower-middle stepping stone
+        {
+            x: gameWorld.width / 2 - gameWorld.width / 12, // ~426px, slightly left of center
+            y: gameWorld.height / 1.2, // ~600px, close to ground
+            width: gameWorld.width / 6, // ~213px
+            height: 30,
+            bColor: `#416859`
         }
     ],
-    spirits: [{ x: 221, speed: 10}, {x: 300, speed: 60}, {  x: gameWorld.width - (gameWorld.width/10) - gameWorld.width/4, speed: 40}, {x: gameWorld.width/2 - gameWorld.width/8, speed: 70}, { x: 500, speed: 30}]
+    spirits: [
+        { x: 221, speed: 10 },
+        { x: 300, speed: 60 },
+        { x: gameWorld.width - (gameWorld.width / 10) - gameWorld.width / 4, speed: 40 },
+        { x: gameWorld.width / 2 - gameWorld.width / 8, speed: 70 },
+        { x: 500, speed: 30 }
+    ]
 };
-
-
-

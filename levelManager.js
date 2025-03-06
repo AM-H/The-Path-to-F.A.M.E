@@ -50,7 +50,7 @@ class LevelManager {
         } else if(level === levelThree){
             this.boss = new Shizoku(this.game);
             this.game.addEntity(this.boss);
-            for (var i = 0; i < level.spirits.length; i++) {
+            for (var i = 0; i < 0; i++) {
                 let spirit = level.spirits[i];
                 this.game.addEntity(new stormSpirit(this.game, spirit.x, spirit.speed));
             }
