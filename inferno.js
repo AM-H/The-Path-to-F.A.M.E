@@ -9,6 +9,8 @@ class inferno {
         this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/runLeft.png`), -55, 11, 150, 64, 8, 0.09);
         this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/attackRight.png`),-28, 11, 150, 64, 8, 0.08);
         this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/attackLeft.png`), -28, 11, 150, 64, 8, 0.08);
+        this.tornadoCastRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/tornadoCastRight.png`), -28, 11, 150, 64, 8, 0.08);
+        this.tornadoCastLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/tornadoCastLeft.png`), -28, 11, 150, 64, 8, 0.08);
 
         // Position setup - start on right side
         this.x = gameWorld.width - 200;
@@ -34,7 +36,6 @@ class inferno {
         this.jumpPhase = 'none';
         this.isOnPlatform = false;
         
-        
         this.timeAbovePlayer = 0;
         this.maxTimeAbovePlayer = 1.0; // Increased to 1 second from 0.5
         this.isCloseAttacking = false;
@@ -46,6 +47,7 @@ class inferno {
         this.attackRange = 95; 
         this.chaseRange = 400; // Distance to player when boss will start chasing
         this.attackDistance = 40; // Distance to maintain when attacking
+        this.tornadoAttackRange = 300; // Range for tornado attack
 
         // Attack properties
         this.attackBoxWidth = 70; // Width of attack hit box
@@ -53,6 +55,13 @@ class inferno {
         this.attackDuration = 0; // Track attack animation
         this.attackAnimationDuration = 0.8; // Total duration of attack animation
         this.attackCooldown = 0; // Cooldown between attacks
+
+        // Tornado attack properties
+        this.tornadoCooldown = 0;
+        this.tornadoCastDuration = 0;
+        this.tornadoCastAnimationDuration = 0.8;
+        this.tornadoMaxCooldown = 7; // Seconds between tornado attacks
+        this.isCastingTornado = false;
 
         // Initialize bounding boxes
         this.updateBoundingBox();
@@ -197,6 +206,48 @@ class inferno {
         // Boss is above player and accumulated enough time above
         return (distanceY > 20) && (distanceX < 150) && (this.timeAbovePlayer >= this.maxTimeAbovePlayer);
     }
+
+    // Cast tornado attack
+    castTornadoAttack() {
+        if (this.tornadoCooldown <= 0 && !this.isCastingTornado) {
+            // Update facing direction based on player's position before casting
+            const player = this.getPlayer();
+            if (player) {
+                const distanceX = player.box.x - this.box.x;
+                this.facing = distanceX > 0 ? 1 : -1; // Face right if player is to the right, left if player is to the left
+                console.log("Casting tornado, facing:", this.facing); // Debug log to confirm facing
+            }
+    
+            this.state = 'castingTornado';
+            this.isCastingTornado = true;
+            this.tornadoCastDuration = 0;
+            this.velocity.x = 0; // Stop movement during casting
+        }
+    }
+
+    // Complete tornado cast and release the tornado
+    completeTornadoCast() {
+        // Recalculate facing direction before spawning projectile
+        const player = this.getPlayer();
+        if (player) {
+            const distanceX = player.box.x - this.box.x;
+            this.facing = distanceX > 0 ? 1 : -1; // Face right if player is to the right, left if player is to the left
+            console.log("Completing tornado cast, facing:", this.facing); // Debug log to confirm facing
+        }
+    
+        // Create the tornado projectile
+        const tornadoOffsetX = this.facing === 1 ? this.boxWidth + 20 : -20;
+        const tornadoY = this.box.y + this.boxHeight / 2;
+        const tornadoX = this.box.x + (this.facing === 1 ? this.boxWidth : 0) + tornadoOffsetX;
+    
+        const tornado = new TornadoAttack(this.game, tornadoX, tornadoY, false); // Removed unused facing parameter
+        this.game.addEntity(tornado);
+    
+        // Reset state and set cooldown
+        this.isCastingTornado = false;
+        this.tornadoCooldown = this.tornadoMaxCooldown;
+        this.state = 'idle';
+    }
     
     // Track player and move 
     trackPlayerAndMove() {
@@ -210,9 +261,21 @@ class inferno {
         const jumpSpeed = -1130;
         const absoluteDistanceX = Math.abs(distanceX);
     
-        // Handle attack cooldown
+        // Handle cooldowns
         if (this.attackCooldown > 0) {
             this.attackCooldown -= TICK;
+        }
+        if (this.tornadoCooldown > 0) {
+            this.tornadoCooldown -= TICK;
+        }
+    
+        // Handle tornado casting state
+        if (this.state === 'castingTornado') {
+            this.tornadoCastDuration += TICK;
+            if (this.tornadoCastDuration >= this.tornadoCastAnimationDuration) {
+                this.completeTornadoCast();
+            }
+            return; // Skip other movement while casting
         }
     
         // Handle phasing time tracking
@@ -251,7 +314,15 @@ class inferno {
                 }
                 this.velocity.x = 0; // Stop movement during attack
             } 
-            // Check for attack conditions
+            // Check if we should cast tornado (prioritize over melee attack)
+            else if (absoluteDistanceX < this.tornadoAttackRange && 
+                     absoluteDistanceX > this.attackRange &&
+                     Math.abs(distanceY) < 100 && 
+                     this.tornadoCooldown <= 0) {
+                this.facing = distanceX > 0 ? 1 : -1;
+                this.castTornadoAttack();
+            }
+            // Check for melee attack conditions
             else if (absoluteDistanceX < this.attackRange && 
                      Math.abs(distanceY) < this.attackRange && 
                      this.attackCooldown <= 0) {
@@ -269,19 +340,26 @@ class inferno {
             }
             // Chase logic, including edge cases
             else {
-                // Always chase if player is outside attack range, even at edges
                 if (absoluteDistanceX > this.attackDistance) {
                     this.velocity.x = distanceX > 0 ? this.moveSpeed : -this.moveSpeed;
-                    this.facing = distanceX > 0 ? 1 : -1;
+                    if (this.state !== 'castingTornado') { // Only update facing if not casting
+                        this.facing = distanceX > 0 ? 1 : -1;
+                    }
                     this.state = 'chasing';
                 } else if (absoluteDistanceX < this.attackDistance) {
-                    // Push back to maintain attack distance if too close
                     this.velocity.x = distanceX > 0 ? -this.moveSpeed : this.moveSpeed;
+                    if (this.state !== 'castingTornado') { // Only update facing if not casting
+                        this.facing = distanceX > 0 ? 1 : -1;
+                    }
                     this.state = 'chasing';
                 } else {
                     this.velocity.x = 0;
+                    if (this.state !== 'castingTornado') { // Only update facing if not casting
+                        this.facing = distanceX > 0 ? 1 : -1;
+                    }
                     this.state = 'idle';
                 }
+            
     
                 // Vertical movement - jump if player is above
                 if (distanceY < -60 && this.canJump() && this.state !== 'attacking') {
@@ -300,7 +378,9 @@ class inferno {
         } else {
             // In air or phasing, continue tracking player horizontally
             this.velocity.x = distanceX > 0 ? this.moveSpeed : -this.moveSpeed;
-            this.facing = distanceX > 0 ? 1 : -1;
+            if (this.state !== 'castingTornado') { // Only update facing if not casting
+                this.facing = distanceX > 0 ? 1 : -1;
+            }
             this.state = 'chasing';
         }
     }
@@ -390,7 +470,13 @@ class inferno {
     
     draw(ctx) {
         // Draw the appropriate animation based on state and direction
-        if (this.state === 'attacking') {
+        if (this.state === 'castingTornado') {
+            if (this.facing === -1) {
+                this.tornadoCastLeftAnim.drawFrame(this.game.clockTick, ctx, this.x + 30, this.y, 1.25, false, true);
+            } else {
+                this.tornadoCastRightAnim.drawFrame(this.game.clockTick, ctx, this.x + 48, this.y, 1.25);
+            }
+        } else if (this.state === 'attacking') {
             if (this.facing === -1) {
                 this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x + 30, this.y, 1.25, false, true);
             } else {
@@ -438,7 +524,19 @@ class inferno {
                 ctx.fillStyle = "rgba(255, 128, 0, 0.8)";
                 ctx.fillRect(this.box.x - 10, this.box.y - 20, progressWidth, 10);
             }
-        
+            
+            // Show tornado cooldown
+            if (this.tornadoCooldown > 0) {
+                const cooldownWidth = (this.tornadoCooldown / this.tornadoMaxCooldown) * this.boxWidth;
+                ctx.fillStyle = "rgba(0, 200, 255, 0.6)";
+                ctx.fillRect(this.box.x, this.box.y - 10, cooldownWidth, 5);
+                
+                // Display cooldown text
+                ctx.font = '10px Arial';
+                ctx.fillStyle = 'white';
+                ctx.fillText(`Tornado: ${this.tornadoCooldown.toFixed(1)}s`, 
+                             this.box.x, this.box.y - 15);
+            }
         }
         
         this.healthbar.draw(ctx);
