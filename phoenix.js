@@ -133,7 +133,7 @@ class Phoenix {
     getPlayer() {
         // Find any entity that`s a player (AzielSeraph or Grim)
         return this.game.entities.find(entity =>
-            entity instanceof AzielSeraph || entity instanceof HolyDiver || entity instanceof Grim || entity instanceof Kanji
+            entity instanceof AzielSeraph || entity instanceof HolyDiver || entity instanceof Grim || entity instanceof Kanji || entity instanceof Kyra
         );
     }
 

@@ -130,7 +130,7 @@ class inferno {
 
     getPlayer() {
         return this.game.entities.find(entity =>
-            entity instanceof AzielSeraph || entity instanceof HolyDiver || entity instanceof Grim || entity instanceof Kanji
+            entity instanceof AzielSeraph || entity instanceof HolyDiver || entity instanceof Grim || entity instanceof Kanji || entity instanceof Kyra
         );
     }
 

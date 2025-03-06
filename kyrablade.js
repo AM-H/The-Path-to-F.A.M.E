@@ -11,8 +11,12 @@ class Kyra {
         this.attackDirection = null;
         this.removeFromWorld = false;
         this.canAttack = false;
+        this.canRangeAttack = true;
+        this.rangeAttacking = false;
         
         setTimeout(() => { this.canAttack = true; }, 100);
+        setTimeout(() => { this.canRangeAttack = true; }, 500);
+
 
         // Animation Map (keep your existing animations)
         this.animationMap = new Map();
@@ -20,8 +24,11 @@ class Kyra {
         this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/RunLeftKyra.png`), 0, 8, 95, 48, 4, 0.2));
         this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleRightKyra.png`), 0, 0, 96, 38, 5, 0.35));
         this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleLeftKyra.png`), 0, 0, 96, 38, 5, 0.35));
-        this.animationMap.set(`attackRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/AttackRightKyra.png`), 0, 0, 96, 40, 5, 0.07));
-        this.animationMap.set(`attackLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/AttackLeftKyra.png`), 0, 0, 96, 40, 5, 0.07));
+        this.animationMap.set(`attackRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/AttackRightKyra.png`), 0, 0, 96, 42, 5, 0.07));
+        this.animationMap.set(`attackLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/AttackLeftKyra.png`), 0, 0, 95, 42, 5, 0.07));
+        this.animationMap.set(`throwRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/ThrowRightKyra.png`), 0, 0, 95, 34, 4, 0.07));
+        this.animationMap.set(`throwLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/ThrowLeftKyra.png`), 0, 0, 95, 34, 4, 0.07));
+        this.animationMap.set(`shuriken`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/shuriken.png`), 0, 0, 32, 32));
 
         // Set default animation
         this.animator = this.animationMap.get(`idleRight`);
@@ -59,6 +66,34 @@ class Kyra {
             console.log(`kyra takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
         } else {
             console.log(`Damage blocked by invincibility!`);
+        }
+    }
+
+    performRangeAttack() {
+        if (this.game.rangeAttack && this.canRangeAttack && !this.rangeAttacking) {
+            this.rangeAttacking = true;
+
+            // Play throw animation
+            this.animator = this.animationMap.get(this.facing === "right" ? `throwRight` : `throwLeft`);
+            
+            // Delay before throwing the shuriken (so it syncs with animation)
+            setTimeout(() => {
+                const centerX = this.x + (this.box.width / 2);
+                const centerY = this.y + (this.box.height / 2);
+                const shurikenX = this.facing === "right" ? this.x + 60 : this.x;
+                const shurikenY = this.y + 20;
+                const deltaX = this.game.mouseX - centerX;
+                const deltaY = this.game.mouseY - centerY;
+                const angle = Math.atan2(deltaY, deltaX);
+
+                const shuriken = new Shuriken(this.game, shurikenX, shurikenY, angle);
+                this.game.addEntity(shuriken);
+
+                this.rangeAttacking = false; // Reset state after attack
+            }, 200); // Adjust delay as needed
+
+            this.canRangeAttack = false;
+            setTimeout(() => { this.canRangeAttack = true; }, 500);
         }
     }
 
@@ -101,6 +136,10 @@ class Kyra {
             }
         }
 
+        if (this.game.rangeAttack) {
+            this.performRangeAttack();
+        }
+
         // Jump logic
         if (this.game.jump && this.landed) {
             this.velocity.y = -825;  // Upward velocity on jump
@@ -112,18 +151,21 @@ class Kyra {
         this.velocity.y += this.fallGrav * TICK;
         this.y += this.velocity.y * TICK;
 
-        // Update animations based on state
-        if (this.attacking) {
-            this.animator = this.animationMap.get(this.facing === "right" ? `attackRight` : `attackLeft`);
-        } else if (!this.landed) {
-            // Use idle animation for jumping
-            this.animator = this.animationMap.get(this.facing === "left" ? `idleLeft` : `idleRight`);
-        } else if (this.game.left || this.game.right) {
-            this.animator = this.animationMap.get(this.facing === "left" ? `runLeft` : `runRight`);
-            // Only adjust height when running on ground
-        } else {
-            this.animator = this.animationMap.get(this.facing === "left" ? `idleLeft` : `idleRight`);
-            // Only adjust height when idle on ground
+
+        if (!this.rangeAttacking) {
+            // Update animations based on state
+            if (this.attacking) {
+                this.animator = this.animationMap.get(this.facing === "right" ? `attackRight` : `attackLeft`);
+            } else if (!this.landed) {
+                // Use idle animation for jumping
+                this.animator = this.animationMap.get(this.facing === "left" ? `idleLeft` : `idleRight`);
+            } else if (this.game.left || this.game.right) {
+                this.animator = this.animationMap.get(this.facing === "left" ? `runLeft` : `runRight`);
+                // Only adjust height when running on ground
+            } else {
+                this.animator = this.animationMap.get(this.facing === "left" ? `idleLeft` : `idleRight`);
+                // Only adjust height when idle on ground
+            }
         }
 
         // Horizontal Movement
@@ -171,26 +213,29 @@ class Kyra {
     }
 
     draw(ctx) {
+        let yOffset = this.attacking ? -6 : 0; // Apply offset only visually
+    
         if (this.facing === "left" && !this.game.left && !this.game.right) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x + 20, this.y + 3, 1.8);
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x + 20, this.y + 3 + yOffset, 1.8);
         } else if (this.facing == "right" && this.game.right) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x+14, this.y+3, 1.6);
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x + 14, this.y + 3 + yOffset, 1.6);
         } else if (this.facing == "left" && this.game.left) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x + 23, this.y + 4, 1.6);
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x + 19, this.y + 4 + yOffset, 1.6);
         } else {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x+10, this.y+3, 1.8);
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y + 4 + yOffset, 1.8);
         }
+    
 
         // Debugging: Draw bounding boxes
         if (this.game.debugMode) {
             ctx.strokeStyle = "red";
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
-            if (this.attackBox) {
-                ctx.strokeStyle = "blue";
-                ctx.lineWidth = 2;
-                ctx.strokeRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
-            }
+            // if (this.attackBox) {
+            //     ctx.strokeStyle = "blue";
+            //     ctx.lineWidth = 2;
+            //     ctx.strokeRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
+            // }
         }
 
         // Draw health bar

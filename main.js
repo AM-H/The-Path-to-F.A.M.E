@@ -142,6 +142,10 @@ ASSET_MANAGER.queueDownload(`./sprites/kyrablade/RunRightKyra.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kyrablade/RunLeftKyra.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kyrablade/AttackRightKyra.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kyrablade/AttackLeftKyra.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kyrablade/ThrowRightKyra.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kyrablade/ThrowLeftKyra.png`);
+ASSET_MANAGER.queueDownload(`./sprites/kyrablade/shuriken.png`);
+
 
 //Eclipser
 ASSET_MANAGER.queueDownload(`./sprites/eclipser/idleR.png`);

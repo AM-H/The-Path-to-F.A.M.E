@@ -45,7 +45,7 @@ class Drone {
 
     getPlayer() {
         return this.game.entities.find(entity => 
-            entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kanji
+            entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kanji || entity instanceof Kyra
         );
     }
 
