@@ -168,7 +168,7 @@ class TornadoAttack {
         if (this.phase === 'projectile') {
             const anim = this.currentProjectileAnim;
             const spriteSheet = anim.spritesheet;
-            console.log("Drawing projectile - SpriteSheet:", spriteSheet, "Loaded:", spriteSheet.complete, "Width:", spriteSheet.naturalWidth, "Height:", spriteSheet.naturalHeight);
+            //console.log("Drawing projectile - SpriteSheet:", spriteSheet, "Loaded:", spriteSheet.complete, "Width:", spriteSheet.naturalWidth, "Height:", spriteSheet.naturalHeight);
             if (!spriteSheet || !spriteSheet.complete || spriteSheet.naturalWidth === 0) {
                 console.error("Projectile Animator has no valid sprite sheet:", anim);
                 ctx.beginPath();
@@ -204,7 +204,7 @@ class TornadoAttack {
         } else if (this.phase === 'tornado') {
             const anim = this.tornadoAnim;
             const spriteSheet = anim.spritesheet;
-            console.log("Drawing tornado - SpriteSheet:", spriteSheet, "Loaded:", spriteSheet.complete, "Width:", spriteSheet.naturalWidth, "Height:", spriteSheet.naturalHeight, "Current Frame:", anim.currentFrame());
+           // console.log("Drawing tornado - SpriteSheet:", spriteSheet, "Loaded:", spriteSheet.complete, "Width:", spriteSheet.naturalWidth, "Height:", spriteSheet.naturalHeight, "Current Frame:", anim.currentFrame());
             if (!spriteSheet || !spriteSheet.complete || spriteSheet.naturalWidth === 0) {
                 console.error("Tornado Animator has no valid sprite sheet:", anim);
                 ctx.beginPath();
