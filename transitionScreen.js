@@ -7,10 +7,9 @@ class LevelTransition {
         this.removeFromWorld = false;
     }
     update() {
+        this.startTime+=this.game.clockTick;
         if (this.startTime >= this.endTime) {
             this.removeFromWorld = true;
-        } else {
-            this.startTime+=this.game.clockTick;
         }
     };
     draw(ctx) {

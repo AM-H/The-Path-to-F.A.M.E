@@ -72,11 +72,11 @@ class RangeSlash {
         // Collision detection
         this.game.entities.forEach(entity => {
             if (entity !== this && entity.box && this.box.collide(entity.box)) {
-                if (entity instanceof Drone || entity instanceof stormSpirit || entity instanceof Phoenix || entity instanceof Eclipser || entity instanceof stormSpirit || entity instanceof Shizoku || entity instanceof  inferno) {
-                    if(entity instanceof Drone){
+                if (entity instanceof Drone || entity instanceof stormSpirit || entity instanceof Phoenix || entity instanceof Eclipser || entity instanceof Shizoku || entity instanceof  inferno || entity instanceof LeviathDraconis) {
+                    if(entity instanceof Phoenix || entity instanceof Drone){
                         entity.takeDamage(100);
                     }
-                    if(entity instanceof Eclipser || entity instanceof  Shizoku || entity instanceof inferno){
+                    if(entity instanceof Eclipser || entity instanceof  Shizoku || entity instanceof inferno || entity instanceof LeviathDraconis){
                         entity.takeDamage(60);
                     }
                     if(entity instanceof stormSpirit){

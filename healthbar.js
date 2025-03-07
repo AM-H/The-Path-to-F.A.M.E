@@ -50,20 +50,17 @@ class HealthBar {
             ctx.strokeRect(barX, 10, 200, 30);
 
         } else {
-            // For other entities like drones
-            // Make sure we have the necessary properties before rendering
-            if (!this.agent.radius || !this.agent.box) return;
             
-            const healthBarX = this.agent.x - this.agent.radius + 27;
-            const healthBarY = this.agent.y - this.agent.box.height / 5;
+            const healthBarX = this.agent.box.x + this.agent.box.width/4;
+            const healthBarY = this.agent.box.y - this.agent.box.height / 5;
 
             // Draw dark background
             ctx.fillStyle = "#3a3a3a";
-            ctx.fillRect(healthBarX, healthBarY, this.agent.radius * 2, 4);
+            ctx.fillRect(healthBarX, healthBarY, this.agent.box.width/2, 4);
 
             // Draw health fill
             if (ratio > 0) {
-                const fillWidth = Math.floor(this.agent.radius * 2 * ratio);
+                const fillWidth = Math.floor(this.agent.box.width/2 * ratio);
                 ctx.fillStyle = ratio > 0.5 ? "#32CD32" : ratio > 0.2 ? "#FFD700" : "#FF4500";
                 ctx.fillRect(healthBarX, healthBarY, fillWidth, 4);
             }
@@ -71,7 +68,7 @@ class HealthBar {
             // Draw border
             ctx.strokeStyle = "Black";
             ctx.lineWidth = 1;
-            ctx.strokeRect(healthBarX, healthBarY, this.agent.radius * 2, 4);
+            ctx.strokeRect(healthBarX, healthBarY, this.agent.box.width/2, 4);
         }
     }
 }

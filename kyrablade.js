@@ -19,10 +19,10 @@ class Kyra {
 
         // Animation Map
         this.animationMap = new Map();
-        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/RunRightKyra.png`), 0, 8, 96, 48, 4, 0.2));
-        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/RunLeftKyra.png`), 0, 8, 95, 48, 4, 0.2));
-        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleRightKyra.png`), 0, 0, 96, 38, 5, 0.35));
-        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleLeftKyra.png`), 0, 0, 96, 38, 5, 0.35));
+        this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/RunRightKyra.png`), 0, 8, 92, 48, 4, 0.2));
+        this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/RunLeftKyra.png`), 0, 8, 92, 48, 4, 0.2));
+        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleRightKyra.png`), 0, 0, 92, 38, 5, 0.35));
+        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleLeftKyra.png`), 0, 2, 92, 38, 5, 0.35));
         this.animationMap.set(`attackRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/AttackRightKyra.png`), 0, 0, 96, 42, 5, 0.07));
         this.animationMap.set(`attackLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/AttackLeftKyra.png`), 0, 0, 95, 42, 5, 0.07));
         this.animationMap.set(`throwRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/ThrowRightKyra.png`), 0, 0, 95, 34, 4, 0.07));
@@ -32,7 +32,7 @@ class Kyra {
         this.animator = this.animationMap.get(`idleRight`);
 
         this.attacking = false;
-        this.box = new BoundingBox(this.x + 80, this.y + 10, 40, 61);
+        this.box = new BoundingBox(this.x, this.y, 50, 61);
         this.attackBox = null;
         this.updateBoundingBox();
         this.hitpoints = 500;
@@ -48,7 +48,7 @@ class Kyra {
     }
 
     updateBoundingBox() {
-        this.box = new BoundingBox(this.x + 80, this.y + 10, 40, 61);
+        this.box = new BoundingBox(this.x, this.y, 40, 61);
 
         if (this.attacking) {
             if (this.attackDirection === "right") {
@@ -225,9 +225,9 @@ class Kyra {
 
         // Collision detection
         this.game.entities.forEach(entity => {
-            if ((entity instanceof Eclipser || entity instanceof Drone || entity instanceof inferno || entity instanceof Shizoku || entity instanceof LeviathDraconis) &&
+            if ((entity instanceof Eclipser || entity instanceof Drone || entity instanceof inferno || entity instanceof Phoenix || entity instanceof stormSpirit || entity instanceof Shizoku || entity instanceof LeviathDraconis) &&
                 this.attackBox && this.attackBox.collide(entity.box) && this.game.closeAttack) {
-                if (entity instanceof Drone) {
+                if (entity instanceof Drone || entity instanceof Phoenix || entity instanceof stormSpirit) {
                     entity.takeDamage(20);
                 } else {
                     entity.takeDamage(40);
@@ -256,13 +256,13 @@ class Kyra {
         let yOffset = this.attacking ? -6 : 0;
 
         if (this.facing === "left" && !this.game.left && !this.game.right) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x + 20, this.y + 3 + yOffset, 1.8);
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.8);
         } else if (this.facing === "right" && this.game.right) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x + 14, this.y + 3 + yOffset, 1.6);
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.6);
         } else if (this.facing === "left" && this.game.left) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x + 19, this.y + 4 + yOffset, 1.6);
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.6);
         } else {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y + 4 + yOffset, 1.8);
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.8);
         }
 
         if (this.game.debugMode) {

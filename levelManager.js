@@ -4,7 +4,7 @@ class LevelManager {
         this.whichPlayer = player;
         this.boss = null;
         //this.startLevelTransition(level);
-        this.loadLevel(levelOne);
+        this.loadLevel(levelThree);
     };
     startLevelTransition(level) {
         const transition = new LevelTransition(this.game);
@@ -50,9 +50,9 @@ class LevelManager {
             ASSET_MANAGER.playAsset(`./audio/level2Music.mp3`);
             ASSET_MANAGER.autoRepeat(`./audio/level2Music.mp3`);
         } else if(level === levelThree){
-            this.boss = new Shizoku(this.game);
-            this.game.addEntity(this.boss);
-            for (var i = 0; i < level.spirits.length; i++) {
+            // this.boss = new Shizoku(this.game);
+            // this.game.addEntity(this.boss);
+            for (var i = 0; i < 0; i++) {
                 let spirit = level.spirits[i];
                 this.game.addEntity(new stormSpirit(this.game, spirit.x, spirit.speed));
             }

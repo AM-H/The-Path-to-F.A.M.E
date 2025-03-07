@@ -45,7 +45,7 @@ class ChronosVeil {
         if (!this.leviath.isRangeAttacking) return;
     
         // Get blocking objects (Holy Diver or Grim's Axe)
-        const blockers = this.game.entities.filter(entity => entity instanceof HolyDiver || entity instanceof GrimAxe);
+        const blockers = this.game.entities.filter(entity => entity instanceof HolyDiver || entity instanceof GrimAxe || entity instanceof Kyra || entity instanceof Kanji);
     
         // **Check if any blocker is actually hit by the laser**
         const laserBlocked = blockers.some(blocker => 
@@ -54,12 +54,12 @@ class ChronosVeil {
     
         // **Check if the player is actually blocking**
         const player = this.getPlayer();
-        const playerIsBlocking = player.isCloseAttacking && laserBlocked; 
+        const playerIsBlocking = (player.isCloseAttacking || this.game.closeAttack) && laserBlocked; 
     
         if (!playerIsBlocking) {
             // **Deal damage to the player if they are not blocking**
             this.game.entities.forEach(entity => {
-                if ((entity instanceof AzielSeraph || entity instanceof Grim) &&
+                if ((entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kyra || entity instanceof Kanji) &&
                     this.laserBoxes.some(laserBox => laserBox.collide(entity.box))) {
                     entity.takeDamage(3);
                     console.log(`Chronos Veil's laser hits ${entity.constructor.name}! HP: ${entity.hitpoints}`);
@@ -72,7 +72,7 @@ class ChronosVeil {
         if (!this.leviath.isCloseAttacking) return;
 
         this.game.entities.forEach(entity => {
-            if ((entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kanji) && this.box.collide(entity.box)) {
+            if ((entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kanji || entity instanceof Kyra) && this.box.collide(entity.box)) {
                 if (this.getPlayer().isCloseAttacking || this.game.closeAttack) {
                     entity.takeDamage(1); //If the player is close attacking whilst getting close attacked, reduce damage dealt
                 } else {

@@ -189,7 +189,7 @@ class Kanji {
 
         // Jump logic
         if (this.game.jump && this.landed) {
-            this.velocity.y = -800;
+            this.velocity.y = -825;
             this.fallGrav = 1900;
             this.landed = false;
         }
@@ -213,10 +213,10 @@ class Kanji {
 
         // Collision detection (only with platforms)
         this.game.entities.forEach(entity => {
-            if ((entity instanceof Eclipser || entity instanceof Drone || entity instanceof Shizoku || entity instanceof stormSpirit || entity instanceof  inferno) && this.attackBox && this.attackBox.collide(entity.box) && this.game.closeAttack) {
-                if (entity instanceof Eclipser || entity instanceof Shizoku || entity instanceof stormSpirit || entity instanceof  inferno || entity instanceof LeviathDraconis) {
+            if ((entity instanceof Phoenix || entity instanceof Eclipser || entity instanceof Drone || entity instanceof Shizoku || entity instanceof stormSpirit || entity instanceof  inferno || entity instanceof LeviathDraconis) && this.attackBox && this.attackBox.collide(entity.box) && this.game.closeAttack) {
+                if (entity instanceof Eclipser || entity instanceof Shizoku || entity instanceof  inferno || entity instanceof LeviathDraconis) {
                     entity.takeDamage(50);
-                } else if (entity instanceof Drone) {
+                } else if (entity instanceof Drone || entity instanceof Phoenix || entity instanceof stormSpirit) {
                     entity.takeDamage(20);
                 }
             }

@@ -17,22 +17,26 @@ class Grim {
         setTimeout(() => {
             this.canAttack = true;
         }, 100);
-        
-        // Create animation map for Grim's animations
+
+        // Animation map
         this.animationMap = new Map();
         this.animationMap.set('runRight', new Animator(ASSET_MANAGER.getAsset('./sprites/GrimRunningR.png'), 13, 16, 48, 32, 8, 0.2));
         this.animationMap.set('runLeft', new Animator(ASSET_MANAGER.getAsset('./sprites/GrimRunningL.png'), 3.01, 16, 48, 32, 8, 0.2));
         this.animationMap.set('idleRight', new Animator(ASSET_MANAGER.getAsset('./sprites/GrimIdleR.png'), 0, 16, 42, 32, 5, 0.2));
         this.animationMap.set('idleLeft', new Animator(ASSET_MANAGER.getAsset('./sprites/GrimIdleL.png'), 5, 16, 48, 32, 5, 0.2));
-        
-        // Set default animation
+
         this.animator = this.animationMap.get('idleRight');
-        
+
         this.box = new BoundingBox(this.x, this.y, 32, 64);
         this.updateBoundingBox();
         this.landed = false;
         this.attacking = false;
         this.canShoot = true;
+
+         this.friction = 800; // Friction set to 800, matching other players
+        this.knockbackTimer = 0;
+        this.knockbackDuration = 0.3;
+        this.knockbackSpeed = 300;
     }
     getLeviath() {
         return this.game.entities.find(entity => 
@@ -40,13 +44,29 @@ class Grim {
         );
     };
     takeDamage(amount) {
-        // Skip damage if invincible
         if (!this.game.invincibleMode) {
             this.hitpoints -= amount;
             if (this.hitpoints < 0) this.hitpoints = 0;
             console.log(`Grim takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
         } else {
             console.log(`Damage blocked by invincibility!`);
+        }
+    }
+
+    takeKnockBack(amount, source = this) {
+        if (!this.game.invincibleMode) { // Knockback and damage only apply when invincibility is off
+            this.hitpoints -= amount;
+            if (this.hitpoints < 0) this.hitpoints = 0;
+            console.log(`Kyra takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+        } else {
+            console.log(`Damage blocked by invincibility!`);
+
+        }
+        if (source && source.box) {
+            const dx = this.box.x - source.box.x; // Direction from source to Kyra
+            this.velocity.x = dx > 0 ? this.knockbackSpeed : -this.knockbackSpeed;
+            this.knockbackTimer = this.knockbackDuration;
+            if (!this.landed) this.velocity.y = -200; // Slight upward push if in air
         }
     }
 
@@ -63,8 +83,7 @@ class Grim {
             return;
         }
         const TICK = this.game.clockTick;
-        
-        // Check if Grim is dead
+
         if (this.hitpoints <= 0) {
             this.hitpoints = 0;
             this.game.isGameOver = true;
@@ -72,35 +91,53 @@ class Grim {
             return;
         }
 
-        // Update damage cooldown
         this.damageCooldown -= TICK;
-        
-        // Left movement
-        if (this.game.left) {
-            this.x -= 130 * TICK; //change this back to 130
-            if (this.facing !== "left") {
-                this.facing = "left";
-                this.animator = this.animationMap.get('runLeft');
+
+        // Update knockback timer
+        if (this.knockbackTimer > 0) {
+            this.knockbackTimer -= TICK;
+        }
+
+        // Movement input (only if not in knockback)
+        if (this.knockbackTimer <= 0) {
+            if (this.game.left) {
+                this.velocity.x = -130;
+                if (this.facing !== "left") {
+                    this.facing = "left";
+                    this.animator = this.animationMap.get('runLeft');
+                }
+            } else if (this.game.right) {
+                this.velocity.x = 130;
+                if (this.facing !== "right") {
+                    this.facing = "right";
+                    this.animator = this.animationMap.get('runRight');
+                }
+            } else {
+                // Apply friction when no input
+                if (this.velocity.x > 0) {
+                    this.velocity.x = Math.max(0, this.velocity.x - this.friction * TICK);
+                } else if (this.velocity.x < 0) {
+                    this.velocity.x = Math.min(0, this.velocity.x + this.friction * TICK);
+                }
+                if (!this.attacking) {
+                    if (this.facing === "left") {
+                        this.animator = this.animationMap.get('idleLeft');
+                    } else if (this.facing === "right") {
+                        this.animator = this.animationMap.get('idleRight');
+                    }
+                }
+            }
+        } else {
+            // During knockback, apply friction to slow down
+            if (this.velocity.x > 0) {
+                this.velocity.x = Math.max(0, this.velocity.x - this.friction * TICK);
+            } else if (this.velocity.x < 0) {
+                this.velocity.x = Math.min(0, this.velocity.x + this.friction * TICK);
             }
         }
-        
-        // Right movement
-        if (this.game.right) {
-            this.x += 130 * TICK; //change this back to 130
-            if (this.facing !== "right") {
-                this.facing = "right";
-                this.animator = this.animationMap.get('runRight');
-            }
-        }
-        
-        // Idle state
-        if (!this.game.left && !this.game.right && !this.attacking) {
-            if (this.facing === "left") {
-                this.animator = this.animationMap.get('idleLeft');
-            } else if (this.facing === "right") {
-                this.animator = this.animationMap.get('idleRight');
-            }
-        }
+
+        // Apply velocity to position
+        this.x += this.velocity.x * TICK;
 
         // Long range attack
         if (this.game.rangeAttack && this.canShoot) {
@@ -119,19 +156,17 @@ class Grim {
             };
 
             const projectile = new SkullProjectile(
-                this.game, 
-                projectileCenterX, 
-                projectileCenterY, 
+                this.game,
+                projectileCenterX,
+                projectileCenterY,
                 direction,
                 { x: this.velocity.x, y: this.velocity.y }
             );
             this.game.addEntity(projectile);
-            
+
             this.canShoot = false;
         }
 
-
-        // Reset shooting capability
         if (!this.game.rangeAttack) {
             this.canShoot = true;
         }
@@ -144,15 +179,19 @@ class Grim {
         }
 
         // World boundaries
-        if (this.x < 0) this.x = 0;
-        if (this.x > gameWorld.width-this.box.width) {
-            this.x = gameWorld.width-this.box.width;
+        if (this.x < 0) {
+            this.x = 0;
+            this.velocity.x = 0;
+        }
+        if (this.x > gameWorld.width - this.box.width) {
+            this.x = gameWorld.width - this.box.width;
+            this.velocity.x = 0;
         }
 
         // Gravity and vertical movement
         this.velocity.y += this.fallGrav * TICK;
         this.y += this.velocity.y * TICK;
-        
+
         this.updateLastBB();
         this.updateBoundingBox();
 
@@ -160,49 +199,41 @@ class Grim {
         this.game.entities.forEach(entity => {
             if (entity.box && this.box.collide(entity.box)) {
                 if (this.velocity.y > 0) {
-                    if ((entity instanceof Platform) && (this.lastBox.bottom) <= entity.box.top) {
+                    if (entity instanceof Platform && this.lastBox.bottom <= entity.box.top) {
                         this.velocity.y = 0;
-                        this.y = entity.box.top-64;
+                        this.y = entity.box.top - 64;
                         this.landed = true;
-                        //console.log(`bottom collision`);
                     }
                 } else if (this.velocity.y > 0) {
                     this.landed = false;
                 }
-            
+                if (this.velocity.x > 0 && this.lastBox.right <= entity.box.left && entity instanceof Platform) {
+                    this.x = entity.box.left - this.box.width;
+                    this.velocity.x = 0;
+                } else if (this.velocity.x < 0 && this.lastBox.left >= entity.box.right && entity instanceof Platform) {
+                    this.x = entity.box.right;
+                    this.velocity.x = 0;
+                }
             }
-            this.updateBoundingBox();
         });
 
-        if (this.character === `grim` && this.game.rangeAttack) {
-            const direction = {
-                x: (this.game.mouseX - this.player.x) / Math.sqrt((this.game.mouseX - this.player.x) ** 2 + (this.game.mouseY - this.player.y) ** 2),
-                y: (this.game.mouseY - this.player.y) / Math.sqrt((this.game.mouseX - this.player.x) ** 2 + (this.game.mouseY - this.player.y) ** 2)
-            };
-
-            const projectile = new SkullProjectile(this.game, this.player.x + this.player.box.width / 2, this.player.y + this.player.box.height / 2, direction);
-            this.game.addEntity(projectile);  // Add the projectile to the game entities
-        }
-
-        // Update healthbar
+        this.updateBoundingBox();
         this.healthbar.update();
     }
 
     draw(ctx) {
-        if(this.facing === "left"){
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x - 12, this.y+14, 1.55, false, true); //change grim to be smaller or same size as level 2 boss
-        }else{
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y+14,  1.55); //change grim to be smaller or same size as level 2 boss
+        if (this.facing === "left") {
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x - 12, this.y + 14, 1.55, false, true);
+        } else {
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y + 14, 1.55);
         }
-        
-        // Draw bounding box
+
         if (this.game.debugMode) {
             ctx.strokeStyle = "red";
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }
 
-        // Draw healthbar
         this.healthbar.draw(ctx);
     }
 }

@@ -23,7 +23,6 @@ class Drone {
 
         this.hitpoints = 300;
         this.maxhitpoints = 300;
-        this.radius = 20;
 
         this.healthbar = new HealthBar(this);
 
