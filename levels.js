@@ -29,7 +29,7 @@ var levelTwo = {
             y: gameWorld.height - 70,
             width: gameWorld.width,
             height: 70,
-            bColor: `#211D25`
+            bColor: `#12121F`
         },
           // Left elevated platform (moved more left)
           {
