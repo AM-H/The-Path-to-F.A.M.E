@@ -35,8 +35,8 @@ class Kyra {
         this.box = new BoundingBox(this.x + 80, this.y + 10, 40, 61);
         this.attackBox = null;
         this.updateBoundingBox();
-        this.hitpoints = 100;
-        this.maxhitpoints = 100;
+        this.hitpoints = 500;
+        this.maxhitpoints = 500;
         this.healthbar = new HealthBar(this);
         this.attackTimer = 0;
         this.attackDuration = 0;

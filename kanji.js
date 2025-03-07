@@ -33,8 +33,8 @@ class Kanji {
         this.attackBox = null;
         this.updateBoundingBox();
         this.landed = false;
-        this.hitpoints = 100;
-        this.maxhitpoints = 100;
+        this.hitpoints = 500;
+        this.maxhitpoints = 500;
         this.healthbar = new HealthBar(this);
         this.attackTimer = 0;
         this.attackDuration = 0;
