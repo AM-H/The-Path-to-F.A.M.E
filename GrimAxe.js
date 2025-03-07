@@ -29,6 +29,8 @@ class GrimAxe {
         this.animationDuration = 8 * 0.1; // frameCount * frameDuration
 
         this.debug = false;
+
+
     }
 
     updateBoundingBox() {

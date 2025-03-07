@@ -32,9 +32,9 @@ class Shuriken {
 
         // Check for collisions with enemies
         this.game.entities.forEach(entity => {
-            if (entity instanceof Eclipser || entity instanceof Drone || entity instanceof Phoenix || entity instanceof stormSpirit) {
+            if (entity instanceof Eclipser || entity instanceof inferno || entity instanceof Drone || entity instanceof Phoenix || entity instanceof stormSpirit || entity instanceof Shizoku) {
                 if (this.box.collide(entity.box)) {
-                    if (entity instanceof Eclipser) {
+                    if (entity instanceof Eclipser || entity instanceof Shizoku || entity instanceof inferno) {
                         entity.takeDamage(30);
                     } else if (entity instanceof Drone) {
                         entity.takeDamage(40);

@@ -84,13 +84,24 @@ class BurningEffect {
             ctx.closePath();
         } else {
             try {
-                this.animator.drawFrame(
-                    this.game.clockTick,
-                    ctx,
-                    this.x - (this.width * this.scale) / 2,
-                    this.y - (this.height * this.scale) / 2,
-                    this.scale
-                );
+                if(this.player instanceof Kyra){
+                    this.animator.drawFrame(
+                        this.game.clockTick,
+                        ctx,
+                        this.x - (this.width * this.scale) / 2 + 75,
+                        this.y - (this.height * this.scale) / 2 + 3,
+                        this.scale
+                    );
+                }else{
+                    this.animator.drawFrame(
+                        this.game.clockTick,
+                        ctx,
+                        this.x - (this.width * this.scale) / 2,
+                        this.y - (this.height * this.scale) / 2,
+                        this.scale
+                    );
+                }
+
             } catch (e) {
                 console.error("Error drawing burning effect animation:", e.message);
                 ctx.beginPath();
@@ -104,10 +115,20 @@ class BurningEffect {
         if (this.game.debugMode) {
             ctx.strokeStyle = "orange";
             ctx.lineWidth = 2;
-            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+            if(this.player instanceof Kyra){
+                ctx.strokeRect(this.box.x + 80, this.box.y + 8, this.box.width, this.box.height);
+            }else{
+                ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+            }
+
 
             ctx.beginPath();
-            ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+            if(this.player instanceof Kyra){
+                ctx.arc(this.x + 80, this.y + 8, 3, 0, Math.PI * 2);
+            }else{
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+            }
+
             ctx.fillStyle = "red";
             ctx.fill();
             ctx.closePath();

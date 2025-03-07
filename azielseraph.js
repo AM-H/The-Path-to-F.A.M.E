@@ -28,6 +28,11 @@ class AzielSeraph {
         this.updateBoundingBox();
         this.landed = false;
 
+        this.friction = 800; // Friction set to 800, matching other players
+        this.knockbackTimer = 0;
+        this.knockbackDuration = 0.3;
+        this.knockbackSpeed = 300;
+
     };
 
     updateBoundingBox() {
@@ -48,7 +53,25 @@ class AzielSeraph {
             console.log(`Damage blocked by invincibility!`);
         }
     }
-       
+
+    takeKnockBack(amount, source = this) {
+        if (!this.game.invincibleMode) { // Knockback and damage only apply when invincibility is off
+            this.hitpoints -= amount;
+            if (this.hitpoints < 0) this.hitpoints = 0;
+            console.log(`Kyra takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+        } else {
+            console.log(`Damage blocked by invincibility!`);
+
+        }
+        if (source && source.box) {
+            const dx = this.box.x - source.box.x; // Direction from source to Kyra
+            this.velocity.x = dx > 0 ? this.knockbackSpeed : -this.knockbackSpeed;
+            this.knockbackTimer = this.knockbackDuration;
+            if (!this.landed) this.velocity.y = -200; // Slight upward push if in air
+        }
+    }
+
+
     update () {
         const TICK = this.game.clockTick;
         const currentTime = this.game.timer.gameTime;
@@ -61,32 +84,50 @@ class AzielSeraph {
             return;
         }
 
-        //left control
-        if (this.game.left) {
-            this.x -= 130 * TICK;
-            if (this.facing !== "left") {
-                this.facing = "left";
-                this.animator = this.animationMap.get(`runLeft`);
+        // Update knockback timer
+        if (this.knockbackTimer > 0) {
+            this.knockbackTimer -= TICK;
+        }
+
+        // Movement input (only if not in knockback)
+        if (this.knockbackTimer <= 0) {
+            if (this.game.left) {
+                this.velocity.x = -130;
+                if (this.facing !== "left") {
+                    this.facing = "left";
+                    this.animator = this.animationMap.get(`runLeft`);
+                }
+            } else if (this.game.right) {
+                this.velocity.x = 130;
+                if (this.facing !== "right") {
+                    this.facing = "right";
+                    this.animator = this.animationMap.get(`runRight`);
+                }
+            } else {
+                if (this.velocity.x > 0) {
+                    this.velocity.x = Math.max(0, this.velocity.x - this.friction * TICK);
+                } else if (this.velocity.x < 0) {
+                    this.velocity.x = Math.min(0, this.velocity.x + this.friction * TICK);
+                }
+                if (this.facing === "left" && this.facing !== "idle") {
+                    this.facing = "idle";
+                    this.animator = this.animationMap.get(`idleLeft`);
+                } else if (this.facing === "right" && this.facing !== "idle") {
+                    this.facing = "idle";
+                    this.animator = this.animationMap.get(`idleRight`);
+                }
+            }
+        } else {
+            // During knockback, apply friction
+            if (this.velocity.x > 0) {
+                this.velocity.x = Math.max(0, this.velocity.x - this.friction * TICK);
+            } else if (this.velocity.x < 0) {
+                this.velocity.x = Math.min(0, this.velocity.x + this.friction * TICK);
             }
         }
-        //right control
-        if (this.game.right) {
-            this.x += 130 * TICK;
-            if (this.facing !== "right") {
-                this.facing = "right";
-                this.animator = this.animationMap.get(`runRight`)
-            }
-        }
-       //logic for which way our sprite is facing
-        if (!this.game.left && !this.game.right) {
-            if (this.facing === "left" && this.facing !== "idle") {
-                this.facing = "idle";
-                this.animator = this.animationMap.get(`idleLeft`);
-            } else if (this.facing === "right" && this.facing !== "idle") {
-                this.facing = "idle";
-                this.animator = this.animationMap.get(`idleRight`);
-            }
-        }
+
+        // Apply velocity to position
+        this.x += this.velocity.x * TICK;
         //jump logic with gravity
         if (this.game.jump && this.landed) { // jump
             this.velocity.y = -825;
@@ -128,25 +169,28 @@ class AzielSeraph {
         this.y += this.velocity.y * TICK;
         this.updateLastBB();
         this.updateBoundingBox();
-        
-        //collision with floor and platforms:
+
+
+        let wasLanded = this.landed; // Preserve previous landed state
+        this.landed = false; // Reset to false, only set true by platforms
         this.game.entities.forEach(entity => {
             if (entity.box && this.box.collide(entity.box)) {
-                if (this.velocity.y > 0) {
-                    if ((entity instanceof Platform) && (this.lastBox.bottom) <= entity.box.top) {
+                if (entity instanceof Platform) {
+                    if (this.velocity.y > 0 && this.lastBox.bottom <= entity.box.top) {
                         this.velocity.y = 0;
-                        this.y = entity.box.top-64;
+                        this.y = entity.box.top - 64;
                         this.landed = true;
-                        //console.log(`bottom collision`);
-                    } else {
-                        this.landed = false;
                     }
-                } else {
-                    this.landed = false;
                 }
+                // Ignore non-platform entities for landing state
             }
             this.updateBoundingBox();
         });
+
+        // Restore landed state if no platform collision disproves it
+        if (!this.landed && wasLanded && this.velocity.y === 0) {
+            this.landed = true; // Keep landed if stationary on ground
+        }
         this.healthbar.update();
         
     };

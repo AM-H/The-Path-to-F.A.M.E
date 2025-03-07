@@ -38,7 +38,10 @@ class Kanji {
         this.healthbar = new HealthBar(this);
         this.attackTimer = 0;
         this.attackDuration = 0;
-        this.friction = 800; // Friction still applies naturally to velocity
+        this.friction = 800; // Friction set to 800, matching other players
+        this.knockbackTimer = 0;
+        this.knockbackDuration = 0.3;
+        this.knockbackSpeed = 300;
     }
 
     performRangeAttack() {
@@ -95,6 +98,23 @@ class Kanji {
         }
     }
 
+    takeKnockBack(amount, source = this) {
+        if (!this.game.invincibleMode) { // Knockback and damage only apply when invincibility is off
+            this.hitpoints -= amount;
+            if (this.hitpoints < 0) this.hitpoints = 0;
+            console.log(`Kyra takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+        } else {
+            console.log(`Damage blocked by invincibility!`);
+
+        }
+        if (source && source.box) {
+            const dx = this.box.x - source.box.x; // Direction from source to Kyra
+            this.velocity.x = dx > 0 ? this.knockbackSpeed : -this.knockbackSpeed;
+            this.knockbackTimer = this.knockbackDuration;
+            if (!this.landed) this.velocity.y = -200; // Slight upward push if in air
+        }
+    }
+
     updateLastBB() {
         this.lastBox = this.box;
     }
@@ -146,6 +166,7 @@ class Kanji {
 
         // Apply velocity to position
         this.x += this.velocity.x * TICK;
+
 
         // Apply input (friction will naturally slow knockback)
         if (this.game.left) this.velocity.x = -130;
@@ -199,20 +220,10 @@ class Kanji {
                     this.y = entity.box.top - 64;
                     this.landed = true;
                 }
-                // } else if (this.velocity.y < 0 && this.lastBox.top >= entity.box.bottom) {
-                //     this.velocity.y = 300;
-                //     this.y = entity.box.bottom;
                  else {
                     this.landed = false;
                 }
 
-                // if (this.velocity.x > 0 && this.lastBox.right <= entity.box.left) {
-                //     this.x = entity.box.left - this.box.width;
-                //     this.velocity.x = 0;
-                // } else if (this.velocity.x < 0 && this.lastBox.left >= entity.box.right) {
-                //     this.x = entity.box.right;
-                //     this.velocity.x = 0;
-                // }
             }
         });
 

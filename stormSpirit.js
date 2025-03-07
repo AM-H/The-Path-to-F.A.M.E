@@ -65,7 +65,7 @@ class stormSpirit {
         this.attackCooldown = 1.0;
         this.attackCooldownTimer = 0;
         this.hasDealtDamage = false;
-        this.knockbackForce = 300; // Knockback force applied to player
+
     }
 
     update() {
@@ -100,12 +100,16 @@ class stormSpirit {
             this.velocity = this.calculateJumpVelocity(targetX, targetY);
             this.landed = false;
             this.state = "jumping";
-            if (this.attackBox) this.attackBox = null; // Clear attackBox when jumping
+            if (this.attackBox) this.attackBox = null;
             if (this.debug) console.log(`stormSpirit jumping to (${targetX}, ${targetY}), facing: ${this.facing}`);
         }
 
-        const distToPlayer = Math.abs(this.x + this.width / 2 - (player.x + player.box.width / 2));
-        const moveDir = player.x > this.x ? 1 : -1;
+        // Use hitbox centers for distance and direction
+        const playerBoxCenterX = player.box.x + player.box.width / 2;
+        const stormBoxCenterX = this.box.x + this.boxWidth / 2;
+        const distToPlayer = Math.abs(playerBoxCenterX - stormBoxCenterX);
+        const dx = playerBoxCenterX - stormBoxCenterX;
+        const moveDir = dx > 0 ? 1 : -1;
         const currentPlatform = this.getCurrentPlatform();
         const playerPlatform = this.getPlayerPlatform(player);
 
@@ -117,47 +121,50 @@ class stormSpirit {
                 this.attackCooldownTimer = this.attackCooldown;
                 this.facing = moveDir;
                 this.hasDealtDamage = false;
-                const attackOffsetX = this.facing === 1 ? this.boxWidth : -this.attackBoxWidth;
+
+                // Position attackBox relative to stormSpirit's box.x
+                let attackOffsetX;
+                if (player instanceof Kyra) {
+                    attackOffsetX = this.facing === 1 ? this.boxWidth : -this.attackBoxWidth ;
+                } else {
+                    attackOffsetX = this.facing === 1 ? this.boxWidth : -this.attackBoxWidth;
+                }
+
                 this.attackBox = new BoundingBox(
-                    this.x + attackOffsetX,
-                    this.y + (this.boxHeight - this.attackBoxHeight) / 2,
+                    this.box.x + attackOffsetX,
+                    this.box.y + (this.boxHeight - this.attackBoxHeight) / 2,
                     this.attackBoxWidth,
                     this.attackBoxHeight
                 );
-                if (this.debug) console.log(`Punch attack initiated, facing: ${this.facing}`);
+                if (this.debug) console.log(`Punch attack initiated, facing: ${this.facing}, attackBox: (${this.attackBox.x}, ${this.attackBox.y})`);
             } else if (distToPlayer < this.chaseRange && this.state !== "attacking") {
                 if (this.state !== 'chasing' || Math.abs(this.velocity.x) < 1) {
                     this.state = `chasing`;
+                    this.attackBox = null;
                 }
                 const speedMultiplier = (currentPlatform && playerPlatform && currentPlatform === playerPlatform) ? 1.5 : 1;
                 this.velocity.x = this.moveSpeed * moveDir * speedMultiplier;
                 this.x += this.velocity.x * TICK;
                 this.facing = moveDir;
+                if (this.debug) console.log(`Chasing player, dx: ${dx}, velocity.x: ${this.velocity.x}, facing: ${this.facing}`);
             } else if (this.state !== "attacking") {
                 this.state = `idle`;
                 this.velocity.x = 0;
+                this.attackBox = null;
             }
         }
 
         if (this.state === `attacking` && this.attackTimer > 0) {
             this.velocity.x = 0;
-            // Update attackBox position if still attacking
-            if (this.attackBox) {
-                const attackOffsetX = this.facing === 1 ? this.boxWidth : -this.attackBoxWidth;
-                this.attackBox.x = this.x + attackOffsetX;
-                this.attackBox.y = this.y + (this.boxHeight - this.attackBoxHeight) / 2;
-            }
             if (player.box && this.attackBox && this.attackBox.collide(player.box) && !this.hasDealtDamage) {
-                // Apply damage
-                player.takeDamage(3);
-                // Apply knockback directly to player's velocity
-                player.velocity.x = this.facing * this.knockbackForce;
+                // Use takeDamage with source to apply knockback
+                player.takeKnockBack(3, this);
                 this.hasDealtDamage = true;
-                if (this.debug) console.log(`Player hit by stormSpirit punch! Damage: 3, Knockback: ${player.velocity.x}`);
+                if (this.debug) console.log(`Player hit by stormSpirit punch! Damage: 3`);
             }
         } else if (this.state === `attacking` && this.attackTimer <= 0) {
             this.state = `idle`;
-            this.attackBox = null; // Clear attackBox when attack ends
+            this.attackBox = null;
             this.hasDealtDamage = false;
             if (this.debug) console.log("Attack ended, attackBox cleared");
         }
@@ -167,7 +174,7 @@ class stormSpirit {
         this.y += this.velocity.y * TICK;
         if (!this.landed) {
             this.x += this.velocity.x * TICK;
-            if (this.attackBox) this.attackBox = null; // Clear attackBox when moving in air
+            if (this.attackBox) this.attackBox = null;
         }
 
         this.updateLastBB();
@@ -186,6 +193,7 @@ class stormSpirit {
                         isOnGround = true;
                         if (this.state !== "attacking" || this.attackTimer <= 0) {
                             this.state = "idle";
+                            this.attackBox = null;
                         }
                         if (this.debug) console.log("Landed on platform at y:", this.y);
                     }
@@ -204,16 +212,16 @@ class stormSpirit {
             this.landed = true;
             if (this.state !== "attacking" || this.attackTimer <= 0) {
                 this.state = "idle";
+                this.attackBox = null;
             }
             this.updateBoundingBox();
             if (this.debug) console.log("Reset to ground level at y:", this.y);
         }
 
-        // Trigger falling if player is below and stormSpirit is landed
         if (shouldFall && this.landed) {
             this.landed = false;
             this.state = "jumping";
-            if (this.attackBox) this.attackBox = null; // Clear attackBox when falling
+            this.attackBox = null;
             if (this.debug) console.log("Falling to lower platform or ground to chase player");
         }
 
@@ -364,7 +372,7 @@ class stormSpirit {
 
         if (playerPlatform && currentPlatform && playerPlatform === currentPlatform) {
             if (player.y < this.y - 150) {
-                if (this.debug) console.log("Kanji is much higher on same platform, will jump");
+                if (this.debug) console.log("Player is much higher on same platform, will jump");
                 this.lastJumpTime = currentTime;
                 this.targetPlatform = playerPlatform;
                 return true;
@@ -373,14 +381,14 @@ class stormSpirit {
         }
 
         if (playerPlatform && (!currentPlatform || playerPlatform !== currentPlatform)) {
-            if (this.debug) console.log("Kanji is on a different platform, will jump");
+            if (this.debug) console.log("Player is on a different platform, will jump");
             this.lastJumpTime = currentTime;
             this.targetPlatform = playerPlatform;
             return true;
         }
 
         if (!currentPlatform && player.y < this.y - 100) {
-            if (this.debug) console.log("Kanji is higher, no platform detected, will jump");
+            if (this.debug) console.log("Player is higher, no platform detected, will jump");
             this.lastJumpTime = currentTime;
             this.targetPlatform = playerPlatform;
             return true;
