@@ -8,8 +8,8 @@ class Grim {
         this.facing = "right";
 
         // Health system
-        this.hitpoints = 100;
-        this.maxhitpoints = 100;
+        this.hitpoints = 500;
+        this.maxhitpoints = 500;
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
 
