@@ -30,7 +30,7 @@ class HealthBar {
             ctx.lineWidth = 2;
             ctx.strokeRect(10, 10, 200, 30);
 
-        } else if (this.agent instanceof Eclipser || this.agent instanceof Shizoku || this.agent instanceof inferno) {
+        } else if (this.agent instanceof Eclipser || this.agent instanceof Shizoku || this.agent instanceof inferno || this.agent instanceof LeviathDraconis) {
             const barX = gameWorld.width - 210;
 
             // Draw dark background first
@@ -53,7 +53,7 @@ class HealthBar {
             // For other entities like drones
             // Make sure we have the necessary properties before rendering
             if (!this.agent.radius || !this.agent.box) return;
-
+            
             const healthBarX = this.agent.x - this.agent.radius + 27;
             const healthBarY = this.agent.y - this.agent.box.height / 5;
 

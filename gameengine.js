@@ -22,6 +22,13 @@ class GameEngine {
         this.closeAttack = false;
         this.rangeAttack = false;
 
+        this.debugMode = false;
+        this.invincibleMode = false;
+        this.isPaused = false;
+        this.lastKeys = {}; // For tracking key state changes
+
+        this.showControls = false;
+
         this.isGameOver = false;
 
 
@@ -29,6 +36,7 @@ class GameEngine {
         this.options = options || {
             debugging: false,
         };
+        
     };
 
     init(ctx) {
@@ -51,6 +59,16 @@ class GameEngine {
             x: e.clientX - this.ctx.canvas.getBoundingClientRect().left,
             y: e.clientY - this.ctx.canvas.getBoundingClientRect().top
         });
+
+
+        // const helpButton = document.getElementById('helpButton');
+        // if (helpButton) {
+        //     helpButton.addEventListener('click', () => {
+        //         this.showControls = !this.showControls;
+        //         this.isPaused = this.showControls;
+        //     });
+        // }
+
         
         this.ctx.canvas.addEventListener("mousemove", e => {
             if (this.options.debugging) {
@@ -102,6 +120,21 @@ class GameEngine {
                 case "Space":
                     this.jump = true;
                     break;
+                case "KeyB": // for debug
+                    this.keys["KeyB"] = true;
+                    break;
+                case "KeyI":  //for invincibility 
+                    this.keys["KeyI"] = true;
+                    break;
+                case "KeyP": //for pausing
+                    this.keys["KeyP"] = true;
+                    break;
+
+                case "KeyH":
+                    this.keys["KeyH"] = true;
+                    break;
+
+                
             }
 
         }); 
@@ -115,6 +148,18 @@ class GameEngine {
                     break;
                 case "Space":
                     this.jump = false;
+                    break;
+                case "KeyB":   // for debug
+                    this.keys["KeyB"] = false;
+                    break;
+                case "KeyI":  //for invincibility 
+                    this.keys["KeyI"] = false;
+                    break;
+                case "KeyP": //for pausing
+                    this.keys["KeyP"] = false;
+                    break;
+                case "KeyH": // for help menu
+                    this.keys["KeyH"] = false;
                     break;
             }
 
@@ -204,12 +249,37 @@ class GameEngine {
         // this.ctx.fillStyle = `red`;
         // this.ctx.arc(this.mouseX, this.mouseY, 2, 0, Math.PI * 2);
         // this.ctx.fill();
-    }
+        }
+   
     };
 
-
     update() {
+
         let entitiesCount = this.entities.length;
+
+            // Toggle debug mode with B key
+        if (this.keys["KeyB"] && !this.lastKeys["KeyB"]) {
+            this.debugMode = !this.debugMode;
+            console.log("Debug mode:", this.debugMode ? "ON" : "OFF");
+        }
+        
+        // Toggle invincibility with I key
+        if (this.keys["KeyI"] && !this.lastKeys["KeyI"]) {
+            this.invincibleMode = !this.invincibleMode;
+            console.log("Invincibility mode:", this.invincibleMode ? "ON" : "OFF");
+        }
+        
+        // Toggle pause with P key
+        if (this.keys["KeyP"] && !this.lastKeys["KeyP"]) {
+            this.isPaused = !this.isPaused;
+            console.log("Game " + (this.isPaused ? "paused" : "resumed"));
+        }
+        
+        // Save current key state for next frame
+        this.lastKeys = {...this.keys};
+        
+        // Skip the rest of update if paused
+        if (this.isPaused || this.showControls) return;
 
         for (let i = 0; i < entitiesCount; i++) {
             let entity = this.entities[i];
@@ -224,14 +294,107 @@ class GameEngine {
                 this.entities.splice(i, 1);
             }
         }
+
+        
     };
+
+    
 
     loop() {
         if (!this.isGameOver) {
             this.clockTick = this.timer.tick();
             this.update();
             this.draw();
+
+             // Draw pause overlay if paused
+        if (this.isPaused) {
+            this.ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+            this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+            
+            this.ctx.font = "30px Arial";
+            this.ctx.fillStyle = "white";
+            this.ctx.textAlign = "center";
+            this.ctx.fillText("PAUSED", this.ctx.canvas.width / 2, this.ctx.canvas.height / 2);
+            this.ctx.fillText("Press P to Resume", this.ctx.canvas.width / 2, this.ctx.canvas.height / 2 + 40);
         }
+        
+        // Draw debug info if debug mode is on
+        if (this.debugMode || this.invincibleMode) {
+            this.ctx.font = "14px Arial";
+            this.ctx.fillStyle = "white";
+            this.ctx.textAlign = "left";
+            
+            // Create background for text
+            this.ctx.fillStyle = "rgba(0,0,0,0.5)";
+            this.ctx.fillRect(10, 10, 200, 50);
+            
+            this.ctx.fillStyle = "white";
+            this.ctx.fillText("Debug Mode: " + (this.debugMode ? "ON" : "OFF") + " (B)", 20, 30);
+            this.ctx.fillText("Invincibility: " + (this.invincibleMode ? "ON" : "OFF") + " (I)", 20, 50);
+        }
+        if (this.showControls) {
+            // Draw semi-transparent background
+            this.ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+            this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+            
+            // Draw panel
+            this.ctx.fillStyle = "#222";
+            const panelWidth = 500;
+            const panelHeight = 400;
+            const panelX = (this.ctx.canvas.width - panelWidth) / 2;
+            const panelY = (this.ctx.canvas.height - panelHeight) / 2;
+            this.ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
+            this.ctx.strokeStyle = "#FFF";
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
+            
+            // Title
+            this.ctx.font = "30px Arial";
+            this.ctx.fillStyle = "#FFF";
+            this.ctx.textAlign = "center";
+            this.ctx.fillText("GAME CONTROLS", this.ctx.canvas.width / 2, panelY + 40);
+            
+            // Controls text
+            this.ctx.font = "18px Arial";
+            this.ctx.textAlign = "left";
+            const controlsX = panelX + 50;
+            let controlsY = panelY + 90;
+            const lineHeight = 30;
+            //checking
+            const controls = [
+                "Movement: A (left), D (right)",
+                "Jump: Space",
+                "Melee Attack: Left Mouse Button (hold or click)",
+                "Range Attack: Right Mouse Button (hold or click)",
+                "Debug Mode (Show Boxes): B",
+                "Invincibility Mode: I",
+                "Pause Game: P",
+                "Toggle Controls: H or click ? icon"
+            ];
+            
+            controls.forEach(control => {
+                this.ctx.fillText(control, controlsX, controlsY);
+                controlsY += lineHeight;
+            });
+            
+            // Special note for debug controls
+            this.ctx.font = "16px Arial";
+            this.ctx.fillStyle = "#AAA";
+            this.ctx.fillText("* Debug controls are for development purposes only", controlsX, controlsY + 20);
+            
+            // Close button instructions
+            this.ctx.font = "18px Arial";
+            this.ctx.fillStyle = "#FFF";
+            this.ctx.textAlign = "center";
+            this.ctx.fillText("Click Anywhere on the Game to Close", this.ctx.canvas.width / 2, panelY + panelHeight - 30);
+            
+            // Click anywhere to close
+            if (this.closeAttack) {
+                this.showControls = false;
+                this.isPaused = false; // Resume game when closing controls
+            }
+        }
+    }
     };
 
 };

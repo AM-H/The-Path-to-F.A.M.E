@@ -49,7 +49,6 @@ class Drone {
         );
     }
 
-
     takeDamage(amount) {
         this.hitpoints = Math.max(0, this.hitpoints - amount);
     }
@@ -116,9 +115,11 @@ class Drone {
 
     draw(ctx) {
         this.droneImg.drawFrame(this.game.clockTick, ctx, this.x, this.y, this.spriteScale);
-        ctx.strokeStyle = `red`;
-        ctx.lineWidth = 2;
-        //ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        if (this.game.debugMode) {
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        }
 
         this.healthbar.draw(ctx);
     }

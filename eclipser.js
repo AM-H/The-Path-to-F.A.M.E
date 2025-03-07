@@ -47,8 +47,8 @@ class Eclipser {
         this.minDistance = 150;
 
         // Health system
-        this.hitpoints = 350;
-        this.maxhitpoints = 350;
+        this.hitpoints = 600;
+        this.maxhitpoints = 600;
         
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
@@ -245,12 +245,15 @@ class Eclipser {
                 this.currentLaserDamageCooldown -= TICK;
             }
     
-            let laserStartX = this.facing === 1 ? this.x + 35 : this.x - 200;
-    
+            const laserStartX = this.facing === 1 ? this.x + this.boxWidth/2 : this.x - 180
+            let laserWidth = 200;
+            if (this.facing != 1) {
+                laserWidth = 230;
+            }
             const laserBox = new BoundingBox(
                 laserStartX,
                 this.y - 20,
-                200,
+                laserWidth,
                 40 
             );
     
@@ -263,11 +266,11 @@ class Eclipser {
             }
         }
     }
-
+    
     update() {
         const TICK = this.game.clockTick;
         const player = this.getPlayer();
-
+    
         if (!player || this.hitpoints <= 0) {
             if (this.hitpoints <= 0) {
                 this.removeFromWorld = true;
@@ -275,72 +278,73 @@ class Eclipser {
             }
             return;
         }
+        // Check if health is low and should spawn minions
+        const healthRatio = this.hitpoints / this.maxhitpoints;
+        if (healthRatio <= this.lowHealthThreshold && !this.hasSpawnedMinions) {
+            this.spawnMinions();
+        }
 
-         // Check if health is low and should spawn minions
-         const healthRatio = this.hitpoints / this.maxhitpoints;
-         if (healthRatio <= this.lowHealthThreshold && !this.hasSpawnedMinions) {
-             this.spawnMinions();
-         }
- 
-         // Check if minions are dead and can spawn again
-         if (this.hasSpawnedMinions && this.areMinionsDead()) {
-             this.hasSpawnedMinions = true;  // Allow spawning again
-         }
-
+        // Check if minions are dead and can spawn again
+        if (this.hasSpawnedMinions && this.areMinionsDead()) {
+            this.hasSpawnedMinions = true;  // Allow spawning again
+        }
         // Update timers
         if (this.laserTimer > 0) this.laserTimer -= TICK;
         if (this.damageCooldown > 0) this.damageCooldown -= TICK;
-
-        const distToPlayer = Math.abs(this.x + this.width / 2 - (player.x + player.box.width / 2));
-        const moveDir = player.x > this.x ? 1 : -1;
-
-        // Check if we should start phasing
-        if (this.shouldPhase(player)) {
-            this.isPhasing = true;
+    
+        const playerCenterX = player.box.x + player.box.width / 2;
+        const playerCenterY = player.box.y + player.box.height / 2;
+        const eclipserCenterX = this.box.x + this.box.width / 2;
+        const eclipserCenterY = this.box.y + this.box.height / 2;
+        
+        const distToPlayerX = Math.abs(eclipserCenterX - playerCenterX);
+        const distToPlayerY = Math.abs(eclipserCenterY - playerCenterY);
+        const moveDir = playerCenterX > eclipserCenterX ? 1 : -1;
+    
+        // **NEW: Smooth vertical movement toward the player**
+        const floatSpeed = 50;  // Adjust speed to control how fast Eclipser moves vertically
+        if (distToPlayerY > 10) {
+            this.y += (playerCenterY > eclipserCenterY ? floatSpeed : -floatSpeed) * TICK;
         }
-
-        // Handle phasing movement
-        if (this.isPhasing) {
-            const playerPlatformY = this.getPlayerPlatformY(player);
-            if (playerPlatformY) {
-                const targetY = playerPlatformY - this.boxHeight;
-                
-                // Move vertically
-                this.y -= this.phaseSpeed * TICK;
-                
-                // Check if we've reached the target platform
-                if (this.y <= targetY) {
-                    this.y = targetY;
-                    this.isPhasing = false;
-                    this.velocity.y = 0;
-                }
+    
+        // **NEW: Prevent jitter by ensuring state changes only when necessary**
+        const moveThreshold = 1;  // Minimum movement required to switch states
+    
+        if (distToPlayerX > this.minDistance) {
+            if (Math.abs(this.velocity.x) > moveThreshold) { 
+                this.state = 'chasing';
             }
+            this.x += this.moveSpeed * moveDir;
+            this.facing = moveDir;
         } else {
-            // Only apply gravity when not phasing
-            this.velocity.y += this.fallGrav * TICK;
-            this.y += this.velocity.y * TICK;
+            if (this.state !== 'idle') {
+                this.state = 'idle';
+            }
         }
-
-        // Laser state machine
+    
+        // **Prevent animation reset if already in the correct animation state**
+        if (this.state === 'chasing') {
+            if ((this.facing === 1 && this.animator !== this.walkRightAnim) ||
+                (this.facing === -1 && this.animator !== this.walkLeftAnim)) {
+                this.animator = this.facing === 1 ? this.walkRightAnim : this.walkLeftAnim;
+            }
+        } else if (this.state === 'idle') {
+            if ((this.facing === 1 && this.animator !== this.idleRightAnim) ||
+                (this.facing === -1 && this.animator !== this.idleLeftAnim)) {
+                this.animator = this.facing === 1 ? this.idleRightAnim : this.idleLeftAnim;
+            }
+        }
+    
+        // **Handle laser attacks**
         switch (this.laserState) {
             case 'inactive':
-                // Move towards player when not using laser
-                if (distToPlayer > this.minDistance) {
-                    this.x += this.moveSpeed * moveDir;
-                    this.facing = moveDir;
-                    this.state = 'chasing';
-                } else {
-                    this.state = 'idle';
-                }
-
-                // Start laser attack when in range and cooldown is done
-                if (this.laserTimer <= 0 && distToPlayer < this.laserRange) {
+                if (this.laserTimer <= 0 && distToPlayerX < this.laserRange) {
                     this.laserState = 'charging';
                     this.laserTimer = this.laserChargeTime;
                     this.facing = moveDir;
                 }
                 break;
-
+    
             case 'charging':
                 this.laserTimer -= TICK;
                 if (this.laserTimer <= 0) {
@@ -349,52 +353,153 @@ class Eclipser {
                     this.currentLaserDamageCooldown = 0;
                 }
                 break;
-
+    
             case 'firing':
                 this.handleLaserDamage(player, TICK);
                 this.laserTimer -= TICK;
-
                 if (this.laserTimer <= 0) {
                     this.laserState = 'inactive';
                     this.laserTimer = this.laserCooldown;
                 }
                 break;
         }
-
+    
         this.updateLastBB();
         this.updateBoundingBox();
-
-        // Only check platform collisions when NOT phasing
-        if (!this.isPhasing) {
-            let isOnGround = false;
-            this.game.entities.forEach(entity => {
-                if (entity instanceof Platform && this.box.collide(entity.box)) {
-                    if (this.velocity.y > 0 && this.lastBox.bottom <= entity.box.top) {
-                        this.velocity.y = 0;
-                        this.y = entity.box.top - this.boxHeight;
-                        this.landed = true;
-                        isOnGround = true;
-                    }
-                }
-            });
-
-            // Ground level check
-            const groundLevel = gameWorld.height - 70;
-            if (!isOnGround && this.y + this.boxHeight > groundLevel) {
-                this.y = groundLevel - this.boxHeight;
-                this.velocity.y = 0;
-                this.landed = true;
-            }
-        }
-
-        // Screen boundaries
-        if (this.x < 0) this.x = 0;
-        if (this.x > gameWorld.width - this.width) {
-            this.x = gameWorld.width - this.width;
-        }
-
-        this.healthbar.update();
     }
+    
+    
+    // update() {
+    //     const TICK = this.game.clockTick;
+    //     const player = this.getPlayer();
+
+    //     if (!player || this.hitpoints <= 0) {
+    //         if (this.hitpoints <= 0) {
+    //             this.removeFromWorld = true;
+    //             this.defeated = true;
+    //         }
+    //         return;
+    //     }
+
+    //      // Check if health is low and should spawn minions
+    //      const healthRatio = this.hitpoints / this.maxhitpoints;
+    //      if (healthRatio <= this.lowHealthThreshold && !this.hasSpawnedMinions) {
+    //          this.spawnMinions();
+    //      }
+ 
+    //      // Check if minions are dead and can spawn again
+    //      if (this.hasSpawnedMinions && this.areMinionsDead()) {
+    //          this.hasSpawnedMinions = true;  // Allow spawning again
+    //      }
+
+    //     // Update timers
+    //     if (this.laserTimer > 0) this.laserTimer -= TICK;
+    //     if (this.damageCooldown > 0) this.damageCooldown -= TICK;
+
+    //     const distToPlayer = Math.abs(this.x + this.width / 2 - (player.x + player.box.width / 2));
+    //     const moveDir = player.x > this.x ? 1 : -1;
+
+    //     // Check if we should start phasing
+    //     if (this.shouldPhase(player)) {
+    //         this.isPhasing = true;
+    //     }
+
+    //     // Handle phasing movement
+    //     if (this.isPhasing) {
+    //         const playerPlatformY = this.getPlayerPlatformY(player);
+    //         if (playerPlatformY) {
+    //             const targetY = playerPlatformY - this.boxHeight;
+                
+    //             // Move vertically
+    //             this.y -= this.phaseSpeed * TICK;
+                
+    //             // Check if we've reached the target platform
+    //             if (this.y <= targetY) {
+    //                 this.y = targetY;
+    //                 this.isPhasing = false;
+    //                 this.velocity.y = 0;
+    //             }
+    //         }
+    //     } else {
+    //         // Only apply gravity when not phasing
+    //         this.velocity.y += this.fallGrav * TICK;
+    //         this.y += this.velocity.y * TICK;
+    //     }
+
+    //     // Laser state machine
+    //     switch (this.laserState) {
+    //         case 'inactive':
+    //             // Move towards player when not using laser
+    //             if (distToPlayer > this.minDistance) {
+    //                 this.x += this.moveSpeed * moveDir;
+    //                 this.facing = moveDir;
+    //                 this.state = 'chasing';
+    //             } else {
+    //                 this.state = 'idle';
+    //             }
+
+    //             // Start laser attack when in range and cooldown is done
+    //             if (this.laserTimer <= 0 && distToPlayer < this.laserRange) {
+    //                 this.laserState = 'charging';
+    //                 this.laserTimer = this.laserChargeTime;
+    //                 this.facing = moveDir;
+    //             }
+    //             break;
+
+    //         case 'charging':
+    //             this.laserTimer -= TICK;
+    //             if (this.laserTimer <= 0) {
+    //                 this.laserState = 'firing';
+    //                 this.laserTimer = this.laserFireTime;
+    //                 this.currentLaserDamageCooldown = 0;
+    //             }
+    //             break;
+
+    //         case 'firing':
+    //             this.handleLaserDamage(player, TICK);
+    //             this.laserTimer -= TICK;
+
+    //             if (this.laserTimer <= 0) {
+    //                 this.laserState = 'inactive';
+    //                 this.laserTimer = this.laserCooldown;
+    //             }
+    //             break;
+    //     }
+
+    //     this.updateLastBB();
+    //     this.updateBoundingBox();
+
+    //     // Only check platform collisions when NOT phasing
+    //     if (!this.isPhasing) {
+    //         let isOnGround = false;
+    //         this.game.entities.forEach(entity => {
+    //             if (entity instanceof Platform && this.box.collide(entity.box)) {
+    //                 if (this.velocity.y > 0 && this.lastBox.bottom <= entity.box.top) {
+    //                     this.velocity.y = 0;
+    //                     this.y = entity.box.top - this.boxHeight;
+    //                     this.landed = true;
+    //                     isOnGround = true;
+    //                 }
+    //             }
+    //         });
+
+    //         // Ground level check
+    //         const groundLevel = gameWorld.height - 70;
+    //         if (!isOnGround && this.y + this.boxHeight > groundLevel) {
+    //             this.y = groundLevel - this.boxHeight;
+    //             this.velocity.y = 0;
+    //             this.landed = true;
+    //         }
+    //     }
+
+    //     // Screen boundaries
+    //     if (this.x < 0) this.x = 0;
+    //     if (this.x > gameWorld.width - this.width) {
+    //         this.x = gameWorld.width - this.width;
+    //     }
+
+    //     this.healthbar.update();
+    // }
 
 
     draw(ctx) {
@@ -435,10 +540,16 @@ class Eclipser {
             ctx.drawImage(this.laserImage, laserX, laserY, 200, 20);
     
             // Debug: Draw laser hitbox
+            if (this.game.debugMode) {
             ctx.strokeStyle = 'yellow';
             ctx.lineWidth = 1;
-            const hitboxX = this.facing === 1 ? this.x + 35 : this.x - 200;
-            //ctx.strokeRect(hitboxX, this.y - 20, 200, 30);
+            const hitboxX = this.facing === 1 ? this.x + this.boxWidth/2 : this.x - 180;
+            let laserWidth = 200;
+            if (this.facing != 1) {
+                laserWidth = 230;
+            }
+            ctx.strokeRect(hitboxX, this.y - 20, laserWidth, 30);
+            }
         }
 
         if (this.isPhasing) {
@@ -447,11 +558,15 @@ class Eclipser {
     
 
         ctx.globalAlpha = 1.0;
-        // Debug bounding box
-        ctx.strokeStyle = 'red';
-        ctx.lineWidth = 2;
-        //ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        
+        if (this.game.debugMode) {
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        };
     
         this.healthbar.draw(ctx);
     }
+    
+    
 }
