@@ -13,22 +13,22 @@ class LevelManager {
          }, 4000); // Wait 4 seconds before loading the level
     }
     loadLevel(level) {
-        if (this.whichPlayer == `aziel`) {
+        if (this.whichPlayer === `aziel`) {
             const aziel = new AzielSeraph(this.game);
             this.game.addEntity(aziel);
             this.game.addEntity(new HolyDiver(this.game, aziel));
         } else if(this.whichPlayer === `kanji`){
             const kanji = new Kanji(this.game);
             this.game.addEntity(kanji);
-        } else if(this.whichPlayer == `grim`){
+        } else if(this.whichPlayer === `grim`){
             const grim = new Grim(this.game);
             this.game.addEntity(grim);
             this.game.addEntity(new GrimAxe(this.game, grim));
-        } else if(this.whichPlayer == `kyra`){
+        } else if(this.whichPlayer === `kyra`){
             const kyra = new Kyra(this.game);
             this.game.addEntity(kyra);
         }
-        if(level == levelOne) {
+        if(level === levelOne) {
             this.boss = new Eclipser(this.game);
             for (var i = 0; i < level.drones.length; i++) {
                 let drone = level.drones[i];
