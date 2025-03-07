@@ -72,7 +72,7 @@ class GrimAxe {
             if ((entity instanceof  inferno || entity instanceof  Shizoku || entity instanceof Eclipser || entity instanceof LeviathDraconis) && this.box.collide(entity.box) && this.game.closeAttack) {
                 entity.takeDamage(10); // Deal 10 damage to boss
                 console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
-            } else if ((entity instanceof Drone ||entity instanceof Phoenix || entity instanceof stormSpirit) && this.box.collide(entity.box) && this.game.closeAttack) {
+            } else if ((entity instanceof Drone || entity instanceof Phoenix || entity instanceof stormSpirit) && this.box.collide(entity.box) && this.game.closeAttack) {
                 entity.takeDamage(3);
                 console.log(`Minion takes damage! HP: ${entity.hitpoints}`);
             }
