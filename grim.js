@@ -70,7 +70,7 @@ class Grim {
         
         // Left movement
         if (this.game.left) {
-            this.x -= 400 * TICK; //change this back to 130
+            this.x -= 130 * TICK; //change this back to 130
             if (this.facing !== "left") {
                 this.facing = "left";
                 this.animator = this.animationMap.get('runLeft');
@@ -79,7 +79,7 @@ class Grim {
         
         // Right movement
         if (this.game.right) {
-            this.x += 400 * TICK; //change this back to 130
+            this.x += 130 * TICK; //change this back to 130
             if (this.facing !== "right") {
                 this.facing = "right";
                 this.animator = this.animationMap.get('runRight');
