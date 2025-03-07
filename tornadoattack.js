@@ -10,13 +10,13 @@ class TornadoAttack {
 
         this.projectileSpeed = 200;
         this.velocity = { x: 0, y: 0 };
-        this.projectileWidth = 40;  
-        this.projectileHeight = 40; 
+        this.projectileWidth = 35;  // Updated to match new frame width (140 / 4)
+        this.projectileHeight = 34; // Updated to match new frame height
         this.projectileScale = 1;
         this.projectileDamage = 15;
 
-        this.hitboxWidth = 20;
-        this.hitboxHeight = 20;
+        this.hitboxWidth = 20;  // Kept the same, adjust if needed
+        this.hitboxHeight = 20; // Kept the same, adjust if needed
         this.hitboxScale = 1;
 
         this.tornadoWidth = 80;    
@@ -26,27 +26,25 @@ class TornadoAttack {
         this.throwForce = -800;
         this.elapsedTornadoTime = 0;
 
-        // Animation setup with detailed logging
-        const rightSprite = ASSET_MANAGER.getAsset(`./sprites/tornado/part1finalR.png`);
-        const leftSprite = ASSET_MANAGER.getAsset(`./sprites/tornado/part1finalL.png`);
+        // Animation setup with detailed logging (using new projectile sprite)
+        const rightSprite = ASSET_MANAGER.getAsset(`./sprites/tornado/projectile.png`); 
         const tornadoSprite = ASSET_MANAGER.getAsset(`./sprites/tornado/part2final.png`);
 
         console.log("Right Sprite:", rightSprite, "Loaded:", rightSprite?.complete, "Width:", rightSprite?.naturalWidth, "Height:", rightSprite?.naturalHeight);
-        console.log("Left Sprite:", leftSprite, "Loaded:", leftSprite?.complete, "Width:", leftSprite?.naturalWidth, "Height:", leftSprite?.naturalHeight);
         console.log("Tornado Sprite:", tornadoSprite, "Loaded:", tornadoSprite?.complete, "Width:", tornadoSprite?.naturalWidth, "Height:", tornadoSprite?.naturalHeight);
 
-        this.projectileRightAnim = new Animator(rightSprite && rightSprite.complete ? rightSprite : new Image(), -6, 0, this.projectileWidth, this.projectileHeight, 4, 0.07);
-        this.projectileLeftAnim = new Animator(leftSprite && leftSprite.complete ? leftSprite : new Image(), -6, 0, this.projectileWidth, this.projectileHeight, 4, 0.07);
+        this.projectileRightAnim = new Animator(rightSprite && rightSprite.complete ? rightSprite : new Image(), 0, 0, this.projectileWidth, this.projectileHeight, 4, 0.07); // Updated xStart to 0, dimensions to 35x34
         this.tornadoAnim = new Animator(tornadoSprite && tornadoSprite.complete ? tornadoSprite : new Image(), -2, 0, 40, 38, 4, 0.07); 
 
         this.direction = 1;
         this.currentProjectileAnim = this.projectileRightAnim;
 
-        this.lifetime = 6;
+        this.lifetime = 20; 
         this.updateBoundingBox();
 
         this.damageCooldown = 0;
         this.hitEntities = new Set();
+        this.angle = 0;
     }
 
     updateBoundingBox() {
@@ -72,7 +70,7 @@ class TornadoAttack {
         this.phase = 'tornado';
         this.velocity.x = 0;
         this.velocity.y = 0;
-        this.tornadoAnim.elapsedTime = 0; // Reset elapsedTime to ensure frame 0 is drawn first
+        this.tornadoAnim.elapsedTime = 0;
         this.updateBoundingBox();
         this.hitEntities.clear();
     }
@@ -94,45 +92,96 @@ class TornadoAttack {
         }
 
         if (this.phase === 'projectile') {
+            if (this.forceLeftDirection) {
+                this.direction = -1;
+                this.velocity.x = -50;
+                this.velocity.y = 0;
+                const dx = -this.x; // Move toward left side
+                const dy = 0;
+                this.angle = Math.atan2(dy, dx);
+            } else {
+                const player = this.getPlayer();
+                if (player) {
+                    const dx = (player.box.x + player.box.width / 2) - this.x;
+                    const dy = (player.box.y + player.box.height / 2) - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance > 0) {
+                        this.velocity.x = (dx / distance) * this.projectileSpeed;
+                        this.velocity.y = (dy / distance) * this.projectileSpeed;
+                        this.angle = Math.atan2(dy, dx);
+                        this.direction = this.velocity.x >= 0 ? 1 : -1;
+                    }
+                }
+            }
+
             const player = this.getPlayer();
-            if (player) {
+            if (player && !this.forceLeftDirection) {
                 const dx = (player.box.x + player.box.width / 2) - this.x;
                 const dy = (player.box.y + player.box.height / 2) - this.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 if (distance > 0) {
-                    this.velocity.x = (dx / distance) * this.projectileSpeed;
-                    this.velocity.y = (dy / distance) * this.projectileSpeed;
                     this.angle = Math.atan2(dy, dx);
-                    this.direction = this.velocity.x >= 0 ? 1 : -1;
-                    this.currentProjectileAnim = this.direction === 1 ? this.projectileRightAnim : this.projectileLeftAnim;
                 }
+            } else if (this.forceLeftDirection) {
+                const dx = -this.x;
+                const dy = 0;
+                this.angle = Math.atan2(dy, dx);
             }
 
             this.x += this.velocity.x * TICK;
             this.y += this.velocity.y * TICK;
             this.updateBoundingBox();
 
+            if (this.forceStayInMap) {
+                if (this.x < 50) {
+                    this.x = 50;
+                    this.velocity.x = Math.abs(this.velocity.x);
+                    this.direction = 1;
+                    this.angle = 0;
+                }
+                if (this.x > this.game.ctx.canvas.width - 50) {
+                    this.x = this.game.ctx.canvas.width - 50;
+                    this.velocity.x = -Math.abs(this.velocity.x);
+                    this.direction = -1;
+                    this.angle = Math.PI;
+                }
+                if (this.y < 50) {
+                    this.y = 50;
+                    this.velocity.y = Math.abs(this.velocity.y);
+                }
+                if (this.y > this.game.ctx.canvas.height - 50) {
+                    this.y = this.game.ctx.canvas.height - 50;
+                    this.velocity.y = -Math.abs(this.velocity.y);
+                }
+            }
+
             this.lifetime -= TICK;
             if (this.lifetime <= 0) {
-                this.removeFromWorld = true;
-                return;
+                if (this.forceStayInMap) {
+                    this.lifetime = 20;
+                    console.log("Debug: Resetting lifetime");
+                } else {
+                    this.removeFromWorld = true;
+                    return;
+                }
             }
 
-            if (player && this.box.collide(player.box) && !this.hitEntities.has(player)) {
-                console.log("Collision detected with player:", player);
-                if (player.takeDamage) {
-                    player.takeDamage(this.projectileDamage);
-                    console.log(`Player hit by projectile! Remaining HP: ${player.hitpoints}`);
+            const players = this.getPlayer();
+            if (players && this.box.collide(players.box) && !this.hitEntities.has(players)) {
+                console.log("Collision detected with player:", players);
+                if (players.takeDamage) {
+                    players.takeDamage(this.projectileDamage);
+                    console.log(`Player hit by projectile! Remaining HP: ${players.hitpoints}`);
                 }
                 this.transformToTornado();
-                this.hitEntities.add(player);
+                this.hitEntities.add(players);
             }
 
-            if (
+            if (!this.forceStayInMap && (
                 this.x < -100 ||
                 this.x > this.game.ctx.canvas.width + 100 ||
                 this.y < -100 ||
-                this.y > this.game.ctx.canvas.height + 100
+                this.y > this.game.ctx.canvas.height + 100)
             ) {
                 this.removeFromWorld = true;
                 return;
@@ -168,13 +217,33 @@ class TornadoAttack {
         if (this.phase === 'projectile') {
             const anim = this.currentProjectileAnim;
             const spriteSheet = anim.spritesheet;
-            //console.log("Drawing projectile - SpriteSheet:", spriteSheet, "Loaded:", spriteSheet.complete, "Width:", spriteSheet.naturalWidth, "Height:", spriteSheet.naturalHeight);
+
+            if (this.game.debugMode) {
+                ctx.font = "12px Arial";
+                ctx.fillStyle = "white";
+                ctx.fillText(`Direction: ${this.direction === 1 ? 'Right' : 'Left'}`, this.x - 50, this.y - 40);
+                ctx.fillText(`Angle: ${this.angle.toFixed(2)}`, this.x - 50, this.y - 25);
+                ctx.fillText(`Frame: ${anim.currentFrame()}`, this.x - 50, this.y - 10);
+            }
+
+            
             if (!spriteSheet || !spriteSheet.complete || spriteSheet.naturalWidth === 0) {
                 console.error("Projectile Animator has no valid sprite sheet:", anim);
+                console.log("Current direction:", this.direction);
+                console.log("Right sprite:", this.projectileRightAnim.spritesheet);
+
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.projectileWidth * this.projectileScale / 2, 0, Math.PI * 2);
-                ctx.fillStyle = 'orange';
+                ctx.fillStyle = this.direction === 1 ? 'orange' : 'yellow';
                 ctx.fill();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x + Math.cos(this.angle) * 30, this.y + Math.sin(this.angle) * 30);
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                ctx.stroke();
                 ctx.closePath();
             } else {
                 try {
@@ -187,8 +256,8 @@ class TornadoAttack {
                         -this.projectileWidth * this.projectileScale / 2,
                         -this.projectileHeight * this.projectileScale / 2,
                         this.projectileScale,
-                        false, // vertical = false
-                        false  // reverse = false
+                        false,
+                        false
                     );
                     ctx.restore();
                 } catch (e) {
@@ -204,7 +273,6 @@ class TornadoAttack {
         } else if (this.phase === 'tornado') {
             const anim = this.tornadoAnim;
             const spriteSheet = anim.spritesheet;
-           // console.log("Drawing tornado - SpriteSheet:", spriteSheet, "Loaded:", spriteSheet.complete, "Width:", spriteSheet.naturalWidth, "Height:", spriteSheet.naturalHeight, "Current Frame:", anim.currentFrame());
             if (!spriteSheet || !spriteSheet.complete || spriteSheet.naturalWidth === 0) {
                 console.error("Tornado Animator has no valid sprite sheet:", anim);
                 ctx.beginPath();
@@ -219,7 +287,7 @@ class TornadoAttack {
                         ctx,
                         this.x - this.tornadoWidth / 2,
                         this.y - this.tornadoHeight / 2,
-                        2 // Scale to make tornado bigger
+                        2
                     );
                 } catch (e) {
                     console.error("Error drawing tornado animation:", e.message);
@@ -236,6 +304,14 @@ class TornadoAttack {
             ctx.strokeStyle = this.phase === 'projectile' ? "blue" : "purple";
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+            ctx.fillStyle = "red";
+            ctx.fill();
+            ctx.closePath();
         }
     }
 }
+
+

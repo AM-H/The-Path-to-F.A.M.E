@@ -127,8 +127,7 @@ ASSET_MANAGER.queueDownload(`./sprites/inferno/tornadoCastLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/inferno/tornadoCastRight.png`);  
 
 //Special move
-ASSET_MANAGER.queueDownload(`./sprites/tornado/part1finalL.png`);
-ASSET_MANAGER.queueDownload(`./sprites/tornado/part1finalR.png`);
+ASSET_MANAGER.queueDownload(`./sprites/tornado/projectile.png`);
 ASSET_MANAGER.queueDownload(`./sprites/tornado/part2final.png`);
 
 
