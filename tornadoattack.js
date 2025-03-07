@@ -88,7 +88,7 @@ class TornadoAttack {
             entity instanceof AzielSeraph || 
             entity instanceof Grim || 
             entity instanceof Kanji || 
-            entity instanceof KyraBlade
+            entity instanceof Kyra
         );
     }
 

@@ -187,7 +187,7 @@ class inferno {
             entity instanceof Platform &&
             entity.box.y < this.box.y && // The platform is above
             ((Math.abs(entity.box.left - this.box.left) < 100) ||
-             (Math.abs(entity.box.right - this.box.right) < 100)) // platform within reach horizontally
+                (Math.abs(entity.box.right - this.box.right) < 100)) // platform within reach horizontally
         );
     }
 
@@ -316,16 +316,16 @@ class inferno {
             }
             // Check if we should cast tornado (prioritize over melee attack)
             else if (absoluteDistanceX < this.tornadoAttackRange &&
-                     absoluteDistanceX > this.attackRange &&
-                     Math.abs(distanceY) < 100 &&
-                     this.tornadoCooldown <= 0) {
+                absoluteDistanceX > this.attackRange &&
+                Math.abs(distanceY) < 100 &&
+                this.tornadoCooldown <= 0) {
                 this.facing = distanceX > 0 ? 1 : -1;
                 this.castTornadoAttack();
             }
             // Check for melee attack conditions
             else if (absoluteDistanceX < this.attackRange &&
-                     Math.abs(distanceY) < this.attackRange &&
-                     this.attackCooldown <= 0) {
+                Math.abs(distanceY) < this.attackRange &&
+                this.attackCooldown <= 0) {
                 this.state = 'attacking';
                 this.isCloseAttacking = true;
                 this.attackDuration = 0;
@@ -395,7 +395,7 @@ class inferno {
 
     getPlayer() {
         return this.game.entities.find(entity =>
-            entity instanceof AzielSeraph || entity instanceof HolyDiver ||
+            entity instanceof AzielSeraph || entity instanceof Kyra ||
             entity instanceof Grim || entity instanceof Kanji
         );
     }
@@ -535,7 +535,7 @@ class inferno {
                 ctx.font = '10px Arial';
                 ctx.fillStyle = 'white';
                 ctx.fillText(`Tornado: ${this.tornadoCooldown.toFixed(1)}s`,
-                             this.box.x, this.box.y - 15);
+                    this.box.x, this.box.y - 15);
             }
         }
 

@@ -183,11 +183,13 @@ class Kyra {
 
         // Collision detection
         this.game.entities.forEach(entity => {
-            if ((entity instanceof Eclipser || entity instanceof Drone) && this.attackBox && this.attackBox.collide(entity.box) && this.game.closeAttack) {
-                if(entity instanceof Eclipser){
-                    entity.takeDamage(40);
-                }else if(entity instanceof Drone){
+            if ((entity instanceof Eclipser || entity instanceof Drone
+                || entity instanceof inferno || entity instanceof Shizoku || entity instanceof LeviathDraconis) && this.attackBox && this.attackBox.collide(entity.box) && this.game.closeAttack) {
+                if(entity instanceof Drone){
                     entity.takeDamage(20);
+                }
+                else{
+                    entity.takeDamage(40);
                 }
             }
 

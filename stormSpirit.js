@@ -410,7 +410,8 @@ class stormSpirit {
             player = this.game.entities.find(entity =>
                 entity instanceof AzielSeraph ||
                 entity instanceof HolyDiver ||
-                entity instanceof Grim
+                entity instanceof Grim ||
+                entity instanceof Kyra
             );
         }
         return player;
