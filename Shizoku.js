@@ -135,27 +135,6 @@ class Shizoku {
         );
     }
 
-    checkPlayerAttack() {
-        const player = this.getPlayer();
-        if (!player) return;
-        // Check for close attack collision
-        if (player.box && this.box.collide(player.box)) {
-            console.log(`HERE`);
-            if (player instanceof AzielSeraph || player instanceof HolyDiver) {
-                // Check for HolyDiver attack
-                //const holyDiver = this.game.entities.find(entity => entity instanceof HolyDiver);
-                if (player.box && this.box.collide(player.box) && this.game.closeAttack) {
-                    this.takeDamage(10);
-                }
-            } else if (player instanceof Grim) {
-                // Handle Grim's attack
-                if (player.game.closeAttack) {
-                    this.takeDamage(10);
-                }
-            }
-        }
-    }
-
     update() {
         const TICK = this.game.clockTick;
         const player = this.getPlayer();
@@ -241,7 +220,6 @@ class Shizoku {
         }
 
         this.damageCooldown -= TICK;
-        //this.checkPlayerAttack();
         this.healthbar.update();
     }
 
@@ -250,20 +228,20 @@ class Shizoku {
 
         if (this.state === 'attacking') {
             if (this.facing === -1) {
-                this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, true);
+                this.attackLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, false, true);
             } else {
                 this.attackRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
             }
         } else {
             if (this.state === 'chasing' || this.state === 'moving' || this.jumpPhase === 'jumping') {
                 if (this.facing === -1) {
-                    this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, true);
+                    this.walkLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, false, true);
                 } else {
                     this.walkRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
                 }
             } else {
                 if (this.facing === -1) {
-                    this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, true);
+                    this.idleLeftAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, false, true);
                 } else {
                     this.idleRightAnim.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
                 }

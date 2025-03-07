@@ -3,8 +3,7 @@ class LevelManager {
         this.game = game;
         this.whichPlayer = player;
         this.boss = null;
-        //this.startLevelTransition(level);
-        this.loadLevel(levelFour);
+        this.startLevelTransition(level);
     };
     startLevelTransition(level) {
         const transition = new LevelTransition(this.game);
@@ -42,10 +41,10 @@ class LevelManager {
         } else if (level === levelTwo) {
             this.boss = new inferno(this.game);
             this.game.addEntity(this.boss);
-            // for (var i = 0; i < level.phoenixes.length; i++) {
-            //     let phoenix = level.phoenixes[i];
-            //     this.game.addEntity(new Phoenix(this.game, phoenix.x, phoenix.y, phoenix.speed));
-            // }
+            for (var i = 0; i < level.phoenixes.length; i++) {
+                let phoenix = level.phoenixes[i];
+                this.game.addEntity(new Phoenix(this.game, phoenix.x, phoenix.y, phoenix.speed));
+            }
             ASSET_MANAGER.pauseBackgroundMusic();
             ASSET_MANAGER.playAsset(`./audio/level2Music.mp3`);
             ASSET_MANAGER.autoRepeat(`./audio/level2Music.mp3`);

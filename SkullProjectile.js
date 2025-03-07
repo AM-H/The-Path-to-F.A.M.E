@@ -51,7 +51,8 @@ class SkullProjectile {
                      entity instanceof inferno || 
                      entity instanceof Shizoku ||
                      entity instanceof stormSpirit ||
-                     entity instanceof Phoenix)) {
+                     entity instanceof Phoenix ||
+                     entity instanceof LeviathDraconis)) {
                     
                     // Deal damage if entity has a takeDamage method
                     if (entity.takeDamage) {

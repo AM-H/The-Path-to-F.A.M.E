@@ -19,7 +19,7 @@ class ChronosVeil {
     getPlayer() {
         // Find any entity thats a player
         return this.game.entities.find(entity => 
-            entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kanji
+            entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kanji || entity instanceof Kyra
         );
     };
     updateBoundingBox() {
@@ -73,7 +73,7 @@ class ChronosVeil {
 
         this.game.entities.forEach(entity => {
             if ((entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kanji) && this.box.collide(entity.box)) {
-                if (this.getPlayer().isCloseAttacking) {
+                if (this.getPlayer().isCloseAttacking || this.game.closeAttack) {
                     entity.takeDamage(1); //If the player is close attacking whilst getting close attacked, reduce damage dealt
                 } else {
                     entity.takeDamage(4);

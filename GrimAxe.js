@@ -69,12 +69,12 @@ class GrimAxe {
 
          //Check for boss collision & apply damage close range
          this.game.entities.forEach(entity => {
-            if ((entity instanceof  inferno || entity instanceof  Shizoku || entity instanceof Eclipser) && this.box.collide(entity.box) && this.game.closeAttack) {
+            if ((entity instanceof  inferno || entity instanceof  Shizoku || entity instanceof Eclipser || entity instanceof LeviathDraconis) && this.box.collide(entity.box) && this.game.closeAttack) {
                 entity.takeDamage(10); // Deal 10 damage to boss
                 console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
-            } else if ((entity instanceof Drone ||entity instanceof Phoenix || entity instanceof stormSpirit) && this.box.collide(entity.box) && this.game.closeAttack) {
+            } else if ((entity instanceof Drone || entity instanceof Phoenix || entity instanceof stormSpirit) && this.box.collide(entity.box) && this.game.closeAttack) {
                 entity.takeDamage(3);
-                console.log(`Drone takes damage! HP: ${entity.hitpoints}`);
+                console.log(`Minion takes damage! HP: ${entity.hitpoints}`);
             }
         });
 
@@ -95,7 +95,7 @@ class GrimAxe {
             if (this.damageCooldown <= 0) {
                 this.game.entities.forEach(entity => {
                     if (this.box.collide(entity.box)) {
-                        if (entity instanceof Eclipser || entity instanceof inferno || entity instanceof Shizoku) {
+                        if (entity instanceof Eclipser || entity instanceof inferno || entity instanceof Shizoku || entity instanceof LeviathDraconis) {
                             entity.takeDamage(10); // Deal 10 damage to boss
                             console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
                             this.damageCooldown = 0.5; // Set cooldown between damage ticks (0.5 seconds)

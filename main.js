@@ -123,6 +123,12 @@ ASSET_MANAGER.queueDownload(`./sprites/inferno/runRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/inferno/runLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/inferno/attackRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/inferno/attackLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/inferno/tornadoCastLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/inferno/tornadoCastRight.png`);  
+
+//Special move
+ASSET_MANAGER.queueDownload(`./sprites/tornado/projectile.png`);
+ASSET_MANAGER.queueDownload(`./sprites/tornado/part2final.png`);
 
 
 //Grim
