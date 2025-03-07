@@ -17,7 +17,7 @@ class Shizoku {
         // Basic properties
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 1800;
-        this.moveSpeed = 200;
+        this.moveSpeed = 50;
         this.landed = true;
 
         this.spriteScale = 2;
@@ -55,7 +55,7 @@ class Shizoku {
         // Debug flag
         this.debug = true;
 
-        // Attack properties
+        // Attack properties (melee)
         this.attackBoxWidth = 20;
         this.attackBoxHeight = 20;
         this.attackBox = null;
@@ -68,6 +68,10 @@ class Shizoku {
         // Falling when stuck above player
         this.timeAbovePlayer = 0;
         this.maxTimeAbovePlayer = 0.5;
+
+        // ScorchingEye shooting properties
+        this.shootTimer = 0;
+        this.shootInterval = 5;
     }
 
     update() {
@@ -87,6 +91,9 @@ class Shizoku {
         if (this.attackCooldownTimer > 0) this.attackCooldownTimer -= TICK;
         if (this.attackTimer > 0) this.attackTimer -= TICK;
 
+        // Update shooting timer
+        this.shootTimer += TICK;
+
         // Check vertical difference for falling when player is below
         const playerCenterY = player.box.y + player.box.height / 2;
         const shouldFall = playerCenterY > this.y + 50;
@@ -103,6 +110,7 @@ class Shizoku {
             this.landed = false;
             this.state = "jumping";
             this.jumpCooldown = 1.0;
+            if (this.state !== "attacking") this.attackBox = null; // Clear attackBox when jumping
             if (this.debug) console.log(`Shizoku jumping to (${targetX}, ${targetY}), facing: ${this.facing}`);
         }
 
@@ -110,6 +118,12 @@ class Shizoku {
         const moveDir = player.x > this.x ? 1 : -1;
 
         if (this.landed) {
+            // Shoot ScorchingEye every 5 seconds
+            if (this.shootTimer >= this.shootInterval) {
+                this.shootScorchingEye(player);
+                this.shootTimer = 0; // Reset timer
+            }
+
             if (distToPlayer < this.attackRange && this.attackCooldownTimer <= 0) {
                 this.state = `attacking`;
                 this.velocity.x = 0;
@@ -117,11 +131,10 @@ class Shizoku {
                 this.attackCooldownTimer = this.attackCooldown;
                 if (this.attackTimer === this.attackDuration) {
                     const dx = player.x - this.x;
-                    this.facing = dx > 0 ? 1 : -1; // Simplified facing logic
+                    this.facing = dx > 0 ? 1 : -1;
                 }
                 this.hasDealtDamage = false;
-                // Adjust attack box positioning
-                const attackOffsetX = this.facing === 1 ? this.boxWidth + 5 : -this.attackBoxWidth - 5; // Ensure reach when facing right
+                const attackOffsetX = this.facing === 1 ? this.boxWidth + 5 : -this.attackBoxWidth - 5;
                 this.attackBox = new BoundingBox(
                     this.x + attackOffsetX,
                     this.y + (this.boxHeight - this.attackBoxHeight) / 2,
@@ -132,9 +145,9 @@ class Shizoku {
             } else if (distToPlayer < this.chaseRange && this.state !== "attacking") {
                 if (this.state !== 'chasing' || Math.abs(this.velocity.x) < 1) {
                     this.state = `chasing`;
+                    this.attackBox = null; // Clear attackBox when chasing
                 }
                 const speedMultiplier = (this.getCurrentPlatform() && this.getPlayerPlatform(player) && this.getCurrentPlatform() === this.getPlayerPlatform(player)) ? 1.5 : 1;
-                // Simplified chasing logic to always move toward player
                 const dx = player.x + (player.box.width / 2) - (this.x + this.width / 2);
                 this.velocity.x = Math.min(Math.max(dx * speedMultiplier, -this.moveSpeed), this.moveSpeed);
                 this.x += this.velocity.x * TICK;
@@ -143,6 +156,7 @@ class Shizoku {
             } else if (this.state !== "attacking") {
                 this.state = `idle`;
                 this.velocity.x = 0;
+                this.attackBox = null; // Clear attackBox when idle
             }
 
             // Track time above player
@@ -162,7 +176,7 @@ class Shizoku {
             }
         } else if (this.state === `attacking` && this.attackTimer <= 0) {
             this.state = `idle`;
-            this.attackBox = null;
+            this.attackBox = null; // Clear attackBox when attack ends
             this.hasDealtDamage = false;
             if (this.debug) console.log("Attack ended, attackBox cleared");
         }
@@ -190,9 +204,10 @@ class Shizoku {
                         isOnGround = true;
                         if (this.state !== "attacking" || this.attackTimer <= 0) {
                             this.state = "idle";
+                            this.attackBox = null; // Clear attackBox when landing
                         }
                         if (this.debug) console.log("Landed on platform at y:", this.y);
-                     }
+                    }
                 }
             }
         });
@@ -208,6 +223,7 @@ class Shizoku {
             this.landed = true;
             if (this.state !== "attacking" || this.attackTimer <= 0) {
                 this.state = "idle";
+                this.attackBox = null; // Clear attackBox when landing on ground
             }
             this.updateBoundingBox();
             if (this.debug) console.log("Reset to ground level at y:", this.y);
@@ -217,11 +233,13 @@ class Shizoku {
         if (shouldFall && this.landed) {
             this.landed = false;
             this.state = "jumping";
+            this.attackBox = null; // Clear attackBox when falling
             if (this.debug) console.log("Falling to lower platform or ground to chase player");
         }
         if (this.timeAbovePlayer > this.maxTimeAbovePlayer && this.landed) {
             this.landed = false;
             this.state = "jumping";
+            this.attackBox = null; // Clear attackBox when falling
             this.timeAbovePlayer = 0;
             if (this.debug) console.log("Falling due to being stuck above player too long");
         }
@@ -237,6 +255,14 @@ class Shizoku {
 
         this.damageCooldown -= TICK;
         this.healthbar.update();
+    }
+
+    shootScorchingEye(player) {
+        const eyeX = this.x + (this.facing === 1 ? this.boxWidth : -this.projectileWidth);
+        const eyeY = this.y + this.boxHeight / 2;
+        const scorchingEye = new ScorchingEye(this.game, eyeX, eyeY, false);
+        this.game.addEntity(scorchingEye);
+        if (this.debug) console.log(`Shizoku shot ScorchingEye at (${eyeX}, ${eyeY}), targeting player at (${player.x}, ${player.y})`);
     }
 
     draw(ctx) {

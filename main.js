@@ -140,6 +140,10 @@ ASSET_MANAGER.queueDownload(`./sprites/eclipser/walkR.png`);
 ASSET_MANAGER.queueDownload(`./sprites/eclipser/walkL.png`);
 ASSET_MANAGER.queueDownload(`./sprites/eclipser/laser.png`);
 
+//Scorching Eye
+ASSET_MANAGER.queueDownload(`./sprites/eye/Eye.png`)
+ASSET_MANAGER.queueDownload(`./sprites/eye/effect.png`)
+
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");
 	const ctx = canvas.getContext("2d");

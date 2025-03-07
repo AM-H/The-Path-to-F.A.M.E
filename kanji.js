@@ -38,9 +38,7 @@ class Kanji {
         this.healthbar = new HealthBar(this);
         this.attackTimer = 0;
         this.attackDuration = 0;
-        this.friction = 800; // Friction for stormSpirit knockback
-        this.knockbackTimer = 0; // Timer for knockback duration
-        this.knockbackDuration = 0.3; // Duration knockback overrides input
+        this.friction = 800; // Friction still applies naturally to velocity
     }
 
     performRangeAttack() {
@@ -86,19 +84,11 @@ class Kanji {
         }
     }
 
-    takeDamage(amount, attacker) { // Added attacker parameter
+    takeDamage(amount) { // Simplified: no knockback logic here
         this.hitpoints -= amount;
         if (this.hitpoints < 0) this.hitpoints = 0;
         console.log(`Kanji takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
         this.healthbar.update();
-
-        // Apply knockback only if attacker is stormSpirit
-        if (attacker instanceof stormSpirit) {
-            this.knockbackTimer = this.knockbackDuration;
-            this.velocity.x = attacker.facing * attacker.knockbackForce; // Use stormSpirit's knockbackForce
-            if (this.game.debug) console.log(`Knockback applied to Kanji: ${this.velocity.x}`);
-        }
-        // No knockback for Shizoku or other entities
     }
 
     updateLastBB() {
@@ -113,19 +103,6 @@ class Kanji {
             this.game.isGameOver = true;
             this.game.addEntity(new GameOver(this.game));
             return;
-        }
-
-        // Update knockback timer (relevant for stormSpirit)
-        if (this.knockbackTimer > 0) {
-            this.knockbackTimer -= TICK;
-            // Apply friction during knockback when no input
-            if (!this.game.left && !this.game.right) {
-                if (this.velocity.x > 0) {
-                    this.velocity.x = Math.max(0, this.velocity.x - this.friction * TICK);
-                } else if (this.velocity.x < 0) {
-                    this.velocity.x = Math.min(0, this.velocity.x + this.friction * TICK);
-                }
-            }
         }
 
         // Update facing direction
@@ -166,11 +143,16 @@ class Kanji {
         // Apply velocity to position
         this.x += this.velocity.x * TICK;
 
-        // Apply input only if not in knockback state (from stormSpirit)
-        if (this.knockbackTimer <= 0) {
-            if (this.game.left) this.velocity.x = -130;
-            else if (this.game.right) this.velocity.x = 130;
-            else this.velocity.x = 0; // Stop movement if no input
+        // Apply input (friction will naturally slow knockback)
+        if (this.game.left) this.velocity.x = -130;
+        else if (this.game.right) this.velocity.x = 130;
+        else {
+            // Apply friction when no input
+            if (this.velocity.x > 0) {
+                this.velocity.x = Math.max(0, this.velocity.x - this.friction * TICK);
+            } else if (this.velocity.x < 0) {
+                this.velocity.x = Math.min(0, this.velocity.x + this.friction * TICK);
+            }
         }
 
         // Jump logic

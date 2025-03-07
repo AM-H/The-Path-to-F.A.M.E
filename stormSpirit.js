@@ -65,7 +65,7 @@ class stormSpirit {
         this.attackCooldown = 1.0;
         this.attackCooldownTimer = 0;
         this.hasDealtDamage = false;
-        this.knockbackForce = 300;
+        this.knockbackForce = 300; // Knockback force applied to player
     }
 
     update() {
@@ -100,7 +100,6 @@ class stormSpirit {
             this.velocity = this.calculateJumpVelocity(targetX, targetY);
             this.landed = false;
             this.state = "jumping";
-            this.jumpCooldown = 1.0;
             if (this.attackBox) this.attackBox = null; // Clear attackBox when jumping
             if (this.debug) console.log(`stormSpirit jumping to (${targetX}, ${targetY}), facing: ${this.facing}`);
         }
@@ -149,9 +148,12 @@ class stormSpirit {
                 this.attackBox.y = this.y + (this.boxHeight - this.attackBoxHeight) / 2;
             }
             if (player.box && this.attackBox && this.attackBox.collide(player.box) && !this.hasDealtDamage) {
-                player.takeDamage(3, this);
+                // Apply damage
+                player.takeDamage(3);
+                // Apply knockback directly to player's velocity
+                player.velocity.x = this.facing * this.knockbackForce;
                 this.hasDealtDamage = true;
-                if (this.debug) console.log(`Player hit by stormSpirit punch! Damage dealt: 3`);
+                if (this.debug) console.log(`Player hit by stormSpirit punch! Damage: 3, Knockback: ${player.velocity.x}`);
             }
         } else if (this.state === `attacking` && this.attackTimer <= 0) {
             this.state = `idle`;
@@ -385,7 +387,7 @@ class stormSpirit {
         }
 
         if (currentTime - this.lastJumpTime > 3 && player.y < this.y - 50 && (!currentPlatform || playerPlatform !== currentPlatform)) {
-            if (this.debug) console.log("Forcing nowych jump due to time and height difference");
+            if (this.debug) console.log("Forcing jump due to time and height difference");
             this.lastJumpTime = currentTime;
             this.targetPlatform = playerPlatform;
             return true;
