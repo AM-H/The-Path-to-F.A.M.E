@@ -28,8 +28,8 @@ class Phoenix {
         this.attackTimer = 0; 
         
         // Health
-        this.hitpoints = 150;
-        this.maxhitpoints = 150;
+        this.hitpoints = 300;
+        this.maxhitpoints = 300;
         this.healthbar = new HealthBar(this);
         
         // State
@@ -54,7 +54,7 @@ class Phoenix {
             entity instanceof AzielSeraph || 
             entity instanceof Grim || 
             entity instanceof Kanji ||
-            entity instanceof KyraBlade
+            entity instanceof Kyra
         );
     }
     

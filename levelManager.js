@@ -3,15 +3,14 @@ class LevelManager {
         this.game = game;
         this.whichPlayer = player;
         this.boss = null;
-        //this.startLevelTransition(level);
-        this.loadLevel(levelThree);
+        this.startLevelTransition(level);
     };
     startLevelTransition(level) {
         const transition = new LevelTransition(this.game);
         this.game.addEntity(transition);
         setTimeout(() => {
             this.loadLevel(level);
-         }, 1000); // Wait 4 seconds before loading the level
+         }, 4000); // Wait 4 seconds before loading the level
     }
     loadLevel(level) {
         if (this.whichPlayer == `aziel`) {
@@ -42,10 +41,10 @@ class LevelManager {
         } else if (level === levelTwo) {
             this.boss = new inferno(this.game);
             this.game.addEntity(this.boss);
-            // for (var i = 0; i < level.phoenixes.length; i++) {
-            //     let phoenix = level.phoenixes[i];
-            //     this.game.addEntity(new Phoenix(this.game, phoenix.x, phoenix.y, phoenix.speed));
-            // }
+            for (var i = 0; i < level.phoenixes.length; i++) {
+                let phoenix = level.phoenixes[i];
+                this.game.addEntity(new Phoenix(this.game, phoenix.x, phoenix.y, phoenix.speed));
+            }
             ASSET_MANAGER.pauseBackgroundMusic();
             ASSET_MANAGER.playAsset(`./audio/level2Music.mp3`);
             ASSET_MANAGER.autoRepeat(`./audio/level2Music.mp3`);
@@ -61,6 +60,9 @@ class LevelManager {
             this.boss = new LeviathDraconis(this.game);
             this.game.addEntity(this.boss);
             this.game.addEntity(new ChronosVeil(this.game, this.boss));
+            ASSET_MANAGER.pauseBackgroundMusic();
+            ASSET_MANAGER.playAsset(`./audio/level4Music.mp3`);
+            ASSET_MANAGER.autoRepeat(`./audio/level4Music.mp3`);
         }
 
         // Add background and platforms

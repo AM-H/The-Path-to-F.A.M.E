@@ -28,6 +28,14 @@ class LeviathDraconis {
         this.isRangeAttacking = false;  //Flag to track if the range attack is active
         this.damageCooldown = 0;
         this.invincibilityTime = 0.5; // Time of invincibility after taking damage
+        //time stopping range
+        this.isTimeStopped = false;
+        this.timeStopRange = 95; //If player within 95 pixels of leviath Draconis, they stop moving
+        this.timeStopStart = 0;
+        this.timeStopLength = 4;
+        this.timeStopCooldown = 20;
+        //Sound for timestop
+        this.timeStopSoundPlayed = false;
         this.updateBoundingBox();
     };
     getPlayer() {
@@ -50,7 +58,7 @@ class LeviathDraconis {
         
         const distanceX = player.box.x - this.box.x;
         const distanceY = player.box.y - this.box.y;
-        const horizontalSpeed = 75;
+        const horizontalSpeed = 65;
         const jumpSpeed = -1030;
 
         if (this.landed) {
@@ -108,8 +116,7 @@ class LeviathDraconis {
         const player = this.getPlayer();
         const bossCenter = { x: this.box.x + this.box.width / 2, y: this.box.y + this.box.height / 2 };
         const playerCenter = { x: player.box.x + player.box.width / 2, y: player.box.y + player.box.height / 2 };
-        
-        this.isCloseAttacking = getDistance(bossCenter, playerCenter) < 95; // Example threshold
+        this.isCloseAttacking = getDistance(bossCenter, playerCenter) < 200; //Distance to active close Attack, not neccesarily range of attack
     };
     updateRangeAttack() {
         const currentTime = this.game.timer.gameTime;
@@ -138,7 +145,29 @@ class LeviathDraconis {
         } else {
             this.animator = this.animationMap.get(this.facing === "right" ? "idleRight" : "idleLeft");
         }
-    }
+    };
+    updateTimeStop() {
+        const TICK = this.game.clockTick;
+        if (this.timeStopCooldown <=20 ) {
+            this.timeStopCooldown-=TICK;
+        }
+        if (this.timeStopCooldown <= 0) {
+            this.isTimeStopped = true;
+            this.timeStopStart+=TICK
+            if (!this.timeStopSoundPlayed) {
+                ASSET_MANAGER.getAsset(`./audio/stopTime.mp3`).volume = 0.4;
+                ASSET_MANAGER.playAsset(`./audio/stopTime.mp3`);
+                this.timeStopSoundPlayed = true;
+            }
+        }
+        if (this.timeStopStart>=this.timeStopLength) {
+            this.isTimeStopped = false;
+            this.timeStopStart = 0;
+            this.timeStopCooldown = 20;
+            this.timeStopSoundPlayed = false; // Reset flag so it can play again next time
+        }
+        this.game.isTimeStopped = this.isTimeStopped;
+    };
     update() {
         const TICK = this.game.clockTick;
         //Wall boundaries
@@ -149,12 +178,15 @@ class LeviathDraconis {
             this.x = gameWorld.width-this.box.width;
         }
         this.trackPlayerAndMove();
-        this.velocity.y += this.fallGrav * TICK;
-        this.x += this.velocity.x * TICK;
-        this.y += this.velocity.y * TICK;
+        if (!this.isTimeStopped) {
+            this.velocity.y += this.fallGrav * TICK;
+            this.x += this.velocity.x * TICK;
+            this.y += this.velocity.y * TICK;
+        }
         this.updateAnimation();
         this.updateCloseAttack();
         this.updateRangeAttack();
+        this.updateTimeStop();
         this.updateLastBB();
         this.updateBoundingBox();
         //Check if we have been stuck above player on platform for more than a second
@@ -171,11 +203,25 @@ class LeviathDraconis {
         this.healthbar.update();
     };
     draw(ctx) {
+        if (this.isTimeStopped && this.facing == `right`) {
+            this.animator = this.animationMap.get(`idleRight`)
+        } else if (this.isTimeStopped && this.facing == `left`) {
+            this.animator = this.animationMap.get(`idleLeft`)
+        }
         this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
         if (this.game.debugMode) {
             ctx.strokeStyle = "red";
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        }
+        if (this.isTimeStopped) {
+            ctx.beginPath();
+            ctx.arc(this.x + 16, this.y + 32, this.timeStopRange, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(0, 0, 255, 0.15)";
+            ctx.fill();
+            ctx.strokeStyle = "blue";
+            ctx.lineWidth = 2;
+            ctx.stroke();
         }
         this.healthbar.draw(ctx);
     };

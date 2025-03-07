@@ -69,9 +69,15 @@ class ChronosVeil {
     }
 
     applyCloseAttackDamage() {
+        if (!this.leviath.isCloseAttacking) return;
+
         this.game.entities.forEach(entity => {
             if ((entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kanji) && this.box.collide(entity.box)) {
-                entity.takeDamage(5);
+                if (this.getPlayer().isCloseAttacking || this.game.closeAttack) {
+                    entity.takeDamage(1); //If the player is close attacking whilst getting close attacked, reduce damage dealt
+                } else {
+                    entity.takeDamage(4);
+                }
             }
         });
     }

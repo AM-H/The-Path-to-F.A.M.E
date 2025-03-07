@@ -8,8 +8,8 @@ class Grim {
         this.facing = "right";
 
         // Health system
-        this.hitpoints = 100;
-        this.maxhitpoints = 100;
+        this.hitpoints = 500;
+        this.maxhitpoints = 500;
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
 
@@ -38,7 +38,11 @@ class Grim {
         this.knockbackDuration = 0.3;
         this.knockbackSpeed = 300;
     }
-
+    getLeviath() {
+        return this.game.entities.find(entity => 
+            entity instanceof LeviathDraconis
+        );
+    };
     takeDamage(amount) {
         if (!this.game.invincibleMode) {
             this.hitpoints -= amount;
@@ -75,6 +79,9 @@ class Grim {
     }
 
     update() {
+        if (this.game.isTimeStopped == true && getDistance(this, this.getLeviath()) <= 95 && !(this.hitpoints == 0)) {
+            return;
+        }
         const TICK = this.game.clockTick;
 
         if (this.hitpoints <= 0) {
@@ -166,7 +173,7 @@ class Grim {
 
         // Jump logic with gravity
         if (this.game.jump && this.landed) {
-            this.velocity.y = -800;
+            this.velocity.y = -825;
             this.fallGrav = 1900;
             this.landed = false;
         }
