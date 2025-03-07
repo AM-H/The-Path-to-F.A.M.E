@@ -185,8 +185,8 @@ class Kanji {
 
         // Collision detection (only with platforms)
         this.game.entities.forEach(entity => {
-            if ((entity instanceof Eclipser || entity instanceof Drone || entity instanceof Shizoku || entity instanceof stormSpirit) && this.attackBox && this.attackBox.collide(entity.box) && this.game.closeAttack) {
-                if (entity instanceof Eclipser || entity instanceof Shizoku || entity instanceof stormSpirit) {
+            if ((entity instanceof Eclipser || entity instanceof Drone || entity instanceof Shizoku || entity instanceof stormSpirit || entity instanceof  inferno) && this.attackBox && this.attackBox.collide(entity.box) && this.game.closeAttack) {
+                if (entity instanceof Eclipser || entity instanceof Shizoku || entity instanceof stormSpirit || entity instanceof  inferno || entity instanceof LeviathDraconis) {
                     entity.takeDamage(50);
                 } else if (entity instanceof Drone) {
                     entity.takeDamage(20);
@@ -198,20 +198,21 @@ class Kanji {
                     this.velocity.y = 0;
                     this.y = entity.box.top - 64;
                     this.landed = true;
-                } else if (this.velocity.y < 0 && this.lastBox.top >= entity.box.bottom) {
-                    this.velocity.y = 300;
-                    this.y = entity.box.bottom;
-                } else {
+                }
+                // } else if (this.velocity.y < 0 && this.lastBox.top >= entity.box.bottom) {
+                //     this.velocity.y = 300;
+                //     this.y = entity.box.bottom;
+                 else {
                     this.landed = false;
                 }
 
-                if (this.velocity.x > 0 && this.lastBox.right <= entity.box.left) {
-                    this.x = entity.box.left - this.box.width;
-                    this.velocity.x = 0;
-                } else if (this.velocity.x < 0 && this.lastBox.left >= entity.box.right) {
-                    this.x = entity.box.right;
-                    this.velocity.x = 0;
-                }
+                // if (this.velocity.x > 0 && this.lastBox.right <= entity.box.left) {
+                //     this.x = entity.box.left - this.box.width;
+                //     this.velocity.x = 0;
+                // } else if (this.velocity.x < 0 && this.lastBox.left >= entity.box.right) {
+                //     this.x = entity.box.right;
+                //     this.velocity.x = 0;
+                // }
             }
         });
 
@@ -231,14 +232,18 @@ class Kanji {
             }
         }
 
-        if (this.attackBox) {
+        if (this.attackBox && this.game.debugMode) {
             ctx.strokeStyle = "blue";
             ctx.lineWidth = 2;
             ctx.strokeRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
         }
 
-        ctx.strokeStyle = "red";
-        ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        if(this.game.debugMode){
+            ctx.strokeStyle = "red";
+            ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
+        }
+
         this.healthbar.draw(ctx);
+
     }
 }

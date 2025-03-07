@@ -79,8 +79,14 @@ class LevelManager {
             this.game.entities.forEach(element => {
                 element.removeFromWorld = true;
             });
+            this.game.addEntity(new LevelManager(this.game, this.whichPlayer, levelThree));
+        } else if(this.boss && this.boss instanceof Shizoku && this.boss.defeated){
+            this.game.entities.forEach(element => {
+                element.removeFromWorld = true;
+            });
             this.game.addEntity(new LevelManager(this.game, this.whichPlayer, levelFour));
-        } else if (this.boss && this.boss instanceof LeviathDraconis && this.boss.defeated) {
+        }
+        else if (this.boss && this.boss instanceof LeviathDraconis && this.boss.defeated) {
             this.game.entities.forEach(element => {
                 element.removeFromWorld = true;
             });
