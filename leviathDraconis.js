@@ -178,9 +178,11 @@ class LeviathDraconis {
             this.x = gameWorld.width-this.box.width;
         }
         this.trackPlayerAndMove();
-        this.velocity.y += this.fallGrav * TICK;
-        this.x += this.velocity.x * TICK;
-        this.y += this.velocity.y * TICK;
+        if (!this.isTimeStopped) {
+            this.velocity.y += this.fallGrav * TICK;
+            this.x += this.velocity.x * TICK;
+            this.y += this.velocity.y * TICK;
+        }
         this.updateAnimation();
         this.updateCloseAttack();
         this.updateRangeAttack();
@@ -201,6 +203,11 @@ class LeviathDraconis {
         this.healthbar.update();
     };
     draw(ctx) {
+        if (this.isTimeStopped && this.facing == `right`) {
+            this.animator = this.animationMap.get(`idleRight`)
+        } else if (this.isTimeStopped && this.facing == `left`) {
+            this.animator = this.animationMap.get(`idleLeft`)
+        }
         this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
         if (this.game.debugMode) {
             ctx.strokeStyle = "red";

@@ -55,7 +55,7 @@ class AzielSeraph {
     }
        
     update () {
-        if (this.game.isTimeStopped == true && getDistance(this, this.getLeviath()) <= 95) {
+        if (this.game.isTimeStopped == true && getDistance(this, this.getLeviath()) <= 95 && !(this.hitpoints == 0)) {
             return;
         }
         const TICK = this.game.clockTick;

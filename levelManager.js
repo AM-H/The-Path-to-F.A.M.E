@@ -61,6 +61,9 @@ class LevelManager {
             this.boss = new LeviathDraconis(this.game);
             this.game.addEntity(this.boss);
             this.game.addEntity(new ChronosVeil(this.game, this.boss));
+            ASSET_MANAGER.pauseBackgroundMusic();
+            ASSET_MANAGER.playAsset(`./audio/level4Music.mp3`);
+            ASSET_MANAGER.autoRepeat(`./audio/level4Music.mp3`);
         }
 
         // Add background and platforms
