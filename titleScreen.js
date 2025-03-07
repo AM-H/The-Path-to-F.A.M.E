@@ -45,7 +45,7 @@ class SelectPlayerScreen {
         ASSET_MANAGER.autoRepeat(`./audio/YouSeeBIGGIRLT_T.mp3`);
         this.spritesheet = ASSET_MANAGER.getAsset(`./levelBackgrounds/SelectPlayerScreen.png`);
         this.player1 = {
-            idle: new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleRightKyra.png`), 33, 0, 96, 38, 5, 0.35),
+            idle: new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/kyraIdleRight.png`), 0, 0, 32, 38, 5, 0.35),
             x: (gameWorld.width/5),
             y: (gameWorld.height/8)*6
         };
@@ -130,7 +130,7 @@ class SelectPlayerScreen {
         if (this.hovering1) {
             ctx.strokeStyle = `#fafad4`;
             ctx.lineWidth = 6;
-            ctx.strokeRect(this.player1.x, this.player1.y, 58, 76);
+            ctx.strokeRect(this.player1.x+9, this.player1.y, 58, 76);
         }
 
         if (this.hovering2) {

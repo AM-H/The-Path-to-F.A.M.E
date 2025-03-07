@@ -21,10 +21,10 @@ class Kyra {
         this.animationMap = new Map();
         this.animationMap.set(`runRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/RunRightKyra.png`), 0, 8, 92, 48, 4, 0.2));
         this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/RunLeftKyra.png`), 0, 8, 92, 48, 4, 0.2));
-        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleRightKyra.png`), 0, 0, 92, 38, 5, 0.35));
-        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/IdleLeftKyra.png`), 0, 2, 92, 38, 5, 0.35));
-        this.animationMap.set(`attackRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/AttackRightKyra.png`), 0, 0, 96, 42, 5, 0.07));
-        this.animationMap.set(`attackLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/AttackLeftKyra.png`), 0, 0, 95, 42, 5, 0.07));
+        this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/kyraIdleRight.png`), 0, 2, 32, 38, 5, 0.35));
+        this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/kyraIdleLeft.png`), 0, 2, 32, 38, 5, 0.35));
+        this.animationMap.set(`attackRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/kyraAttackRight.png`), 0, 0, 64, 42, 5, 0.07));
+        this.animationMap.set(`attackLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/kyraAttackLeft.png`), 0, 0, 64, 42, 5, 0.07));
         this.animationMap.set(`throwRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/ThrowRightKyra.png`), 0, 0, 95, 34, 4, 0.07));
         this.animationMap.set(`throwLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/ThrowLeftKyra.png`), 0, 0, 95, 34, 4, 0.07));
         this.animationMap.set(`shuriken`, new Animator(ASSET_MANAGER.getAsset(`./sprites/kyrablade/shuriken.png`), 0, 0, 32, 32));
@@ -32,7 +32,7 @@ class Kyra {
         this.animator = this.animationMap.get(`idleRight`);
 
         this.attacking = false;
-        this.box = new BoundingBox(this.x, this.y, 50, 61);
+        this.box = new BoundingBox(this.x, this.y, 58, 69);
         this.attackBox = null;
         this.updateBoundingBox();
         this.hitpoints = 500;
@@ -48,7 +48,7 @@ class Kyra {
     }
 
     updateBoundingBox() {
-        this.box = new BoundingBox(this.x, this.y, 40, 61);
+        this.box = new BoundingBox(this.x, this.y, 58, 69);
 
         if (this.attacking) {
             if (this.attackDirection === "right") {
@@ -204,8 +204,8 @@ class Kyra {
 
         // World boundaries
         if (this.x < 0) this.x = 0;
-        if (this.x > gameWorld.width - 64) {
-            this.x = gameWorld.width - 64;
+        if (this.x > gameWorld.width - this.box.width) {
+            this.x = gameWorld.width - this.box.width;
         }
 
         if (!this.rangeAttacking) {
@@ -238,7 +238,7 @@ class Kyra {
                 if (this.velocity.y > 0) {
                     if ((entity instanceof Platform) && (this.lastBox.bottom) <= entity.box.top) {
                         this.velocity.y = 0;
-                        this.y = entity.box.top - 71;
+                        this.y = entity.box.top - this.box.height;
                         this.landed = true;
                     } else {
                         this.landed = false;
@@ -253,18 +253,22 @@ class Kyra {
     }
 
     draw(ctx) {
-        let yOffset = this.attacking ? -6 : 0;
-
-        if (this.facing === "left" && !this.game.left && !this.game.right) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.8);
+        let yOffset = this.attacking ? -6 : 0; // Ensuring yOffset applies when attacking
+    
+        if (this.facing === "left" && !this.game.left && !this.game.right && !this.attacking) {
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x+5, this.y+4, 1.8, false, true);
+        } else if (this.facing === "right" && !this.game.left && !this.game.right && !this.attacking) {
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y+4, 1.8);
         } else if (this.facing === "right" && this.game.right) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.6);
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y+4, 1.6);
         } else if (this.facing === "left" && this.game.left) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.6);
-        } else {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.8);
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y+4, 1.6, false, true);
+        } else if (this.facing === "left" && this.attacking) {
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x-32, this.y-5, 1.8, false, true);
+        } else if (this.facing === "right" && this.attacking) {
+            this.animator.drawFrame(this.game.clockTick, ctx, this.x-20, this.y-5, 1.8);
         }
-
+    
         if (this.game.debugMode) {
             ctx.strokeStyle = "red";
             ctx.lineWidth = 2;
@@ -274,13 +278,12 @@ class Kyra {
                 ctx.lineWidth = 2;
                 ctx.strokeRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
             }
-            // Optional: Draw knockback indicator
             if (this.knockbackTimer > 0) {
                 ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
                 ctx.fillRect(this.box.x, this.box.y - 10, this.box.width * (this.knockbackTimer / this.knockbackDuration), 5);
             }
         }
-
+    
         this.healthbar.draw(ctx);
     }
 }
