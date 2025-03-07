@@ -33,7 +33,7 @@ class LeviathDraconis {
     getPlayer() {
         // Find any entity thats a player
         return this.game.entities.find(entity => 
-            entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kanji
+            entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kanji || entity instanceof Kyra
         );
     };
     //No jump zone is below 3rd story platform and in between 2nd story platforms
