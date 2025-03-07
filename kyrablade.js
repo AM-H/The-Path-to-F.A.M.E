@@ -119,8 +119,15 @@ class Kyra {
     updateLastBB() {
         this.lastBox = this.box;
     }
-
+    getLeviath() {
+        return this.game.entities.find(entity => 
+            entity instanceof LeviathDraconis
+        );
+    };
     update() {
+        if (this.game.isTimeStopped == true && getDistance(this, this.getLeviath()) <= 95 && !(this.hitpoints == 0)) {
+            return;
+        }
         const TICK = this.game.clockTick;
 
         if (this.hitpoints <= 0) {
