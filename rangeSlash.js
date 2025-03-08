@@ -29,8 +29,8 @@ class RangeSlash {
         this.setAnimation();
 
         // Debugging
-        console.log("Direction:", this.direction);
-        console.log("Animator:", this.animator);
+        console.log(`Direction:`, this.direction);
+        console.log(`Animator:`, this.animator);
 
 
         this.width = 32;
@@ -101,7 +101,7 @@ class RangeSlash {
 
         // Draw debug bounding box
         if (this.box) {
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = `red`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }

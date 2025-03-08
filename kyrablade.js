@@ -5,7 +5,7 @@ class Kyra {
         this.y = 500;
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
-        this.facing = "right";
+        this.facing = `right`;
         this.landed = false;
 
         this.attackDirection = null;
@@ -51,7 +51,7 @@ class Kyra {
         this.box = new BoundingBox(this.x, this.y, 58, 69);
 
         if (this.attacking) {
-            if (this.attackDirection === "right") {
+            if (this.attackDirection === `right`) {
                 this.attackBox = new BoundingBox(this.x + 50, this.y + 10, 40, 50);
             } else {
                 this.attackBox = new BoundingBox(this.x - 40, this.y + 10, 40, 50);
@@ -94,12 +94,12 @@ class Kyra {
         if (this.game.rangeAttack && this.canRangeAttack && !this.rangeAttacking) {
             this.rangeAttacking = true;
 
-            this.animator = this.animationMap.get(this.facing === "right" ? `throwRight` : `throwLeft`);
+            this.animator = this.animationMap.get(this.facing === `right` ? `throwRight` : `throwLeft`);
 
             setTimeout(() => {
                 const centerX = this.x + (this.box.width / 2);
                 const centerY = this.y + (this.box.height / 2);
-                const shurikenX = this.facing === "right" ? this.x + 60 : this.x;
+                const shurikenX = this.facing === `right` ? this.x + 60 : this.x;
                 const shurikenY = this.y + 20;
                 const deltaX = this.game.mouseX - centerX;
                 const deltaY = this.game.mouseY - centerY;
@@ -138,10 +138,10 @@ class Kyra {
         }
 
         // Update facing direction
-        if (this.game.left) this.facing = "left";
-        else if (this.game.right) this.facing = "right";
+        if (this.game.left) this.facing = `left`;
+        else if (this.game.right) this.facing = `right`;
         else if (this.knockbackTimer > 0 && this.velocity.x !== 0) {
-            this.facing = this.velocity.x > 0 ? "right" : "left";
+            this.facing = this.velocity.x > 0 ? `right` : `left`;
         }
 
         // Attack Logic
@@ -151,7 +151,7 @@ class Kyra {
             this.attackDirection = this.facing;
             this.attackTimer = 0;
 
-            const attackAnim = this.animationMap.get(this.facing === "right" ? `attackRight` : `attackLeft`);
+            const attackAnim = this.animationMap.get(this.facing === `right` ? `attackRight` : `attackLeft`);
             this.attackDuration = attackAnim.frameCount * attackAnim.frameDuration;
         }
 
@@ -210,13 +210,13 @@ class Kyra {
 
         if (!this.rangeAttacking) {
             if (this.attacking) {
-                this.animator = this.animationMap.get(this.facing === "right" ? `attackRight` : `attackLeft`);
+                this.animator = this.animationMap.get(this.facing === `right` ? `attackRight` : `attackLeft`);
             } else if (!this.landed) {
-                this.animator = this.animationMap.get(this.facing === "left" ? `idleLeft` : `idleRight`);
+                this.animator = this.animationMap.get(this.facing === `left` ? `idleLeft` : `idleRight`);
             } else if (this.game.left || this.game.right || this.knockbackTimer > 0) {
-                this.animator = this.animationMap.get(this.facing === "left" ? `runLeft` : `runRight`);
+                this.animator = this.animationMap.get(this.facing === `left` ? `runLeft` : `runRight`);
             } else {
-                this.animator = this.animationMap.get(this.facing === "left" ? `idleLeft` : `idleRight`);
+                this.animator = this.animationMap.get(this.facing === `left` ? `idleLeft` : `idleRight`);
             }
         }
 
@@ -255,31 +255,31 @@ class Kyra {
     draw(ctx) {
         let yOffset = this.attacking ? -6 : 0; // Ensuring yOffset applies when attacking
     
-        if (this.facing === "left" && !this.game.left && !this.game.right && !this.attacking) {
+        if (this.facing === `left` && !this.game.left && !this.game.right && !this.attacking) {
             this.animator.drawFrame(this.game.clockTick, ctx, this.x+5, this.y+4, 1.8, false, true);
-        } else if (this.facing === "right" && !this.game.left && !this.game.right && !this.attacking) {
+        } else if (this.facing === `right` && !this.game.left && !this.game.right && !this.attacking) {
             this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y+4, 1.8);
-        } else if (this.facing === "right" && this.game.right) {
+        } else if (this.facing === `right` && this.game.right) {
             this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y+4, 1.6);
-        } else if (this.facing === "left" && this.game.left) {
+        } else if (this.facing === `left` && this.game.left) {
             this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y+4, 1.6, false, true);
-        } else if (this.facing === "left" && this.attacking) {
+        } else if (this.facing === `left` && this.attacking) {
             this.animator.drawFrame(this.game.clockTick, ctx, this.x-32, this.y-5, 1.8, false, true);
-        } else if (this.facing === "right" && this.attacking) {
+        } else if (this.facing === `right` && this.attacking) {
             this.animator.drawFrame(this.game.clockTick, ctx, this.x-20, this.y-5, 1.8);
         }
     
         if (this.game.debugMode) {
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = `red`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
             if (this.attackBox) {
-                ctx.strokeStyle = "blue";
+                ctx.strokeStyle = `blue`;
                 ctx.lineWidth = 2;
                 ctx.strokeRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
             }
             if (this.knockbackTimer > 0) {
-                ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+                ctx.fillStyle = `rgba(255, 0, 0, 0.5)`;
                 ctx.fillRect(this.box.x, this.box.y - 10, this.box.width * (this.knockbackTimer / this.knockbackDuration), 5);
             }
         }

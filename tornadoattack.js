@@ -30,8 +30,8 @@ class TornadoAttack {
         const rightSprite = ASSET_MANAGER.getAsset(`./sprites/tornado/projectile.png`); 
         const tornadoSprite = ASSET_MANAGER.getAsset(`./sprites/tornado/part2final.png`);
 
-        console.log("Right Sprite:", rightSprite, "Loaded:", rightSprite?.complete, "Width:", rightSprite?.naturalWidth, "Height:", rightSprite?.naturalHeight);
-        console.log("Tornado Sprite:", tornadoSprite, "Loaded:", tornadoSprite?.complete, "Width:", tornadoSprite?.naturalWidth, "Height:", tornadoSprite?.naturalHeight);
+        console.log(`Right Sprite:`, rightSprite, `Loaded:`, rightSprite?.complete, `Width:`, rightSprite?.naturalWidth, `Height:`, rightSprite?.naturalHeight);
+        console.log(`Tornado Sprite:`, tornadoSprite, `Loaded:`, tornadoSprite?.complete, `Width:`, tornadoSprite?.naturalWidth, `Height:`, tornadoSprite?.naturalHeight);
 
         this.projectileRightAnim = new Animator(rightSprite && rightSprite.complete ? rightSprite : new Image(), 0, 0, this.projectileWidth, this.projectileHeight, 4, 0.07);
         this.tornadoAnim = new Animator(tornadoSprite && tornadoSprite.complete ? tornadoSprite : new Image(), -2, 0, 40, 38, 4, 0.07); 
@@ -66,7 +66,7 @@ class TornadoAttack {
     }
 
     transformToTornado() {
-        console.log("Transforming to tornado phase");
+        console.log(`Transforming to tornado phase`);
         this.phase = 'tornado';
         this.velocity.x = 0;
         this.velocity.y = 0;
@@ -76,7 +76,7 @@ class TornadoAttack {
         // Immediately affect the player upon transformation
         const player = this.getPlayer();
         if (player && this.box.collide(player.box) && !this.hitEntities.has(player)) {
-            console.log("Player caught in tornado transformation:", player);
+            console.log(`Player caught in tornado transformation:`, player);
             this.throwTarget(player); // Push up and damage the player
         }
 
@@ -167,7 +167,7 @@ class TornadoAttack {
             if (this.lifetime <= 0) {
                 if (this.forceStayInMap) {
                     this.lifetime = 20;
-                    console.log("Debug: Resetting lifetime");
+                    console.log(`Debug: Resetting lifetime`);
                 } else {
                     this.removeFromWorld = true;
                     return;
@@ -176,7 +176,7 @@ class TornadoAttack {
 
             const player = this.getPlayer();
             if (player && this.box.collide(player.box) && !this.hitEntities.has(player)) {
-                console.log("Collision detected with player:", player);
+                console.log(`Collision detected with player:`, player);
                 if (player.takeDamage) {
                     player.takeDamage(this.projectileDamage);
                     console.log(`Player hit by projectile! Remaining HP: ${player.hitpoints}`);
@@ -212,7 +212,7 @@ class TornadoAttack {
 
     throwTarget(target) {
         if (!this.hitEntities.has(target)) {
-            console.log("Throwing target:", target);
+            console.log(`Throwing target:`, target);
             target.velocity.y = this.throwForce; // Push upward
             if (target.takeDamage) {
                 target.takeDamage(this.tornadoDamage); // Apply slight damage
@@ -228,17 +228,17 @@ class TornadoAttack {
             const spriteSheet = anim.spritesheet;
 
             if (this.game.debugMode) {
-                ctx.font = "12px Arial";
-                ctx.fillStyle = "white";
+                ctx.font = `12px Arial`;
+                ctx.fillStyle = `white`;
                 ctx.fillText(`Direction: ${this.direction === 1 ? 'Right' : 'Left'}`, this.x - 50, this.y - 40);
                 ctx.fillText(`Angle: ${this.angle.toFixed(2)}`, this.x - 50, this.y - 25);
                 ctx.fillText(`Frame: ${anim.currentFrame()}`, this.x - 50, this.y - 10);
             }
 
             if (!spriteSheet || !spriteSheet.complete || spriteSheet.naturalWidth === 0) {
-                console.error("Projectile Animator has no valid sprite sheet:", anim);
-                console.log("Current direction:", this.direction);
-                console.log("Right sprite:", this.projectileRightAnim.spritesheet);
+                console.error(`Projectile Animator has no valid sprite sheet:`, anim);
+                console.log(`Current direction:`, this.direction);
+                console.log(`Right sprite:`, this.projectileRightAnim.spritesheet);
 
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.projectileWidth * this.projectileScale / 2, 0, Math.PI * 2);
@@ -269,7 +269,7 @@ class TornadoAttack {
                     );
                     ctx.restore();
                 } catch (e) {
-                    console.error("Error drawing projectile animation:", e.message);
+                    console.error(`Error drawing projectile animation:`, e.message);
                     ctx.restore();
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.projectileWidth * this.projectileScale / 2, 0, Math.PI * 2);
@@ -282,7 +282,7 @@ class TornadoAttack {
             const anim = this.tornadoAnim;
             const spriteSheet = anim.spritesheet;
             if (!spriteSheet || !spriteSheet.complete || spriteSheet.naturalWidth === 0) {
-                console.error("Tornado Animator has no valid sprite sheet:", anim);
+                console.error(`Tornado Animator has no valid sprite sheet:`, anim);
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.tornadoWidth / 2, 0, Math.PI * 2);
                 ctx.fillStyle = 'purple';
@@ -298,7 +298,7 @@ class TornadoAttack {
                         2
                     );
                 } catch (e) {
-                    console.error("Error drawing tornado animation:", e.message);
+                    console.error(`Error drawing tornado animation:`, e.message);
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.tornadoWidth / 2, 0, Math.PI * 2);
                     ctx.fillStyle = 'purple';
@@ -309,13 +309,13 @@ class TornadoAttack {
         }
 
         if (this.game.debugMode) {
-            ctx.strokeStyle = this.phase === 'projectile' ? "blue" : "purple";
+            ctx.strokeStyle = this.phase === 'projectile' ? `blue` : `purple`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
 
             ctx.beginPath();
             ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-            ctx.fillStyle = "red";
+            ctx.fillStyle = `red`;
             ctx.fill();
             ctx.closePath();
         }

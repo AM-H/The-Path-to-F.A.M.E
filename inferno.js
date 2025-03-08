@@ -215,7 +215,7 @@ class inferno {
             if (player) {
                 const distanceX = player.box.x - this.box.x;
                 this.facing = distanceX > 0 ? 1 : -1; // Face right if player is to the right, left if player is to the left
-                console.log("Casting tornado, facing:", this.facing); // Debug log to confirm facing
+                console.log(`Casting tornado, facing:`, this.facing); // Debug log to confirm facing
             }
 
             this.state = 'castingTornado';
@@ -232,7 +232,7 @@ class inferno {
         if (player) {
             const distanceX = player.box.x - this.box.x;
             this.facing = distanceX > 0 ? 1 : -1; // Face right if player is to the right, left if player is to the left
-            console.log("Completing tornado cast, facing:", this.facing); // Debug log to confirm facing
+            console.log(`Completing tornado cast, facing:`, this.facing); // Debug log to confirm facing
         }
 
         // Create the tornado projectile
@@ -295,7 +295,7 @@ class inferno {
                 this.isPhasing = true;
                 this.phasingTime = 0;
                 this.landed = false;
-                console.log("Boss is phasing through platform");
+                console.log(`Boss is phasing through platform`);
             }
         } else {
             this.timeAbovePlayer = 0;
@@ -407,7 +407,7 @@ class inferno {
         if (this.hitpoints <= 0) {
             this.defeated = true;
             this.removeFromWorld = true;
-            console.log("Boss defeated!");
+            console.log(`Boss defeated!`);
             return;
         }
 
@@ -499,36 +499,36 @@ class inferno {
         // Debug bounding boxes
         if (this.game.debugMode) {
             // Draw character box in red
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = `red`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
 
             // Draw attack box in yellow when attacking
             if (this.attackBox) {
-                ctx.strokeStyle = "yellow";
+                ctx.strokeStyle = `yellow`;
                 ctx.lineWidth = 2;
                 ctx.strokeRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
 
                 // Optional: Show attack area with semi-transparent fill
-                ctx.fillStyle = "rgba(255, 255, 0, 0.3)";
+                ctx.fillStyle = `rgba(255, 255, 0, 0.3)`;
                 ctx.fillRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
             }
 
             // Show phasing indicator when phasing through platforms
             if (this.isPhasing) {
-                ctx.fillStyle = "rgba(255, 0, 255, 0.6)";
+                ctx.fillStyle = `rgba(255, 0, 255, 0.6)`;
                 ctx.fillRect(this.box.x - 10, this.box.y - 20, this.boxWidth + 20, 10);
 
                 // Show phasing duration
                 const progressWidth = (this.phasingTime / this.maxPhasingTime) * (this.boxWidth + 20);
-                ctx.fillStyle = "rgba(255, 128, 0, 0.8)";
+                ctx.fillStyle = `rgba(255, 128, 0, 0.8)`;
                 ctx.fillRect(this.box.x - 10, this.box.y - 20, progressWidth, 10);
             }
 
             // Show tornado cooldown
             if (this.tornadoCooldown > 0) {
                 const cooldownWidth = (this.tornadoCooldown / this.tornadoMaxCooldown) * this.boxWidth;
-                ctx.fillStyle = "rgba(0, 200, 255, 0.6)";
+                ctx.fillStyle = `rgba(0, 200, 255, 0.6)`;
                 ctx.fillRect(this.box.x, this.box.y - 10, cooldownWidth, 5);
 
                 // Display cooldown text

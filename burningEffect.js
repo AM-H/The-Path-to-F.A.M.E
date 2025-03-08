@@ -19,7 +19,7 @@ class BurningEffect {
 
         // Animation setup
         const effectSprite = ASSET_MANAGER.getAsset(`./sprites/eye/effect.png`);
-        console.log("Effect Sprite:", effectSprite, "Loaded:", effectSprite?.complete, "Width:", effectSprite?.naturalWidth, "Height:", effectSprite?.naturalHeight);
+        console.log(`Effect Sprite:`, effectSprite, `Loaded:`, effectSprite?.complete, `Width:`, effectSprite?.naturalWidth, `Height:`, effectSprite?.naturalHeight);
 
         this.animator = new Animator(
             effectSprite && effectSprite.complete ? effectSprite : new Image(),
@@ -67,7 +67,7 @@ class BurningEffect {
         // Remove after 5 seconds
         if (this.elapsedTime >= this.duration) {
             this.removeFromWorld = true;
-            console.log("Burning effect ended");
+            console.log(`Burning effect ended`);
         }
     }
 
@@ -75,7 +75,7 @@ class BurningEffect {
         const spriteSheet = this.animator.spritesheet;
 
         if (!spriteSheet || !spriteSheet.complete || spriteSheet.naturalWidth === 0) {
-            console.error("Burning Effect Animator has no valid sprite sheet:", this.animator);
+            console.error(`Burning Effect Animator has no valid sprite sheet:`, this.animator);
             // Fallback: draw orange circle
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.width * this.scale / 2, 0, Math.PI * 2);
@@ -84,23 +84,7 @@ class BurningEffect {
             ctx.closePath();
         } else {
             try {
-                // if(this.player instanceof Kyra){
-                //     this.animator.drawFrame(
-                //         this.game.clockTick,
-                //         ctx,
-                //         this.x - (this.width * this.scale) / 2 + 75,
-                //         this.y - (this.height * this.scale) / 2 + 3,
-                //         this.scale
-                //     );
-                // }else{
-                //     this.animator.drawFrame(
-                //         this.game.clockTick,
-                //         ctx,
-                //         this.x - (this.width * this.scale) / 2,
-                //         this.y - (this.height * this.scale) / 2,
-                //         this.scale
-                //     );
-                // }
+
                 this.animator.drawFrame(
                     this.game.clockTick,
                     ctx,
@@ -110,7 +94,7 @@ class BurningEffect {
                 );
 
             } catch (e) {
-                console.error("Error drawing burning effect animation:", e.message);
+                console.error(`Error drawing burning effect animation:`, e.message);
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.width * this.scale / 2, 0, Math.PI * 2);
                 ctx.fillStyle = 'orange';
@@ -120,24 +104,14 @@ class BurningEffect {
         }
 
         if (this.game.debugMode) {
-            ctx.strokeStyle = "orange";
+            ctx.strokeStyle = `orange`;
             ctx.lineWidth = 2;
-            // if(this.player instanceof Kyra){
-            //     ctx.strokeRect(this.box.x + 80, this.box.y + 8, this.box.width, this.box.height);
-            // }else{
-            //     ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
-            // }
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
 
             ctx.beginPath();
-            // if(this.player instanceof Kyra){
-            //     ctx.arc(this.x + 80, this.y + 8, 3, 0, Math.PI * 2);
-            // }else{
-            //     ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-            // }
             ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
 
-            ctx.fillStyle = "red";
+            ctx.fillStyle = `red`;
             ctx.fill();
             ctx.closePath();
         }

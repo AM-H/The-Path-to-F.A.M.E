@@ -4,13 +4,13 @@ class ChronosVeil {
         this.removeFromWorld = false;
         this.leviath = leviath;
         this.animationMap = new Map([
-            ["right", new Animator(ASSET_MANAGER.getAsset(`./sprites/chronosVeil/ChronosVeilRight.png`), 0, 0, 32, 32, 8, 0.1)],
-            ["left", new Animator(ASSET_MANAGER.getAsset(`./sprites/chronosVeil/ChronosVeilLeft.png`), 0, 0, 32, 32, 8, 0.1)],
-            ["rightRanged", new Animator(ASSET_MANAGER.getAsset(`./sprites/chronosVeil/ChronosVeilLaserRight.png`), 0, 0, 500, 32, 8, 0.1)],
-            ["leftRanged", new Animator(ASSET_MANAGER.getAsset(`./sprites/chronosVeil/ChronosVeilLaserLeft.png`), 0, 0, 500, 32, 8, 0.1)]
+            [`right`, new Animator(ASSET_MANAGER.getAsset(`./sprites/chronosVeil/ChronosVeilRight.png`), 0, 0, 32, 32, 8, 0.1)],
+            [`left`, new Animator(ASSET_MANAGER.getAsset(`./sprites/chronosVeil/ChronosVeilLeft.png`), 0, 0, 32, 32, 8, 0.1)],
+            [`rightRanged`, new Animator(ASSET_MANAGER.getAsset(`./sprites/chronosVeil/ChronosVeilLaserRight.png`), 0, 0, 500, 32, 8, 0.1)],
+            [`leftRanged`, new Animator(ASSET_MANAGER.getAsset(`./sprites/chronosVeil/ChronosVeilLaserLeft.png`), 0, 0, 500, 32, 8, 0.1)]
         ]);
-        this.animator = this.animationMap.get("left");
-        this.laserAnimator = this.animationMap.get("leftRanged");
+        this.animator = this.animationMap.get(`left`);
+        this.laserAnimator = this.animationMap.get(`leftRanged`);
         this.laserBoxes = [];
         this.box = new BoundingBox(0, 0, 32, 32);
         this.rotation = 0;
@@ -97,8 +97,8 @@ class ChronosVeil {
         this.rotation = Math.atan2(dy, dx);
 
         const facingLeft = playerCenterX < this.leviathCenterX;
-        const newAnimator = this.animationMap.get(facingLeft ? "left" : "right");
-        const newLaserAnimator = this.animationMap.get(facingLeft ? "leftRanged" : "rightRanged");
+        const newAnimator = this.animationMap.get(facingLeft ? `left` : `right`);
+        const newLaserAnimator = this.animationMap.get(facingLeft ? `leftRanged` : `rightRanged`);
 
         if (this.laserAnimator !== newLaserAnimator) {
             newLaserAnimator.elapsedTime = this.laserAnimator.elapsedTime;
@@ -131,7 +131,7 @@ class ChronosVeil {
 
         // Debugging: Draw the hitboxes for visual reference
         if (this.game.debugMode) {
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = `red`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }

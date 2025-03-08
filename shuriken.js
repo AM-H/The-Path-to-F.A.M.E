@@ -62,7 +62,7 @@ class Shuriken {
 
         // Debug: Draw bounding box
         if (this.game.debugMode) {
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = `red`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }

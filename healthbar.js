@@ -15,18 +15,18 @@ class HealthBar {
 
         // Handle player characters
         if (this.agent instanceof AzielSeraph || this.agent instanceof Grim || this.agent instanceof Kanji || this.agent instanceof Kyra) {
-            ctx.fillStyle = "#3a3a3a";  // Dark gray
+            ctx.fillStyle = `#3a3a3a`;  // Dark gray
             ctx.fillRect(10, 10, 200, 30);
 
             // Draw health fill
             if (ratio > 0) {
                 const fillWidth = Math.floor(200 * ratio);
-                ctx.fillStyle = ratio > 0.5 ? "#32CD32" : ratio > 0.2 ? "#FFD700" : "#FF4500";
+                ctx.fillStyle = ratio > 0.5 ? `#32CD32` : ratio > 0.2 ? `#FFD700` : `#FF4500`;
                 ctx.fillRect(10, 10, fillWidth, 30);
             }
 
             // Draw border
-            ctx.strokeStyle = "Black";
+            ctx.strokeStyle = `Black`;
             ctx.lineWidth = 2;
             ctx.strokeRect(10, 10, 200, 30);
 
@@ -34,18 +34,18 @@ class HealthBar {
             const barX = gameWorld.width - 210;
 
             // Draw dark background first
-            ctx.fillStyle = "#3a3a3a";  // Dark gray
+            ctx.fillStyle = `#3a3a3a`;  // Dark gray
             ctx.fillRect(barX, 10, 200, 30);
 
             // Draw health fill
             if (ratio > 0) {
                 const fillWidth = Math.floor(200 * ratio);
-                ctx.fillStyle = ratio > 0.5 ? "#32CD32" : ratio > 0.2 ? "#FFD700" : "#FF4500";
+                ctx.fillStyle = ratio > 0.5 ? `#32CD32` : ratio > 0.2 ? `#FFD700` : `#FF4500`;
                 ctx.fillRect(barX, 10, fillWidth, 30);
             }
 
             // Draw border
-            ctx.strokeStyle = "Black";
+            ctx.strokeStyle = `Black`;
             ctx.lineWidth = 2;
             ctx.strokeRect(barX, 10, 200, 30);
 
@@ -55,18 +55,18 @@ class HealthBar {
             const healthBarY = this.agent.box.y - this.agent.box.height / 5;
 
             // Draw dark background
-            ctx.fillStyle = "#3a3a3a";
+            ctx.fillStyle = `#3a3a3a`;
             ctx.fillRect(healthBarX, healthBarY, this.agent.box.width/2, 4);
 
             // Draw health fill
             if (ratio > 0) {
                 const fillWidth = Math.floor(this.agent.box.width/2 * ratio);
-                ctx.fillStyle = ratio > 0.5 ? "#32CD32" : ratio > 0.2 ? "#FFD700" : "#FF4500";
+                ctx.fillStyle = ratio > 0.5 ? `#32CD32` : ratio > 0.2 ? `#FFD700` : `#FF4500`;
                 ctx.fillRect(healthBarX, healthBarY, fillWidth, 4);
             }
 
             // Draw border
-            ctx.strokeStyle = "Black";
+            ctx.strokeStyle = `Black`;
             ctx.lineWidth = 1;
             ctx.strokeRect(healthBarX, healthBarY, this.agent.box.width/2, 4);
         }

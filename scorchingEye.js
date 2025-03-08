@@ -21,7 +21,7 @@ class ScorchingEye {
 
         // Animation setup
         const rightSprite = ASSET_MANAGER.getAsset(`./sprites/eye/Eye.png`);
-        console.log("Right Sprite:", rightSprite, "Loaded:", rightSprite?.complete, "Width:", rightSprite?.naturalWidth, "Height:", rightSprite?.naturalHeight);
+        console.log(`Right Sprite:`, rightSprite, `Loaded:`, rightSprite?.complete, `Width:`, rightSprite?.naturalWidth, `Height:`, rightSprite?.naturalHeight);
 
         this.projectileRightAnim = new Animator(rightSprite && rightSprite.complete ? rightSprite : new Image(), 0, 0, this.projectileWidth, this.projectileHeight, 4, 0.07);
 
@@ -129,7 +129,7 @@ class ScorchingEye {
             if (this.lifetime <= 0) {
                 if (this.forceStayInMap) {
                     this.lifetime = 20;
-                    console.log("Debug: Resetting lifetime");
+                    console.log(`Debug: Resetting lifetime`);
                 } else {
                     this.removeFromWorld = true;
                     return;
@@ -138,7 +138,7 @@ class ScorchingEye {
 
             const player = this.getPlayer();
             if (player && this.box.collide(player.box) && !this.hitEntities.has(player)) {
-                console.log("Collision detected with player:", player);
+                console.log(`Collision detected with player:`, player);
                 if (player.takeDamage) {
                     player.takeDamage(this.projectileDamage); // Initial 15 damage
                     // Spawn burning effect, passing the player reference
@@ -168,17 +168,17 @@ class ScorchingEye {
             const spriteSheet = anim.spritesheet;
 
             if (this.game.debugMode) {
-                ctx.font = "12px Arial";
-                ctx.fillStyle = "white";
+                ctx.font = `12px Arial`;
+                ctx.fillStyle = `white`;
                 ctx.fillText(`Direction: ${this.direction === 1 ? 'Right' : 'Left'}`, this.x - 50, this.y - 40);
                 ctx.fillText(`Angle: ${this.angle.toFixed(2)}`, this.x - 50, this.y - 25);
                 ctx.fillText(`Frame: ${anim.currentFrame()}`, this.x - 50, this.y - 10);
             }
 
             if (!spriteSheet || !spriteSheet.complete || spriteSheet.naturalWidth === 0) {
-                console.error("Projectile Animator has no valid sprite sheet:", anim);
-                console.log("Current direction:", this.direction);
-                console.log("Right sprite:", this.projectileRightAnim.spritesheet);
+                console.error(`Projectile Animator has no valid sprite sheet:`, anim);
+                console.log(`Current direction:`, this.direction);
+                console.log(`Right sprite:`, this.projectileRightAnim.spritesheet);
 
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.projectileWidth * this.projectileScale / 2, 0, Math.PI * 2);
@@ -209,7 +209,7 @@ class ScorchingEye {
                     );
                     ctx.restore();
                 } catch (e) {
-                    console.error("Error drawing projectile animation:", e.message);
+                    console.error(`Error drawing projectile animation:`, e.message);
                     ctx.restore();
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.projectileWidth * this.projectileScale / 2, 0, Math.PI * 2);
@@ -221,13 +221,13 @@ class ScorchingEye {
         }
 
         if (this.game.debugMode) {
-            ctx.strokeStyle = "blue";
+            ctx.strokeStyle = `blue`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
 
             ctx.beginPath();
             ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-            ctx.fillStyle = "red";
+            ctx.fillStyle = `red`;
             ctx.fill();
             ctx.closePath();
         }

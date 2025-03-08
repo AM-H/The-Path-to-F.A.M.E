@@ -81,7 +81,7 @@ class Shizoku {
         if (this.hitpoints <= 0) {
             this.removeFromWorld = true;
             this.defeated = true;
-            console.log("Boss defeated!");
+            console.log(`Boss defeated!`);
             return;
         }
 
@@ -108,9 +108,9 @@ class Shizoku {
             this.facing = targetX > this.x ? 1 : -1;
             this.velocity = this.calculateJumpVelocity(targetX, targetY);
             this.landed = false;
-            this.state = "jumping";
+            this.state = `jumping`;
             this.jumpCooldown = 1.0;
-            if (this.state !== "attacking") this.attackBox = null;
+            if (this.state !== `attacking`) this.attackBox = null;
             if (this.debug) console.log(`Shizoku jumping to (${targetX}, ${targetY}), facing: ${this.facing}`);
         }
 
@@ -162,7 +162,7 @@ class Shizoku {
                     this.attackBoxHeight
                 );
                 if (this.debug) console.log(`Punch attack initiated, facing: ${this.facing}, attackBox: (${this.attackBox.x}, ${this.attackBox.y})`);
-            } else if (distToPlayer < this.chaseRange && this.state !== "attacking") {
+            } else if (distToPlayer < this.chaseRange && this.state !== `attacking`) {
                 if (this.state !== 'chasing' || Math.abs(this.velocity.x) < 1) {
                     this.state = `chasing`;
                     this.attackBox = null;
@@ -172,7 +172,7 @@ class Shizoku {
                 this.x += this.velocity.x * TICK;
                 this.facing = dx > 0 ? 1 : -1; // Face based on hitbox center
                 if (this.debug) console.log(`Chasing player, dx: ${dx}, velocity.x: ${this.velocity.x}, facing: ${this.facing}`);
-            } else if (this.state !== "attacking") {
+            } else if (this.state !== `attacking`) {
                 this.state = `idle`;
                 this.velocity.x = 0;
                 this.attackBox = null;
@@ -197,7 +197,7 @@ class Shizoku {
             this.state = `idle`;
             this.attackBox = null;
             this.hasDealtDamage = false;
-            if (this.debug) console.log("Attack ended, attackBox cleared");
+            if (this.debug) console.log(`Attack ended, attackBox cleared`);
         }
 
         // Apply gravity every frame
@@ -221,11 +221,11 @@ class Shizoku {
                         if (!this.landed) justLanded = true;
                         this.landed = true;
                         isOnGround = true;
-                        if (this.state !== "attacking" || this.attackTimer <= 0) {
-                            this.state = "idle";
+                        if (this.state !== `attacking` || this.attackTimer <= 0) {
+                            this.state = `idle`;
                             this.attackBox = null;
                         }
-                        if (this.debug) console.log("Landed on platform at y:", this.y);
+                        if (this.debug) console.log(`Landed on platform at y:`, this.y);
                     }
                 }
             }
@@ -240,26 +240,26 @@ class Shizoku {
             this.velocity.x = 0;
             if (!this.landed) justLanded = true;
             this.landed = true;
-            if (this.state !== "attacking" || this.attackTimer <= 0) {
-                this.state = "idle";
+            if (this.state !== `attacking` || this.attackTimer <= 0) {
+                this.state = `idle`;
                 this.attackBox = null;
             }
             this.updateBoundingBox();
-            if (this.debug) console.log("Reset to ground level at y:", this.y);
+            if (this.debug) console.log(`Reset to ground level at y:`, this.y);
         }
 
         if (shouldFall && this.landed) {
             this.landed = false;
-            this.state = "jumping";
+            this.state = `jumping`;
             this.attackBox = null;
-            if (this.debug) console.log("Falling to lower platform or ground to chase player");
+            if (this.debug) console.log(`Falling to lower platform or ground to chase player`);
         }
         if (this.timeAbovePlayer > this.maxTimeAbovePlayer && this.landed) {
             this.landed = false;
-            this.state = "jumping";
+            this.state = `jumping`;
             this.attackBox = null;
             this.timeAbovePlayer = 0;
-            if (this.debug) console.log("Falling due to being stuck above player too long");
+            if (this.debug) console.log(`Falling due to being stuck above player too long`);
         }
 
         if (this.x < 0) {
@@ -321,10 +321,10 @@ class Shizoku {
         this.healthbar.draw(ctx);
 
         if (this.debug) {
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = `red`;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
             if (this.attackBox) {
-                ctx.strokeStyle = "blue";
+                ctx.strokeStyle = `blue`;
                 ctx.strokeRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
             }
         }
@@ -407,7 +407,7 @@ class Shizoku {
 
         if (playerPlatform && currentPlatform && playerPlatform === currentPlatform) {
             if (player.y < this.y - 150) {
-                if (this.debug) console.log("Kanji is much higher on same platform, will jump");
+                if (this.debug) console.log(`Kanji is much higher on same platform, will jump`);
                 this.lastJumpTime = currentTime;
                 this.targetPlatform = playerPlatform;
                 return true;
@@ -416,21 +416,21 @@ class Shizoku {
         }
 
         if (playerPlatform && (!currentPlatform || playerPlatform !== currentPlatform)) {
-            if (this.debug) console.log("Kanji is on a different platform, will jump");
+            if (this.debug) console.log(`Kanji is on a different platform, will jump`);
             this.lastJumpTime = currentTime;
             this.targetPlatform = playerPlatform;
             return true;
         }
 
         if (!currentPlatform && player.y < this.y - 100) {
-            if (this.debug) console.log("Kanji is higher, no platform detected, will jump");
+            if (this.debug) console.log(`Kanji is higher, no platform detected, will jump`);
             this.lastJumpTime = currentTime;
             this.targetPlatform = playerPlatform;
             return true;
         }
 
         if (currentTime - this.lastJumpTime > 3 && player.y < this.y - 50 && (!currentPlatform || playerPlatform !== currentPlatform)) {
-            if (this.debug) console.log("Forcing jump due to time and height difference");
+            if (this.debug) console.log(`Forcing jump due to time and height difference`);
             this.lastJumpTime = currentTime;
             this.targetPlatform = playerPlatform;
             return true;

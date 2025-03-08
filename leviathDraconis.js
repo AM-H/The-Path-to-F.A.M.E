@@ -7,7 +7,7 @@ class LeviathDraconis {
         this.animationMap.set(`runLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/leviathDraconis/LeviathDraconisLeft.png`), 13, 0, 32, 32, 6, 0.15));
         this.animationMap.set(`idleRight`, new Animator(ASSET_MANAGER.getAsset(`./sprites/leviathDraconis/LeviathDraconisIdleRight.png`), 2, 0, 32, 32, 4, 0.2));
         this.animationMap.set(`idleLeft`, new Animator(ASSET_MANAGER.getAsset(`./sprites/leviathDraconis/LeviathDraconisIdleLeft.png`), 13, 0, 32, 32, 4, 0.2));
-        this.facing = "left";
+        this.facing = `left`;
         this.box = new BoundingBox(this.x, this.y, 32, 64);
         this.x = gameWorld.width-50; //start x position
         this.y = 50; // start y position
@@ -64,7 +64,7 @@ class LeviathDraconis {
         if (this.landed) {
             if (Math.abs(distanceX) > 20) {
                 this.velocity.x = distanceX > 0 ? horizontalSpeed : -horizontalSpeed;
-                this.facing = distanceX > 0 ? "right" : "left";
+                this.facing = distanceX > 0 ? `right` : `left`;
             } else {
                 this.velocity.x = 0;
             }
@@ -139,11 +139,11 @@ class LeviathDraconis {
     };
     updateAnimation() {
         if (this.velocity.x > 0) {
-            this.animator = this.animationMap.get("runRight");
+            this.animator = this.animationMap.get(`runRight`);
         } else if (this.velocity.x < 0) {
-            this.animator = this.animationMap.get("runLeft");
+            this.animator = this.animationMap.get(`runLeft`);
         } else {
-            this.animator = this.animationMap.get(this.facing === "right" ? "idleRight" : "idleLeft");
+            this.animator = this.animationMap.get(this.facing === `right` ? `idleRight` : `idleLeft`);
         }
     };
     updateTimeStop() {
@@ -210,16 +210,16 @@ class LeviathDraconis {
         }
         this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
         if (this.game.debugMode) {
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = `red`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }
         if (this.isTimeStopped) {
             ctx.beginPath();
             ctx.arc(this.x + 16, this.y + 32, this.timeStopRange, 0, Math.PI * 2);
-            ctx.fillStyle = "rgba(0, 0, 255, 0.15)";
+            ctx.fillStyle = `rgba(0, 0, 255, 0.15)`;
             ctx.fill();
-            ctx.strokeStyle = "blue";
+            ctx.strokeStyle = `blue`;
             ctx.lineWidth = 2;
             ctx.stroke();
         }

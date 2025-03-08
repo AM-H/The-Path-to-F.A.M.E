@@ -55,7 +55,7 @@ class Bullet {
         ctx.drawImage(this.sprite, this.x, this.y, this.width, this.height);
 
         if (this.game.debugMode) {
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = `red`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }

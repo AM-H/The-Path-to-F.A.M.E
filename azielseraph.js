@@ -12,7 +12,7 @@ class AzielSeraph {
         this.y = 50;
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
-        this.facing = "right";
+        this.facing = `right`;
         this.hitpoints = 500;
         this.maxhitpoints = 500;
         this.radius = 20;
@@ -63,13 +63,13 @@ class AzielSeraph {
         if (!this.game.invincibleMode) { // Knockback and damage only apply when invincibility is off
             this.hitpoints -= amount;
             if (this.hitpoints < 0) this.hitpoints = 0;
-            console.log(`Kyra takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+            console.log(`Aziel takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
         } else {
             console.log(`Damage blocked by invincibility!`);
 
         }
         if (source && source.box) {
-            const dx = this.box.x - source.box.x; // Direction from source to Kyra
+            const dx = this.box.x - source.box.x; // Direction from source to Aziel
             this.velocity.x = dx > 0 ? this.knockbackSpeed : -this.knockbackSpeed;
             this.knockbackTimer = this.knockbackDuration;
             if (!this.landed) this.velocity.y = -200; // Slight upward push if in air
@@ -101,14 +101,14 @@ class AzielSeraph {
         if (this.knockbackTimer <= 0) {
             if (this.game.left) {
                 this.velocity.x = -130;
-                if (this.facing !== "left") {
-                    this.facing = "left";
+                if (this.facing !== `left`) {
+                    this.facing = `left`;
                     this.animator = this.animationMap.get(`runLeft`);
                 }
             } else if (this.game.right) {
                 this.velocity.x = 130;
-                if (this.facing !== "right") {
-                    this.facing = "right";
+                if (this.facing !== `right`) {
+                    this.facing = `right`;
                     this.animator = this.animationMap.get(`runRight`);
                 }
             } else {
@@ -117,11 +117,11 @@ class AzielSeraph {
                 } else if (this.velocity.x < 0) {
                     this.velocity.x = Math.min(0, this.velocity.x + this.friction * TICK);
                 }
-                if (this.facing === "left" && this.facing !== "idle") {
-                    this.facing = "idle";
+                if (this.facing === `left` && this.facing !== `idle`) {
+                    this.facing = `idle`;
                     this.animator = this.animationMap.get(`idleLeft`);
-                } else if (this.facing === "right" && this.facing !== "idle") {
-                    this.facing = "idle";
+                } else if (this.facing === `right` && this.facing !== `idle`) {
+                    this.facing = `idle`;
                     this.animator = this.animationMap.get(`idleRight`);
                 }
             }
@@ -151,7 +151,7 @@ class AzielSeraph {
 
         if (this.game.rangeAttack) {
             if (!this.isRangeAttacking && currentTime - this.lastRangeAttackTime >= this.rangeAttackCooldown) {
-                console.log("Starting long-range attack!");
+                console.log(`Starting long-range attack!`);
                 this.isRangeAttacking = true;
                 this.rangeAttackStartTime = currentTime;
                 this.lastRangeAttackTime = currentTime; // Start cooldown immediately
@@ -169,7 +169,7 @@ class AzielSeraph {
         // Handle the long-range attack duration
         if (this.isRangeAttacking) {
             if (currentTime - this.rangeAttackStartTime >= this.rangeAttackDuration) {
-                console.log("Long-range attack ended.");
+                console.log(`Long-range attack ended.`);
                 this.isRangeAttacking = false; // Stop the attack after 2 seconds
             }
         }
@@ -206,7 +206,7 @@ class AzielSeraph {
         this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
         
         if (this.game.debugMode) {
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = `red`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }

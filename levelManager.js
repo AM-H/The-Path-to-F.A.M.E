@@ -73,7 +73,7 @@ class LevelManager {
             this.game.addEntity(new Platform(this.game, platform.x, platform.y, platform.width, platform.height, platform.bColor));
         }
 
-        console.log("Level loaded:", this.currentLevel);
+        console.log(`Level loaded:`, this.currentLevel);
     };
 
     update() {

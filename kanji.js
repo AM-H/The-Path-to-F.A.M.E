@@ -5,7 +5,7 @@ class Kanji {
         this.y = 500;
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
-        this.facing = "right";
+        this.facing = `right`;
 
         this.attackDirection = null;
         this.removeFromWorld = false;
@@ -77,7 +77,7 @@ class Kanji {
         }
 
         if (this.attacking) {
-            if (this.attackDirection === "right") {
+            if (this.attackDirection === `right`) {
                 this.attackBox = new BoundingBox(this.x + 50, this.y + 10, 40, 50);
             } else {
                 this.attackBox = new BoundingBox(this.x - 40, this.y + 10, 40, 50);
@@ -102,13 +102,13 @@ class Kanji {
         if (!this.game.invincibleMode) { // Knockback and damage only apply when invincibility is off
             this.hitpoints -= amount;
             if (this.hitpoints < 0) this.hitpoints = 0;
-            console.log(`Kyra takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+            console.log(`Kanji takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
         } else {
             console.log(`Damage blocked by invincibility!`);
 
         }
         if (source && source.box) {
-            const dx = this.box.x - source.box.x; // Direction from source to Kyra
+            const dx = this.box.x - source.box.x; // Direction from source to Kanji
             this.velocity.x = dx > 0 ? this.knockbackSpeed : -this.knockbackSpeed;
             this.knockbackTimer = this.knockbackDuration;
             if (!this.landed) this.velocity.y = -200; // Slight upward push if in air
@@ -137,8 +137,8 @@ class Kanji {
         }
 
         // Update facing direction
-        if (this.game.left) this.facing = "left";
-        else if (this.game.right) this.facing = "right";
+        if (this.game.left) this.facing = `left`;
+        else if (this.game.right) this.facing = `right`;
 
         // Attack Logic
         if (this.game.closeAttack && !this.attacking && this.canAttack) {
@@ -146,7 +146,7 @@ class Kanji {
             this.canAttack = false;
             this.attackDirection = this.facing;
             this.attackTimer = 0;
-            const attackAnim = this.animationMap.get(this.facing === "right" ? `attackRight` : `attackLeft`);
+            const attackAnim = this.animationMap.get(this.facing === `right` ? `attackRight` : `attackLeft`);
             this.attackDuration = attackAnim.frameCount * attackAnim.frameDuration;
         }
 
@@ -162,13 +162,13 @@ class Kanji {
 
         // Update animations
         if (this.attacking) {
-            this.animator = this.animationMap.get(this.facing === "right" ? `attackRight` : `attackLeft`);
+            this.animator = this.animationMap.get(this.facing === `right` ? `attackRight` : `attackLeft`);
         } else if (!this.landed) {
-            this.animator = this.animationMap.get(this.facing === "left" ? `jumpLeft` : `jumpRight`);
+            this.animator = this.animationMap.get(this.facing === `left` ? `jumpLeft` : `jumpRight`);
         } else if (this.game.left || this.game.right) {
-            this.animator = this.animationMap.get(this.facing === "left" ? `runLeft` : `runRight`);
+            this.animator = this.animationMap.get(this.facing === `left` ? `runLeft` : `runRight`);
         } else {
-            this.animator = this.animationMap.get(this.facing === "left" ? `idleLeft` : `idleRight`);
+            this.animator = this.animationMap.get(this.facing === `left` ? `idleLeft` : `idleRight`);
         }
 
         // Apply velocity to position
@@ -239,11 +239,11 @@ class Kanji {
     }
 
     draw(ctx) {
-        if (this.attacking && this.facing === "left") {
-            console.log("attacking left");
+        if (this.attacking && this.facing === `left`) {
+            console.log(`attacking left`);
             this.animator.drawFrame(this.game.clockTick, ctx, this.x - 38, this.y - 4, 2);
         } else {
-            if (this.facing === "left") {
+            if (this.facing === `left`) {
                 this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, false, true);
             } else {
                 this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2);
@@ -251,13 +251,13 @@ class Kanji {
         }
 
         if (this.attackBox && this.game.debugMode) {
-            ctx.strokeStyle = "blue";
+            ctx.strokeStyle = `blue`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.attackBox.x, this.attackBox.y, this.attackBox.width, this.attackBox.height);
         }
 
         if(this.game.debugMode){
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = `red`;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }
 

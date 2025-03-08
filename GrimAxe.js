@@ -62,7 +62,7 @@ class GrimAxe {
 
         // Handle attack start
         if (this.game.closeAttack && !this.hasStartedAttack && !this.isAnimating && this.canAttack) {
-            console.log("attacking");
+            console.log(`attacking`);
             this.isAnimating = true;
             this.hasStartedAttack = true;
             this.elapsedTime = 0;
@@ -84,7 +84,7 @@ class GrimAxe {
         if (this.game.closeAttack) {
             // Start animating if not already
             if (!this.isAnimating) {
-                console.log("Starting close attack");
+                console.log(`Starting close attack`);
                 this.isAnimating = true;
                 this.elapsedTime = 0;
                 this.animator = this.animationMap.get(this.facing);
@@ -123,21 +123,6 @@ class GrimAxe {
             }
         }
 
-
-        // Update animation
-        // if (this.isAnimating) {
-        //     this.elapsedTime += this.game.clockTick;
-        //     if (this.elapsedTime >= this.animationDuration) {
-        //         this.isAnimating = false;
-        //         this.elapsedTime = 0;
-        //     }
-        // }
-
-        // Reset attack flag when mouse button is released
-        // if (!this.game.closeAttack) {
-        //     this.hasStartedAttack = false;
-        // }
-
         this.updateBoundingBox();
     }
 
@@ -160,7 +145,7 @@ class GrimAxe {
 
             // Debug bounding box
             if (this.game.debugMode) {
-                ctx.strokeStyle = "red";
+                ctx.strokeStyle = `red`;
                 ctx.lineWidth = 2;
                 ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
             } 

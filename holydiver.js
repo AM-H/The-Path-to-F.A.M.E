@@ -4,13 +4,13 @@ class HolyDiver {
         this.aziel = aziel;
         this.game = game;
         this.animationMap = new Map([
-            ["right", new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiverRight.png`), 0, 0, 32, 32, 8, 0.1)],
-            ["left", new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiverLeft.png`), 0, 0, 32, 32, 8, 0.1)],
-            ["rightRanged", new Animator(ASSET_MANAGER.getAsset(`./sprites/LaserHolyDiverRight.png`), 0, 0, 500, 32, 8, 0.1)],
-            ["leftRanged", new Animator(ASSET_MANAGER.getAsset(`./sprites/LaserHolyDiverLeft.png`), 0, 0, 500, 32, 8, 0.1)]
+            [`right`, new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiverRight.png`), 0, 0, 32, 32, 8, 0.1)],
+            [`left`, new Animator(ASSET_MANAGER.getAsset(`./sprites/HolyDiverLeft.png`), 0, 0, 32, 32, 8, 0.1)],
+            [`rightRanged`, new Animator(ASSET_MANAGER.getAsset(`./sprites/LaserHolyDiverRight.png`), 0, 0, 500, 32, 8, 0.1)],
+            [`leftRanged`, new Animator(ASSET_MANAGER.getAsset(`./sprites/LaserHolyDiverLeft.png`), 0, 0, 500, 32, 8, 0.1)]
         ]);
-        this.animator = this.animationMap.get("right");
-        this.laserAnimator = this.animationMap.get("rightRanged");
+        this.animator = this.animationMap.get(`right`);
+        this.laserAnimator = this.animationMap.get(`rightRanged`);
         this.laserBoxes = [];
         this.box = new BoundingBox(0, 0, 32, 32);
         this.rotation = 0;
@@ -48,8 +48,8 @@ class HolyDiver {
         this.rotation = Math.atan2(dy, dx);
 
         const facingLeft = this.game.mouseX < this.azielCenterX;
-        const newAnimator = this.animationMap.get(facingLeft ? "left" : "right");
-        const newLaserAnimator = this.animationMap.get(facingLeft ? "leftRanged" : "rightRanged");
+        const newAnimator = this.animationMap.get(facingLeft ? `left` : `right`);
+        const newLaserAnimator = this.animationMap.get(facingLeft ? `leftRanged` : `rightRanged`);
         //Save the current fram when swithcing sprite animation from left to right
         if (this.laserAnimator !== newLaserAnimator) {
             newLaserAnimator.elapsedTime = this.laserAnimator.elapsedTime;
@@ -100,7 +100,7 @@ class HolyDiver {
 
         // Debugging: Draw the hitboxes for visual reference
         if (this.game.debugMode) {
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = `red`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }

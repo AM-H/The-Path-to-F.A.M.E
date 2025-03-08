@@ -1,7 +1,7 @@
 class Drone {
     constructor(game, x, y, speed) {
         this.game = game;
-        this.droneImg = new Animator(ASSET_MANAGER.getAsset("./sprites/drone.png"), 0, 0, 48, 50, 4, 0.35);
+        this.droneImg = new Animator(ASSET_MANAGER.getAsset(`./sprites/drone.png`), 0, 0, 48, 50, 4, 0.35);
         this.x = x;
         this.y = y;
 
@@ -62,7 +62,7 @@ class Drone {
             const distance = Math.sqrt(dx * dx + dy * dy);
 
             if (this.hitpoints <= 0) {
-                console.log("Drone Destroyed!");
+                console.log(`Drone Destroyed!`);
                 this.removeFromWorld = true;
                 return;
             }
@@ -93,11 +93,6 @@ class Drone {
                 this.attackTimer -= TICK;
             }
 
-            // Take Damage when hit by player attack
-            // if (this.checkPlayerAttack()) {
-            //     this.hitpoints -= 25;
-            //     console.log(`Drone hit! HP remaining: ${this.hitpoints}`);
-            // }
         }
 
         this.healthbar.update();
@@ -115,7 +110,7 @@ class Drone {
     draw(ctx) {
         this.droneImg.drawFrame(this.game.clockTick, ctx, this.x, this.y, this.spriteScale);
         if (this.game.debugMode) {
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = `red`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }

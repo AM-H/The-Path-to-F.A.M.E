@@ -62,7 +62,7 @@ class Phoenix {
         this.hitpoints = Math.max(0, this.hitpoints - amount);
         if (this.hitpoints <= 0) {
             this.removeFromWorld = true;
-            console.log("Phoenix defeated!");
+            console.log(`Phoenix defeated!`);
         }
     }
     
@@ -76,7 +76,7 @@ class Phoenix {
             const distance = Math.sqrt(dx * dx + dy * dy);
 
             if (this.hitpoints <= 0) {
-                console.log("Fire minion dead!");
+                console.log(`Fire minion dead!`);
                 this.removeFromWorld = true;
                 return;
             }
@@ -140,7 +140,7 @@ class Phoenix {
         
         // Debug bounding box
         if (this.game.debugMode) {
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = `red`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }

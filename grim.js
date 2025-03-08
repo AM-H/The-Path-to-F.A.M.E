@@ -5,7 +5,7 @@ class Grim {
         this.y = 500;
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
-        this.facing = "right";
+        this.facing = `right`;
 
         // Health system
         this.hitpoints = 500;
@@ -57,13 +57,13 @@ class Grim {
         if (!this.game.invincibleMode) { // Knockback and damage only apply when invincibility is off
             this.hitpoints -= amount;
             if (this.hitpoints < 0) this.hitpoints = 0;
-            console.log(`Kyra takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+            console.log(`Grim takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
         } else {
             console.log(`Damage blocked by invincibility!`);
 
         }
         if (source && source.box) {
-            const dx = this.box.x - source.box.x; // Direction from source to Kyra
+            const dx = this.box.x - source.box.x; // Direction from source to Grim
             this.velocity.x = dx > 0 ? this.knockbackSpeed : -this.knockbackSpeed;
             this.knockbackTimer = this.knockbackDuration;
             if (!this.landed) this.velocity.y = -200; // Slight upward push if in air
@@ -102,14 +102,14 @@ class Grim {
         if (this.knockbackTimer <= 0) {
             if (this.game.left) {
                 this.velocity.x = -130;
-                if (this.facing !== "left") {
-                    this.facing = "left";
+                if (this.facing !== `left`) {
+                    this.facing = `left`;
                     this.animator = this.animationMap.get('runLeft');
                 }
             } else if (this.game.right) {
                 this.velocity.x = 130;
-                if (this.facing !== "right") {
-                    this.facing = "right";
+                if (this.facing !== `right`) {
+                    this.facing = `right`;
                     this.animator = this.animationMap.get('runRight');
                 }
             } else {
@@ -120,9 +120,9 @@ class Grim {
                     this.velocity.x = Math.min(0, this.velocity.x + this.friction * TICK);
                 }
                 if (!this.attacking) {
-                    if (this.facing === "left") {
+                    if (this.facing === `left`) {
                         this.animator = this.animationMap.get('idleLeft');
-                    } else if (this.facing === "right") {
+                    } else if (this.facing === `right`) {
                         this.animator = this.animationMap.get('idleRight');
                     }
                 }
@@ -222,14 +222,14 @@ class Grim {
     }
 
     draw(ctx) {
-        if (this.facing === "left") {
+        if (this.facing === `left`) {
             this.animator.drawFrame(this.game.clockTick, ctx, this.x - 12, this.y + 14, 1.55, false, true);
         } else {
             this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y + 14, 1.55);
         }
 
         if (this.game.debugMode) {
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = `red`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
         }

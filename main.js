@@ -145,12 +145,8 @@ ASSET_MANAGER.queueDownload(`./audio/level4Music.mp3`)
 ASSET_MANAGER.queueDownload(`./audio/stopTime.mp3`);
 
 //KyraBlade
-// ASSET_MANAGER.queueDownload(`./sprites/kyrablade/IdleRightKyra.png`);
-// ASSET_MANAGER.queueDownload(`./sprites/kyrablade/IdleLeftKyra.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kyrablade/RunRightKyra.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kyrablade/RunLeftKyra.png`);
-ASSET_MANAGER.queueDownload(`./sprites/kyrablade/AttackRightKyra.png`);
-ASSET_MANAGER.queueDownload(`./sprites/kyrablade/AttackLeftKyra.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kyrablade/ThrowRightKyra.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kyrablade/ThrowLeftKyra.png`);
 ASSET_MANAGER.queueDownload(`./sprites/kyrablade/shuriken.png`);
@@ -184,12 +180,12 @@ ASSET_MANAGER.queueDownload(`./sprites/eye/Eye.png`)
 ASSET_MANAGER.queueDownload(`./sprites/eye/effect.png`)
 
 ASSET_MANAGER.downloadAll(() => {
-	const canvas = document.getElementById("gameWorld");
-	const ctx = canvas.getContext("2d");
+	const canvas = document.getElementById(`gameWorld`);
+	const ctx = canvas.getContext(`2d`);
 
 	gameEngine.addEntity(new TitleScreen(gameEngine));
-	ASSET_MANAGER.adjustVolume(document.getElementById("myVolume").value/100);
-	console.log(document.getElementById("myVolume").value/100);
+	ASSET_MANAGER.adjustVolume(document.getElementById(`myVolume`).value/100);
+	console.log(document.getElementById(`myVolume`).value/100);
 	gameEngine.init(ctx);
 
 	gameEngine.start();
