@@ -189,7 +189,7 @@ class Shizoku {
         if (this.state === `attacking` && this.attackTimer > 0) {
             this.velocity.x = 0;
             if (player.box && this.attackBox && this.attackBox.collide(player.box) && !this.hasDealtDamage) {
-                player.takeDamage(3, this);
+                player.takeKnockBack(70, this);
                 this.hasDealtDamage = true;
                 if (this.debug) console.log(`Player hit by Shizoku punch! Damage dealt: 3`);
             }

@@ -45,8 +45,8 @@ class stormSpirit {
         this.lastBox = this.box;
 
         // Healthbar
-        this.hitpoints = 150;
-        this.maxhitpoints = 150;
+        this.hitpoints = 500;
+        this.maxhitpoints = 500;
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
 
@@ -158,7 +158,7 @@ class stormSpirit {
             this.velocity.x = 0;
             if (player.box && this.attackBox && this.attackBox.collide(player.box) && !this.hasDealtDamage) {
                 // Use takeDamage with source to apply knockback
-                player.takeKnockBack(3, this);
+                player.takeKnockBack(20, this);
                 this.hasDealtDamage = true;
                 if (this.debug) console.log(`Player hit by stormSpirit punch! Damage: 3`);
             }
@@ -407,7 +407,7 @@ class stormSpirit {
     takeDamage(amount) {
         if (this.damageCooldown <= 0) {
             this.hitpoints = Math.max(0, this.hitpoints - amount);
-            this.damageCooldown = 0.5;
+            this.damageCooldown = 0.1;
             console.log(`stormSpirit takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
         }
     }

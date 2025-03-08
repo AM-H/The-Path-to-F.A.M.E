@@ -54,7 +54,7 @@ class FireBall {
         this.height = 15;      // Original collision size
         this.scale = 2;        // Original collision scale
         
-        this.damage = 2;
+        this.damage = 15;
         
         // Lifetime to prevent infinite projectiles
         this.lifetime = 3; // Seconds
@@ -103,7 +103,7 @@ class FireBall {
             e instanceof AzielSeraph || 
             e instanceof Grim || 
             e instanceof Kanji || 
-            e instanceof HolyDiver
+            e instanceof Kyra
         );
         
         if (player && this.box.collide(player.box)) {

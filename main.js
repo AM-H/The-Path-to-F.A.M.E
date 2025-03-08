@@ -14,7 +14,6 @@ ASSET_MANAGER.queueDownload(`./levelBackgrounds/level1_background.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/youdied.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/playagainbutton.png`);
 
-ASSET_MANAGER.queueDownload(`./audio/YouSeeBIGGIRLT_T.mp3`);
 
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level2_background.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level3_background.png`);
@@ -138,9 +137,11 @@ ASSET_MANAGER.queueDownload(`./sprites/GrimRunningR.png`);
 ASSET_MANAGER.queueDownload(`./sprites/GrimIdleL.png`);
 ASSET_MANAGER.queueDownload(`./sprites/GrimIdleR.png`);
 
+//audio
 ASSET_MANAGER.queueDownload(`./audio/YouSeeBIGGIRLT_T.mp3`);
 ASSET_MANAGER.queueDownload(`./audio/level1Music.mp3`);
 ASSET_MANAGER.queueDownload(`./audio/level2Music.mp3`);
+ASSET_MANAGER.queueDownload(`./audio/level3Music.mp3`);
 ASSET_MANAGER.queueDownload(`./audio/level4Music.mp3`)
 ASSET_MANAGER.queueDownload(`./audio/stopTime.mp3`);
 

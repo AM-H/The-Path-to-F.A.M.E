@@ -58,7 +58,7 @@ class LeviathDraconis {
         
         const distanceX = player.box.x - this.box.x;
         const distanceY = player.box.y - this.box.y;
-        const horizontalSpeed = 65;
+        const horizontalSpeed = 100;
         const jumpSpeed = -1030;
 
         if (this.landed) {

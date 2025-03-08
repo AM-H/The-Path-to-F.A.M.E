@@ -38,8 +38,8 @@ class Eclipser {
         this.laserState = 'inactive';
         this.laserChargeTime = 0.5;
         this.laserFireTime = 0.5;
-        this.laserDamage = 30;
-        this.laserDamageCooldown = 1; // Increased cooldown between damage ticks
+        this.laserDamage = 50;
+        this.laserDamageCooldown = 0.8; // Increased cooldown between damage ticks
         this.currentLaserDamageCooldown = 0;
         
         this.attackRange = 50;
@@ -47,8 +47,8 @@ class Eclipser {
         this.minDistance = 150;
 
         // Health system
-        this.hitpoints = 600;
-        this.maxhitpoints = 600;
+        this.hitpoints = 650;
+        this.maxhitpoints = 650;
         
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
@@ -80,7 +80,7 @@ class Eclipser {
     }
 
      // Add new method to spawn minions
-     spawnMinions() {
+    spawnMinions() {
         console.log(`Spawning minions!`);
         this.minionSpawnPoints.forEach(point => {
             const drone = new Drone(this.game, point.x, point.y, point.speed);

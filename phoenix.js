@@ -28,8 +28,8 @@ class Phoenix {
         this.attackTimer = 0; 
         
         // Health
-        this.hitpoints = 300;
-        this.maxhitpoints = 300;
+        this.hitpoints = 400;
+        this.maxhitpoints = 400;
         this.healthbar = new HealthBar(this);
         
         // State

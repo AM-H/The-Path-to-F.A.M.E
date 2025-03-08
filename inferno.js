@@ -71,8 +71,8 @@ class inferno {
         this.attackBox = null;
 
         // Healthbar
-        this.hitpoints = 150;
-        this.maxhitpoints = 150;
+        this.hitpoints = 750;
+        this.maxhitpoints = 750;
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
 
@@ -334,7 +334,7 @@ class inferno {
                     this.x += pushDistance;
                 }
                 if (player.takeDamage && this.damageCooldown <= 0) {
-                    player.takeDamage(10);
+                    player.takeDamage(60);
                     this.damageCooldown = 0.5;
                 }
             }
@@ -459,7 +459,7 @@ class inferno {
 
         if (this.attackBox && player && this.state === 'attacking') {
             if (this.attackBox.collide(player.box) && this.damageCooldown <= 0) {
-                player.takeDamage(10);
+                player.takeDamage(60);
                 this.damageCooldown = 0.5;
             }
         }
