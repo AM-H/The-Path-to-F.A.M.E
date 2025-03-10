@@ -98,7 +98,7 @@ class LevelManager {
             this.game.entities.forEach(element => {
                 element.removeFromWorld = true;
             });
-            this.game.addEntity(new LevelManager(this.game, this.whichPlayer, levelOne));
+            this.game.addEntity(new YouWonScreen(this.game));
         }
 
         updateVolume();

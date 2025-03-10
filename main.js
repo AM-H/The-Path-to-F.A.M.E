@@ -13,6 +13,7 @@ ASSET_MANAGER.queueDownload(`./levelBackgrounds/transitionScreen.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level1_background.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/youdied.png`);
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/playagainbutton.png`);
+ASSET_MANAGER.queueDownload(`./levelBackgrounds/YouWonScreen.png`);
 
 
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/level2_background.png`);

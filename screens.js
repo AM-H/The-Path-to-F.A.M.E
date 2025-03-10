@@ -151,3 +151,76 @@ class SelectPlayerScreen {
         }
     }
 }
+class YouWonScreen {
+    constructor(game) {
+        this.game = game;
+        this.spritesheet = ASSET_MANAGER.getAsset(`./levelBackgrounds/YouWonScreen.png`);
+        this.retryButton = {
+            asset: ASSET_MANAGER.getAsset(`./levelBackgrounds/playagainbutton.png`),
+            x: (gameWorld.width / 2) - 150,
+            y: (gameWorld.height / 4),
+            width: 300,
+            height: 300,
+            defaultWidth: 300,
+            defaultHeight: 300,
+            scaleFactor: 1.1, //How much bigger it gets
+            isHovered: false
+        };
+        this.removeFromWorld = false;
+    }
+
+    update() {
+        const offsetX = 40;
+        const offsetY = 85;
+        const adjustedWidth = this.retryButton.defaultWidth - 80;
+        const adjustedHeight = this.retryButton.defaultHeight - 170;
+    
+        if (
+            this.game.mouseX > this.retryButton.x + offsetX && 
+            this.game.mouseX < this.retryButton.x + offsetX + adjustedWidth &&
+            this.game.mouseY > this.retryButton.y + offsetY && 
+            this.game.mouseY < this.retryButton.y + offsetY + adjustedHeight
+        ) {
+            //Apply scaling effect
+            if (!this.retryButton.isHovered) {
+                this.retryButton.isHovered = true;
+                this.retryButton.width = this.retryButton.defaultWidth * this.retryButton.scaleFactor;
+                this.retryButton.height = this.retryButton.defaultHeight * this.retryButton.scaleFactor;
+                this.retryButton.x -= (this.retryButton.width - this.retryButton.defaultWidth) / 2;
+                this.retryButton.y -= (this.retryButton.height - this.retryButton.defaultHeight) / 2;
+            }
+            if (this.game.closeAttack) {
+                ASSET_MANAGER.pauseBackgroundMusic();
+                this.resetGame();
+            }
+        } else {
+            //Reset to default size if not hovered
+            if (this.retryButton.isHovered) {
+                this.retryButton.isHovered = false;
+                this.retryButton.width = this.retryButton.defaultWidth;
+                this.retryButton.height = this.retryButton.defaultHeight;
+                this.retryButton.x = (gameWorld.width / 2) - (this.retryButton.defaultWidth / 2);
+                this.retryButton.y = (gameWorld.height / 4);
+            }
+        }
+    }
+    
+    resetGame() {
+        this.game.entities.forEach(element => {
+            element.removeFromWorld = true;
+        });
+        this.game.addEntity(new TitleScreen(this.game));
+    }
+    draw(ctx) {
+        ctx.drawImage(this.spritesheet, 0, 0, gameWorld.width, gameWorld.height);
+        ctx.drawImage(this.retryButton.asset, this.retryButton.x, this.retryButton.y, this.retryButton.width, this.retryButton.height);
+        
+        if (this.game.debugMode) {
+            ctx.strokeStyle = `red`;
+            ctx.lineWidth = 4;
+            ctx.strokeRect(this.retryButton.x + 40, this.retryButton.y + 85, this.retryButton.width - 80, this.retryButton.height - 170);
+        }
+    }
+}
+
+
