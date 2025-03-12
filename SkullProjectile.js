@@ -19,7 +19,7 @@ class SkullProjectile {
         }
 
         // Damage properties
-        this.damage = 35; // Damage per hit
+        this.damage = 75; // Damage per hit
         this.hasHit = false; // Track if projectile has hit something
 
         // Duration and distance

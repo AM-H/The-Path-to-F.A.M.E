@@ -158,7 +158,7 @@ class stormSpirit {
             this.velocity.x = 0;
             if (player.box && this.attackBox && this.attackBox.collide(player.box) && !this.hasDealtDamage) {
                 // Use takeDamage with source to apply knockback
-                player.takeKnockBack(20, this);
+                player.takeKnockBack(4, this);
                 this.hasDealtDamage = true;
                 if (this.debug) console.log(`Player hit by stormSpirit punch! Damage: 3`);
             }

@@ -71,7 +71,9 @@ class Shizoku {
 
         // ScorchingEye shooting properties
         this.shootTimer = 0;
-        this.shootInterval = 2;
+        this.shootInterval = 5;
+
+        this.shootSound = ASSET_MANAGER.getAsset(`./audio/scorching_eye_shot.mp3`);
     }
 
     update() {
@@ -189,7 +191,7 @@ class Shizoku {
         if (this.state === `attacking` && this.attackTimer > 0) {
             this.velocity.x = 0;
             if (player.box && this.attackBox && this.attackBox.collide(player.box) && !this.hasDealtDamage) {
-                player.takeDamage(35);
+                player.takeDamage(65);
                 this.hasDealtDamage = true;
                 if (this.debug) console.log(`Player hit by Shizoku punch! Damage dealt: 3`);
             }
@@ -278,9 +280,10 @@ class Shizoku {
     shootScorchingEye(player) {
         const eyeX = this.x + (this.facing === 1 ? this.boxWidth : -this.projectileWidth);
         const eyeY = this.y + this.boxHeight / 2;
-        const scorchingEye = new ScorchingEye(this.game, eyeX, eyeY, false);
+        const lifetimeLimit = 2.0; // Customize this value (e.g., 2.0, 3.0, 5.0)
+        const scorchingEye = new ScorchingEye(this.game, eyeX, eyeY, false, lifetimeLimit);
         this.game.addEntity(scorchingEye);
-        if (this.debug) console.log(`Shizoku shot ScorchingEye at (${eyeX}, ${eyeY}), targeting player at (${player.x}, ${player.y})`);
+        if (this.debug) console.log(`Shizoku shot ScorchingEye at (${eyeX}, ${eyeY}) with lifetime ${lifetimeLimit}s, targeting player at (${player.x}, ${player.y})`);
     }
 
     draw(ctx) {
@@ -320,7 +323,7 @@ class Shizoku {
 
         this.healthbar.draw(ctx);
 
-        if (this.game.debugMode) {
+        if (this.debug) {
             ctx.strokeStyle = `red`;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
             if (this.attackBox) {

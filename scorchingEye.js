@@ -1,9 +1,8 @@
 class ScorchingEye {
-    constructor(game, x, y, isCastByPlayer = false) {
+    constructor(game, x, y, isCastByPlayer = false, lifetimeLimit = 5.0) {
         this.game = game;
         this.x = x;
         this.y = y;
-        this.isCastByPlayer = isCastByPlayer;
 
         this.phase = 'projectile';
         this.removeFromWorld = false;
@@ -26,9 +25,9 @@ class ScorchingEye {
         this.projectileRightAnim = new Animator(rightSprite && rightSprite.complete ? rightSprite : new Image(), 0, 0, this.projectileWidth, this.projectileHeight, 4, 0.07);
 
         this.direction = 1;
-        this.currentProjectileAnim = this.projectileRightAnim;
+        this.currentProjectileAnim = this.projectileRightAnim; // Fixed typo from projectileWrongAnim
 
-        this.lifetime = 4.5;
+        this.lifetime = lifetimeLimit; // Set custom lifetime
         this.updateBoundingBox();
 
         this.damageCooldown = 0;
@@ -125,31 +124,30 @@ class ScorchingEye {
                 }
             }
 
+            // Decrease lifetime and check if it expires
             this.lifetime -= TICK;
             if (this.lifetime <= 0) {
-                if (this.forceStayInMap) {
-                    this.lifetime = 20;
-                    console.log(`Debug: Resetting lifetime`);
-                } else {
-                    this.removeFromWorld = true;
-                    return;
-                }
+                this.removeFromWorld = true;
+                console.log(`ScorchingEye lifetime expired, removing from world`);
+                return;
             }
 
+            // Check collision with player
             const player = this.getPlayer();
             if (player && this.box.collide(player.box) && !this.hitEntities.has(player)) {
                 console.log(`Collision detected with player:`, player);
                 if (player.takeDamage) {
                     player.takeDamage(this.projectileDamage); // Initial 15 damage
-                    // Spawn burning effect, passing the player reference
                     const burningEffect = new BurningEffect(this.game, player);
                     this.game.addEntity(burningEffect);
-                    console.log(`Player hit by projectile! Burning effect spawned, Remaining HP: ${player.hitpoints}`);
+                    console.log(`Player hit by ScorchingEye! Burning effect spawned, Remaining HP: ${player.hitpoints}`);
                 }
-                this.removeFromWorld = true; // Remove ScorchingEye immediately
+                this.removeFromWorld = true;
                 this.hitEntities.add(player);
+                return;
             }
 
+            // Remove if out of bounds (if not forced to stay in map)
             if (!this.forceStayInMap && (
                 this.x < -100 ||
                 this.x > this.game.ctx.canvas.width + 100 ||
@@ -157,6 +155,7 @@ class ScorchingEye {
                 this.y > this.game.ctx.canvas.height + 100)
             ) {
                 this.removeFromWorld = true;
+                console.log(`ScorchingEye out of bounds, removing from world`);
                 return;
             }
         }

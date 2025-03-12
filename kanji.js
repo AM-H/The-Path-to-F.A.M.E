@@ -217,7 +217,7 @@ class Kanji {
                 if (entity instanceof Eclipser || entity instanceof Shizoku || entity instanceof  inferno || entity instanceof LeviathDraconis) {
                     entity.takeDamage(50);
                 } else if (entity instanceof Drone || entity instanceof Phoenix || entity instanceof stormSpirit) {
-                    entity.takeDamage(20);
+                    entity.takeDamage(35);
                 }
             }
 
