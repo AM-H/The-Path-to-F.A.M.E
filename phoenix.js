@@ -22,7 +22,7 @@ class Phoenix {
         
         // Movement properties 
         this.moveSpeed = speed || 100;
-        this.followRange = 600;
+        this.followRange = 750;
         this.attackRange = 200;
         this.attackCooldown = 2;
         this.attackTimer = 0; 

@@ -7,10 +7,14 @@ class inferno {
         this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/IdleLeft.png`), -55, 11, 150, 64, 8, 0.09);
         this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/runRight.png`), -55, 11, 150, 64, 8, 0.09);
         this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/runLeft.png`), -55, 11, 150, 64, 8, 0.09);
-        this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/attackRight.png`),-28, 11, 150, 64, 8, 0.08);
-        this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/attackLeft.png`), -28, 11, 150, 64, 8, 0.08);
+        this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/attackRight.png`),-28, 11, 150, 64, 8, 0.1);
+        this.attackLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/attackLeft.png`), -28, 11, 150, 64, 8, 0.1);
         this.tornadoCastRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/tornadoCastRight.png`), -28, 11, 150, 64, 8, 0.08);
         this.tornadoCastLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/inferno/tornadoCastLeft.png`), -28, 11, 150, 64, 8, 0.08);
+
+        this.normalAttackSound = ASSET_MANAGER.getAsset(`./audio/normal_attack.mp3`);
+        this.normalAttackSoundPlayed = false; 
+        this.normalAttackDuration = 0.81; 
 
         // Position setup - start on right side
         this.x = gameWorld.width - 200;
@@ -20,7 +24,7 @@ class inferno {
         // Basic properties
         this.velocity = { x: 0, y: 0 };
         this.fallGrav = 2000;
-        this.moveSpeed = 175;
+        this.moveSpeed = 135;
         this.landed = true;
 
         // Sprite dimensions
@@ -59,9 +63,10 @@ class inferno {
         // Tornado attack properties
         this.tornadoCooldown = 0;
         this.tornadoCastDuration = 0;
-        this.tornadoCastAnimationDuration = 0.8;
+        this.tornadoCastAnimationDuration = 0.6;
         this.tornadoMaxCooldown = 7; // Seconds between tornado attacks
         this.isCastingTornado = false;
+        
 
         // Initialize bounding boxes
         this.updateBoundingBox();
@@ -249,6 +254,37 @@ class inferno {
         this.state = 'idle';
     }
 
+    updateNormalAttackSound() {
+        const asset = this.normalAttackSound;
+        asset.volume = document.getElementById(`myVolume`).value / 100 > 0.5
+            ? document.getElementById(`myVolume`).value / 100
+            : (document.getElementById(`myVolume`).value / 100) * 2;
+
+        if (this.state === 'attacking' && this.isCloseAttacking && !this.normalAttackSoundPlayed) {
+            
+            if (this.soundTimeout) {
+                clearTimeout(this.soundTimeout);
+            }
+
+            asset.currentTime = 0; // Restart from beginning
+            asset.play().catch(error => {
+                console.error("Error playing normal attack sound:", error);
+            });
+            this.normalAttackSoundPlayed = true;
+
+            // Set timeout to mark sound as finished after duration
+            this.soundTimeout = setTimeout(() => {
+                this.normalAttackSoundPlayed = false;
+                this.soundTimeout = null;
+            }, this.normalAttackDuration * 1000); // Convert to milliseconds
+        } else if (!(this.state === 'attacking' && this.isCloseAttacking) && this.normalAttackSoundPlayed && !this.soundTimeout) {
+            // If attack state ends and sound has finished playing, reset
+            asset.pause();
+            asset.currentTime = 0;
+            this.normalAttackSoundPlayed = false;
+        }
+    }
+
     // Track player and move
     trackPlayerAndMove() {
         const TICK = this.game.clockTick;
@@ -414,6 +450,7 @@ class inferno {
         if (!player) return;
 
         this.trackPlayerAndMove();
+        this.updateNormalAttackSound();
 
         // Apply gravity and movement
         this.velocity.y += this.fallGrav * TICK;

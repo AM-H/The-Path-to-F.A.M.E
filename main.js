@@ -146,6 +146,9 @@ ASSET_MANAGER.queueDownload(`./audio/level3Music.mp3`);
 ASSET_MANAGER.queueDownload(`./audio/level4Music.mp3`)
 ASSET_MANAGER.queueDownload(`./audio/stopTime.mp3`);
 ASSET_MANAGER.queueDownload(`./audio/barrageClash.mp3`);
+ASSET_MANAGER.queueDownload(`./audio/normal_attack.mp3`);
+ASSET_MANAGER.queueDownload(`./audio/fireball_windup.mp3`);
+ASSET_MANAGER.queueDownload(`./audio/tornado_impact.mp3`);
 
 //KyraBlade
 ASSET_MANAGER.queueDownload(`./sprites/kyrablade/RunRightKyra.png`);

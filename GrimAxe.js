@@ -72,7 +72,7 @@ class GrimAxe {
          //Check for boss collision & apply damage close range
          this.game.entities.forEach(entity => {
             if ((entity instanceof  inferno || entity instanceof  Shizoku || entity instanceof Eclipser || entity instanceof LeviathDraconis) && this.box.collide(entity.box) && this.game.closeAttack) {
-                entity.takeDamage(10); // Deal 10 damage to boss
+                entity.takeDamage(15); // Deal 10 damage to boss
                 console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
             } else if ((entity instanceof Drone || entity instanceof Phoenix || entity instanceof stormSpirit) && this.box.collide(entity.box) && this.game.closeAttack) {
                 entity.takeDamage(3);

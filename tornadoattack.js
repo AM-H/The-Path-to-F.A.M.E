@@ -19,32 +19,40 @@ class TornadoAttack {
         this.hitboxHeight = 20;
         this.hitboxScale = 1;
 
-        this.tornadoWidth = 80;    
-        this.tornadoHeight = 76;   
+        this.tornadoWidth = 80;
+        this.tornadoHeight = 76;
         this.tornadoDamage = 5;
-        this.tornadoDuration = 0.5;
+        this.tornadoDuration = 0.89; // Matches tornado impact audio (0.89 seconds)
         this.throwForce = -800;
         this.elapsedTornadoTime = 0;
 
-        // Animation setup with detailed logging
-        const rightSprite = ASSET_MANAGER.getAsset(`./sprites/tornado/projectile.png`); 
+        // Audio setup
+        this.fireballWindupSound = ASSET_MANAGER.getAsset(`./audio/fireball_windup.mp3`);
+        this.tornadoImpactSound = ASSET_MANAGER.getAsset(`./audio/tornado_impact.mp3`);
+        this.fireballWindupPlayed = false;
+
+        // Animation setup
+        const rightSprite = ASSET_MANAGER.getAsset(`./sprites/tornado/projectile.png`);
         const tornadoSprite = ASSET_MANAGER.getAsset(`./sprites/tornado/part2final.png`);
 
-        console.log(`Right Sprite:`, rightSprite, `Loaded:`, rightSprite?.complete, `Width:`, rightSprite?.naturalWidth, `Height:`, rightSprite?.naturalHeight);
-        console.log(`Tornado Sprite:`, tornadoSprite, `Loaded:`, tornadoSprite?.complete, `Width:`, tornadoSprite?.naturalWidth, `Height:`, tornadoSprite?.naturalHeight);
+       // console.log(`Right Sprite:`, rightSprite, `Loaded:`, rightSprite?.complete);
+        //console.log(`Tornado Sprite:`, tornadoSprite, `Loaded:`, tornadoSprite?.complete);
 
         this.projectileRightAnim = new Animator(rightSprite && rightSprite.complete ? rightSprite : new Image(), 0, 0, this.projectileWidth, this.projectileHeight, 4, 0.07);
-        this.tornadoAnim = new Animator(tornadoSprite && tornadoSprite.complete ? tornadoSprite : new Image(), -2, 0, 40, 38, 4, 0.07); 
+        this.tornadoAnim = new Animator(tornadoSprite && tornadoSprite.complete ? tornadoSprite : new Image(), -2, 0, 40, 38, 4, 0.07);
 
         this.direction = 1;
         this.currentProjectileAnim = this.projectileRightAnim;
 
-        this.lifetime = 4.5; 
+        this.lifetime = 5.03; // Matches fireball wind-up audio (5.03 seconds)
         this.updateBoundingBox();
 
         this.damageCooldown = 0;
-        this.hitEntities = new Set();
+        this.hitEntities = new Set(); // Still used for projectile phase
         this.angle = 0;
+
+        // Start the wind-up sound immediately
+        this.updateFireballSound();
     }
 
     updateBoundingBox() {
@@ -73,23 +81,46 @@ class TornadoAttack {
         this.tornadoAnim.elapsedTime = 0;
         this.updateBoundingBox();
 
-        // Immediately affect the player upon transformation
+        // Stop wind-up sound and play impact sound
+        this.fireballWindupSound.pause();
+        this.fireballWindupSound.currentTime = 0;
+        this.fireballWindupPlayed = false;
+        this.tornadoImpactSound.currentTime = 0;
+        this.tornadoImpactSound.play().catch(error => {
+            console.error("Error playing tornado impact sound:", error);
+        });
+
         const player = this.getPlayer();
-        if (player && this.box.collide(player.box) && !this.hitEntities.has(player)) {
-            console.log(`Player caught in tornado transformation:`, player);
-            this.throwTarget(player); // Push up and damage the player
+        if (player && this.box.collide(player.box)) {
+           // console.log(`Player caught in tornado transformation:`, player);
+            this.throwTarget(player);
         }
 
-        this.hitEntities.clear(); // Reset hit entities for the tornado phase
+        this.hitEntities.clear(); // Clear hitEntities so tornado can affect player multiple times
     }
 
     getPlayer() {
         return this.game.entities.find(entity =>
-            entity instanceof AzielSeraph || 
-            entity instanceof Grim || 
-            entity instanceof Kanji || 
+            entity instanceof AzielSeraph ||
+            entity instanceof Grim ||
+            entity instanceof Kanji ||
             entity instanceof Kyra
         );
+    }
+
+    updateFireballSound() {
+        const windup = this.fireballWindupSound;
+        windup.volume = document.getElementById(`myVolume`).value / 100 > 0.5
+            ? document.getElementById(`myVolume`).value / 100
+            : (document.getElementById(`myVolume`).value / 100) * 2;
+
+        if (this.phase === 'projectile' && !this.fireballWindupPlayed) {
+            windup.currentTime = 0;
+            windup.play().catch(error => {
+                console.error("Error playing fireball wind-up sound:", error);
+            });
+            this.fireballWindupPlayed = true;
+        }
     }
 
     update() {
@@ -120,20 +151,6 @@ class TornadoAttack {
                         this.direction = this.velocity.x >= 0 ? 1 : -1;
                     }
                 }
-            }
-
-            const players = this.getPlayer();
-            if (players && !this.forceLeftDirection) {
-                const dx = (players.box.x + players.box.width / 2) - this.x;
-                const dy = (players.box.y + players.box.height / 2) - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance > 0) {
-                    this.angle = Math.atan2(dy, dx);
-                }
-            } else if (this.forceLeftDirection) {
-                const dx = -this.x;
-                const dy = 0;
-                this.angle = Math.atan2(dy, dx);
             }
 
             this.x += this.velocity.x * TICK;
@@ -176,7 +193,7 @@ class TornadoAttack {
 
             const player = this.getPlayer();
             if (player && this.box.collide(player.box) && !this.hitEntities.has(player)) {
-                console.log(`Collision detected with player:`, player);
+               // console.log(`Collision detected with player:`, player);
                 if (player.takeDamage) {
                     player.takeDamage(this.projectileDamage);
                     console.log(`Player hit by projectile! Remaining HP: ${player.hitpoints}`);
@@ -205,20 +222,19 @@ class TornadoAttack {
 
             const player = this.getPlayer();
             if (player && this.box.collide(player.box)) {
-                this.throwTarget(player);
+                this.throwTarget(player); // Check collision every frame for knockback
             }
         }
     }
 
     throwTarget(target) {
-        if (!this.hitEntities.has(target)) {
-            console.log(`Throwing target:`, target);
-            target.velocity.y = this.throwForce; // Push upward
-            if (target.takeDamage) {
-                target.takeDamage(this.tornadoDamage); // Apply slight damage
-                console.log(`Player hit by tornado! Remaining HP: ${target.hitpoints}`);
-            }
-            this.hitEntities.add(target);
+        // Remove hitEntities check to allow repeated knockbacks
+       // console.log(`Throwing target:`, target);
+        target.velocity.y = this.throwForce; // Knock player back up
+        if (target.takeDamage && this.damageCooldown <= 0) { // Only apply damage if cooldown is up
+            target.takeDamage(this.tornadoDamage);
+            console.log(`Player hit by tornado! Remaining HP: ${target.hitpoints}`);
+            this.damageCooldown = 0.5; 
         }
     }
 
@@ -237,9 +253,6 @@ class TornadoAttack {
 
             if (!spriteSheet || !spriteSheet.complete || spriteSheet.naturalWidth === 0) {
                 console.error(`Projectile Animator has no valid sprite sheet:`, anim);
-                console.log(`Current direction:`, this.direction);
-                console.log(`Right sprite:`, this.projectileRightAnim.spritesheet);
-
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.projectileWidth * this.projectileScale / 2, 0, Math.PI * 2);
                 ctx.fillStyle = this.direction === 1 ? 'orange' : 'yellow';

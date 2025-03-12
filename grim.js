@@ -27,7 +27,7 @@ class Grim {
 
         this.animator = this.animationMap.get('idleRight');
 
-        this.box = new BoundingBox(this.x, this.y, 32, 64);
+        this.box = new BoundingBox(this.x, this.y, 32, 63);
         this.updateBoundingBox();
         this.landed = false;
         this.attacking = false;
@@ -71,7 +71,7 @@ class Grim {
     }
 
     updateBoundingBox() {
-        this.box = new BoundingBox(this.x, this.y, 32, 64);
+        this.box = new BoundingBox(this.x, this.y, 32, 63);
     }
 
     updateLastBB() {
