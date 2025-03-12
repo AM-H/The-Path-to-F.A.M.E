@@ -71,7 +71,7 @@ class Shizoku {
 
         // ScorchingEye shooting properties
         this.shootTimer = 0;
-        this.shootInterval = 5;
+        this.shootInterval = 2;
     }
 
     update() {
