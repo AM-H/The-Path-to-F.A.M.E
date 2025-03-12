@@ -43,8 +43,8 @@ ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/attackLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/knockBack.png`);
 
 // fire phoenixes
-ASSET_MANAGER.queueDownload(`./sprites/phoenixes/IdleRight.png`);
-ASSET_MANAGER.queueDownload(`./sprites/phoenixes/IdleLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/phoenixes/idleRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/phoenixes/idleLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/phoenixes/runRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/phoenixes/runLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/phoenixes/attackRight.png`);
