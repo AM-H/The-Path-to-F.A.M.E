@@ -185,11 +185,11 @@ ASSET_MANAGER.queueDownload(`./sprites/chronosVeil/ChronosVeilLaserLeft.png`)
 ASSET_MANAGER.queueDownload(`./sprites/eye/Eye.png`)
 ASSET_MANAGER.queueDownload(`./sprites/eye/effect.png`)
 
-//fireball image
+//fireball image 
 for (let i = 0; i <= 60; i++) {
     ASSET_MANAGER.queueDownload(`./sprites/MinionFire/1_${i}.png`);
 }
-
+//deployment
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById(`gameWorld`);
 	const ctx = canvas.getContext(`2d`);
