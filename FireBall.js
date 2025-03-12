@@ -19,7 +19,7 @@ class FireBall {
         // Load all 61 sprite frames (1_0 through 1_60)
         try {
             for (let i = 0; i <= 60; i++) {
-                const path = `./sprites/minionFire/1_${i}.png`;
+                const path = `./sprites/MinionFire/1_${i}.png`;
                 const img = ASSET_MANAGER.getAsset(path);
                 
                 if (img) {
