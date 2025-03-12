@@ -12,7 +12,7 @@ class ScorchingEye {
         this.velocity = { x: 0, y: 0 };
         this.projectileWidth = 32;
         this.projectileHeight = 32;
-        this.projectileScale = 2;
+        this.projectileScale = 3;
         this.projectileDamage = 15;
 
         this.hitboxWidth = 20;

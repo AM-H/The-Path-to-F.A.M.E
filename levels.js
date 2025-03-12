@@ -117,7 +117,7 @@ var levelThree = {
         // New Platform 2: Upper-middle floating platform
         {
             x: gameWorld.width / 2 - gameWorld.width / 8, // ~480px, centered
-            y: gameWorld.height / 3, // ~180px, near top
+            y: gameWorld.height / 2.5, // ~180px, near top
             width: gameWorld.width / 5, // ~320px
             height: 30,
             bColor: `#416859`
