@@ -36,6 +36,8 @@ class LeviathDraconis {
         this.timeStopCooldown = 20;
         //Sound for timestop
         this.timeStopSoundPlayed = false;
+        //Sound for punching barrage
+        this.barrageSoundPlayed = false;
         this.updateBoundingBox();
     };
     getPlayer() {
@@ -155,7 +157,11 @@ class LeviathDraconis {
             this.isTimeStopped = true;
             this.timeStopStart+=TICK
             if (!this.timeStopSoundPlayed) {
-                ASSET_MANAGER.getAsset(`./audio/stopTime.mp3`).volume = 0.4;
+                if (document.getElementById(`myVolume`).value/100>.5) {
+                    ASSET_MANAGER.getAsset(`./audio/stopTime.mp3`).volume = document.getElementById(`myVolume`).value/100;
+                } else {
+                    ASSET_MANAGER.getAsset(`./audio/stopTime.mp3`).volume = (document.getElementById(`myVolume`).value/100)*2;
+                }
                 ASSET_MANAGER.playAsset(`./audio/stopTime.mp3`);
                 this.timeStopSoundPlayed = true;
             }
@@ -168,6 +174,36 @@ class LeviathDraconis {
         }
         this.game.isTimeStopped = this.isTimeStopped;
     };
+    updateBarrageSound() {
+        const asset = ASSET_MANAGER.getAsset(`./audio/barrageClash.mp3`);
+        const barrageDuration = 2.04; //Duration in seconds
+        asset.volume = (document.getElementById(`myVolume`).value/100)/4
+    
+        if (this.isCloseAttacking) {
+            if (!this.barrageSoundPlayed) {
+                asset.currentTime = .16;  //Restart from .16
+                asset.play();
+                this.barrageSoundPlayed = true;
+    
+                //Stop the sound after the specified duration
+                setTimeout(() => {
+                    if (this.isCloseAttacking) {  //Ensure it's still attacking
+                        asset.pause();
+                        asset.currentTime = .16;  //Reset playback position
+                        this.barrageSoundPlayed = false; //Allow re-triggering
+                    }
+                }, barrageDuration * 1000);  //Convert to milliseconds
+            }
+        } else {
+            if (this.barrageSoundPlayed) {
+                this.barrageSoundPlayed = false;
+                asset.pause();
+                asset.currentTime = .16;  //Reset playback position
+            }
+        }
+    }
+    
+    
     update() {
         const TICK = this.game.clockTick;
         //Wall boundaries
@@ -187,6 +223,7 @@ class LeviathDraconis {
         this.updateCloseAttack();
         this.updateRangeAttack();
         this.updateTimeStop();
+        this.updateBarrageSound();
         this.updateLastBB();
         this.updateBoundingBox();
         //Check if we have been stuck above player on platform for more than a second
