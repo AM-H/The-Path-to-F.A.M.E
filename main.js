@@ -8,7 +8,7 @@ const ASSET_MANAGER = new AssetManager();
 
 //fireball image 
 for (let i = 0; i <= 60; i++) {
-    ASSET_MANAGER.queueDownload(`./sprites/MinionFire/1_${i}.png`);
+    ASSET_MANAGER.queueDownload(`./sprites/minionFire/1_${i}.png`);
 }
 
 ASSET_MANAGER.queueDownload(`./levelBackgrounds/TitleScreen.png`);
