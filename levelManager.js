@@ -56,8 +56,8 @@ class LevelManager {
                 this.game.addEntity(new stormSpirit(this.game, spirit.x, spirit.speed));
             }
             ASSET_MANAGER.pauseBackgroundMusic();
-            ASSET_MANAGER.playAsset(`./audio/level3Music.mp3`);
-            ASSET_MANAGER.autoRepeat(`./audio/level3Music.mp3`);
+            ASSET_MANAGER.playAsset(`./audio/level3music.mp3`);
+            ASSET_MANAGER.autoRepeat(`./audio/level3music.mp3`);
         } else if (level === levelFour) {
             this.boss = new LeviathDraconis(this.game);
             this.game.addEntity(this.boss);

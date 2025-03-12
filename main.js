@@ -142,7 +142,7 @@ ASSET_MANAGER.queueDownload(`./sprites/GrimIdleR.png`);
 ASSET_MANAGER.queueDownload(`./audio/YouSeeBIGGIRLT_T.mp3`);
 ASSET_MANAGER.queueDownload(`./audio/level1Music.mp3`);
 ASSET_MANAGER.queueDownload(`./audio/level2Music.mp3`);
-ASSET_MANAGER.queueDownload(`./audio/level3Music.mp3`);
+ASSET_MANAGER.queueDownload(`./audio/level3music.mp3`);
 ASSET_MANAGER.queueDownload(`./audio/level4Music.mp3`)
 ASSET_MANAGER.queueDownload(`./audio/stopTime.mp3`);
 ASSET_MANAGER.queueDownload(`./audio/barrageClash.mp3`);
