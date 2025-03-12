@@ -3,8 +3,8 @@ class stormSpirit {
         this.game = game;
 
         // Load animations
-        this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/stormSpirit/IdleRight.png`), 0, 0, 32, 32, 4, 0.5);
-        this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/stormSpirit/IdleLeft.png`), 0, 0, 32, 32, 4, 0.5);
+        this.idleRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/stormSpirit/idleRight.png`), 0, 0, 32, 32, 4, 0.5);
+        this.idleLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/stormSpirit/idleLeft.png`), 0, 0, 32, 32, 4, 0.5);
         this.walkRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/stormSpirit/runRight.png`), 0, 0, 32, 32, 6, 0.5);
         this.walkLeftAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/stormSpirit/runLeft.png`), 0, 0, 32, 32, 6, 0.5);
         this.attackRightAnim = new Animator(ASSET_MANAGER.getAsset(`./sprites/stormSpirit/attackRight.png`), 0, 0, 32, 32, 6, 0.6);

@@ -34,8 +34,8 @@ ASSET_MANAGER.queueDownload(`./sprites/bullet.png`);
 
 
 //storm spirits
-ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/IdleRight.png`);
-ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/IdleLeft.png`);
+ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/idleRight.png`);
+ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/idleLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/runRight.png`);
 ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/runLeft.png`);
 ASSET_MANAGER.queueDownload(`./sprites/stormSpirit/attackRight.png`);
