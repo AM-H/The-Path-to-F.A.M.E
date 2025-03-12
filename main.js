@@ -6,7 +6,7 @@ window.gameEngine = gameEngine;
 
 const ASSET_MANAGER = new AssetManager();
 
-//fireball image deploy
+//fireball image 
 for (let i = 0; i <= 60; i++) {
     ASSET_MANAGER.queueDownload(`./sprites/minionFire/1_${i}.png`);
 }
