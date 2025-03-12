@@ -45,6 +45,10 @@ class Kyra {
         this.knockbackTimer = 0;
         this.knockbackDuration = 0.3;
         this.knockbackSpeed = 300;
+
+        this.wasTimeStopped = false; // Track if time-stop was active last frame
+        this.frozenAnimator = null;  // Store the animator during time-stop
+        this.frozenFacing = null;    // Store the facing direction during time-stop
     }
 
     updateBoundingBox() {
@@ -125,11 +129,35 @@ class Kyra {
         );
     };
     update() {
-        if (this.game.isTimeStopped == true && getDistance(this, this.getLeviath()) <= 95 && !(this.hitpoints == 0)) {
-            return;
-        }
         const TICK = this.game.clockTick;
 
+        // Check if time-stop state has changed
+        if (!this.wasTimeStopped && this.game.isTimeStopped && getDistance(this, this.getLeviath()) <= 95 && !(this.hitpoints == 0)) {
+            // Time-stop just started: store current animator and facing direction
+            this.frozenAnimator = this.animator;
+            this.frozenFacing = this.facing;
+            console.log("Time-stop started, freezing Kyra's animation and facing direction");
+        } else if (this.wasTimeStopped && !this.game.isTimeStopped) {
+            // Time-stop just ended: clear frozen state
+            this.frozenAnimator = null;
+            this.frozenFacing = null;
+            console.log("Time-stop ended, resuming normal updates");
+        }
+        this.wasTimeStopped = (this.game.isTimeStopped && getDistance(this, this.getLeviath()) <= 95 && !(this.hitpoints == 0));
+
+        if (this.wasTimeStopped) {
+            // During time-stop: use frozen animator and facing direction
+            this.animator = this.frozenAnimator;
+            this.facing = this.frozenFacing;
+
+            // Skip movement, velocity, and other updates
+            this.updateLastBB();
+            this.updateBoundingBox();
+            this.healthbar.update();
+            return;
+        }
+
+        // Normal update logic when not in time-stop
         if (this.hitpoints <= 0) {
             this.hitpoints = 0;
             this.game.isGameOver = true;
@@ -137,7 +165,7 @@ class Kyra {
             return;
         }
 
-        // Update facing direction
+        // Update facing direction (only when not in time-stop)
         if (this.game.left) this.facing = `left`;
         else if (this.game.right) this.facing = `right`;
         else if (this.knockbackTimer > 0 && this.velocity.x !== 0) {
@@ -208,6 +236,7 @@ class Kyra {
             this.x = gameWorld.width - this.box.width;
         }
 
+        // Update animator based on state (only when not in time-stop)
         if (!this.rangeAttacking) {
             if (this.attacking) {
                 this.animator = this.animationMap.get(this.facing === `right` ? `attackRight` : `attackLeft`);
@@ -253,22 +282,35 @@ class Kyra {
     }
 
     draw(ctx) {
-        let yOffset = this.attacking ? -6 : 0; // Ensuring yOffset applies when attacking
-    
-        if (this.facing === `left` && !this.game.left && !this.game.right && !this.attacking) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x+5, this.y+4, 1.8, false, true);
-        } else if (this.facing === `right` && !this.game.left && !this.game.right && !this.attacking) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y+4, 1.8);
-        } else if (this.facing === `right` && this.game.right) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y+4, 1.6);
-        } else if (this.facing === `left` && this.game.left) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y+4, 1.6, false, true);
-        } else if (this.facing === `left` && this.attacking) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x-32, this.y-5, 1.8, false, true);
-        } else if (this.facing === `right` && this.attacking) {
-            this.animator.drawFrame(this.game.clockTick, ctx, this.x-20, this.y-5, 1.8);
+        if (this.wasTimeStopped) {
+            // During time-stop, always draw using the frozen animator and facing direction
+            // Ignore this.game.left and this.game.right, just use the frozen state
+            let yOffset = this.attacking ? -6 : 0;
+            if (this.facing === `left`) {
+                this.animator.drawFrame(this.game.clockTick, ctx, this.x+5, this.y+4 + yOffset, 1.8, false, true);
+            } else {
+                this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y+4 + yOffset, 1.8);
+            }
+        } else {
+            // Normal drawing logic when not in time-stop
+            let yOffset = this.attacking ? -6 : 0;
+
+            if (this.facing === `left` && !this.game.left && !this.game.right && !this.attacking) {
+                this.animator.drawFrame(this.game.clockTick, ctx, this.x+5, this.y+4, 1.8, false, true);
+            } else if (this.facing === `right` && !this.game.left && !this.game.right && !this.attacking) {
+                this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y+4, 1.8);
+            } else if (this.facing === `right` && this.game.right) {
+                this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y+4, 1.6);
+            } else if (this.facing === `left` && this.game.left) {
+                this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y+4, 1.6, false, true);
+            } else if (this.facing === `left` && this.attacking) {
+                this.animator.drawFrame(this.game.clockTick, ctx, this.x-32, this.y-5, 1.8, false, true);
+            } else if (this.facing === `right` && this.attacking) {
+                this.animator.drawFrame(this.game.clockTick, ctx, this.x-20, this.y-5, 1.8);
+            }
         }
-    
+
+        // Debug and healthbar rendering
         if (this.game.debugMode) {
             ctx.strokeStyle = `red`;
             ctx.lineWidth = 2;
@@ -283,7 +325,7 @@ class Kyra {
                 ctx.fillRect(this.box.x, this.box.y - 10, this.box.width * (this.knockbackTimer / this.knockbackDuration), 5);
             }
         }
-    
+
         this.healthbar.draw(ctx);
     }
 }
