@@ -70,12 +70,12 @@ class GrimAxe {
         }
 
          //Check for boss collision & apply damage close range
-         this.game.entities.forEach(entity => {
+        this.game.entities.forEach(entity => {
             if ((entity instanceof  inferno || entity instanceof  Shizoku || entity instanceof Eclipser || entity instanceof LeviathDraconis) && this.box.collide(entity.box) && this.game.closeAttack) {
                 entity.takeDamage(10); // Deal 10 damage to boss
                 console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
             } else if ((entity instanceof Drone || entity instanceof Phoenix || entity instanceof stormSpirit) && this.box.collide(entity.box) && this.game.closeAttack) {
-                entity.takeDamage(3);
+                entity.takeDamage(10);
                 console.log(`Minion takes damage! HP: ${entity.hitpoints}`);
             }
         });
@@ -94,21 +94,21 @@ class GrimAxe {
             this.damageCooldown -= this.game.clockTick;
             
             // Check for collisions and apply damage with cooldown
-            if (this.damageCooldown <= 0) {
-                this.game.entities.forEach(entity => {
-                    if (this.box.collide(entity.box)) {
-                        if (entity instanceof Eclipser || entity instanceof inferno || entity instanceof Shizoku || entity instanceof LeviathDraconis) {
-                            entity.takeDamage(10); // Deal 10 damage to boss
-                            console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
-                            this.damageCooldown = 0.5; // Set cooldown between damage ticks (0.5 seconds)
-                        } else if (entity instanceof Drone || entity instanceof Phoenix || entity instanceof stormSpirit) {
-                            entity.takeDamage(5); // Deal 5 damage to minions
-                            console.log(`Enemy takes damage! HP: ${entity.hitpoints}`);
-                            this.damageCooldown = 0.3; // Faster cooldown for minions (0.3 seconds)
-                        }
-                    }
-                });
-            }
+            // if (this.damageCooldown <= 0) {
+            //     this.game.entities.forEach(entity => {
+            //         if (this.box.collide(entity.box)) {
+            //             if (entity instanceof Eclipser || entity instanceof inferno || entity instanceof Shizoku || entity instanceof LeviathDraconis) {
+            //                 entity.takeDamage(10); // Deal 10 damage to boss
+            //                 console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
+            //                 this.damageCooldown = 0.5; // Set cooldown between damage ticks (0.5 seconds)
+            //             } else if (entity instanceof Drone || entity instanceof Phoenix || entity instanceof stormSpirit) {
+            //                 entity.takeDamage(5); // Deal 5 damage to minions
+            //                 console.log(`Enemy takes damage! HP: ${entity.hitpoints}`);
+            //                 this.damageCooldown = 0.3; // Faster cooldown for minions (0.3 seconds)
+            //             }
+            //         }
+            //     });
+            // }
         } else {
             // Stop animating when close attack button is released
             this.isAnimating = false;

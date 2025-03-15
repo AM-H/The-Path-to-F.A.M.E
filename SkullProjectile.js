@@ -19,7 +19,7 @@ class SkullProjectile {
         }
 
         // Damage properties
-        this.damage = 35; // Damage per hit
+        this.damage = 55; // Damage per hit
         this.hasHit = false; // Track if projectile has hit something
 
         // Duration and distance
@@ -65,10 +65,6 @@ class SkullProjectile {
                     }
                 }
                 
-                // Check collision with platforms to make projectile disappear
-                if (entity instanceof Platform) {
-                    this.removeFromWorld = true;
-                }
             }
         });
 

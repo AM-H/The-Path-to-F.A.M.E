@@ -44,8 +44,8 @@ class Shizoku {
         this.lastBox = this.box;
 
         // Healthbar
-        this.hitpoints = 850;
-        this.maxhitpoints = 850;
+        this.hitpoints = 950;
+        this.maxhitpoints = 950;
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
 
@@ -320,7 +320,7 @@ class Shizoku {
 
         this.healthbar.draw(ctx);
 
-        if (this.debug) {
+        if (this.game.debugMode) {
             ctx.strokeStyle = `red`;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);
             if (this.attackBox) {
