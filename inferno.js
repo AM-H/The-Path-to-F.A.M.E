@@ -76,11 +76,13 @@ class inferno {
         this.attackBox = null;
 
         // Healthbar
-        this.hitpoints = 750;
-        this.maxhitpoints = 750;
+        this.hitpoints = 800;
+        this.maxhitpoints = 800;
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
-
+        this.spawnedAtHalfHealth = false;
+        this.spawnedAtQuarterHealth = false;
+        
         this.removeFromWorld = false;
         this.defeated = false;
     }
@@ -421,11 +423,31 @@ class inferno {
         }
     }
 
+    spawnPhoenixes() {
+        const phoenixSpeed = 150;
+        for (let i = 0; i < 3; i++) {
+            const offsetX = (i - 1) * 50;
+            const phoenix = new Phoenix(this.game, this.x + offsetX, this.y - 30, phoenixSpeed);
+            this.game.addEntity(phoenix);
+        }
+        console.log("Inferno has spawned 3 Phoenixes!");
+    }
+    
     takeDamage(amount) {
         if (this.damageCooldown <= 0) {
             this.hitpoints = Math.max(0, this.hitpoints - amount);
             this.damageCooldown = 0.5;
             console.log(`Boss takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+            
+            if (!this.spawnedAtHalfHealth && this.hitpoints <= this.maxhitpoints * 0.5) {
+                this.spawnPhoenixes();
+                this.spawnedAtHalfHealth = true;
+            }
+            
+            if (!this.spawnedAtQuarterHealth && this.hitpoints <= this.maxhitpoints * 0.25) {
+                this.spawnPhoenixes();
+                this.spawnedAtQuarterHealth = true;
+            }
         }
     }
 

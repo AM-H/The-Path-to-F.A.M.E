@@ -74,17 +74,14 @@ class RangeSlash {
             if (entity !== this && entity.box && this.box.collide(entity.box)) {
                 if (entity instanceof Drone || entity instanceof stormSpirit || entity instanceof Phoenix || entity instanceof Eclipser || entity instanceof Shizoku || entity instanceof  inferno || entity instanceof LeviathDraconis) {
                     if(entity instanceof Phoenix || entity instanceof Drone){
-                        entity.takeDamage(100);
+                        entity.takeDamage(70);
                     }
                     if(entity instanceof Eclipser || entity instanceof  Shizoku || entity instanceof inferno || entity instanceof LeviathDraconis){
-                        entity.takeDamage(60);
+                        entity.takeDamage(50);
                     }
                     if(entity instanceof stormSpirit){
-                        entity.takeDamage(90);
+                        entity.takeDamage(70);
                     }
-                    this.removeFromWorld = true;
-                }
-                if(entity instanceof Platform){
                     this.removeFromWorld = true;
                 }
             }
@@ -100,7 +97,7 @@ class RangeSlash {
         this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 0.12);
 
         // Draw debug bounding box
-        if (this.box) {
+        if (this.game.debugMode) {
             ctx.strokeStyle = `red`;
             ctx.lineWidth = 2;
             ctx.strokeRect(this.box.x, this.box.y, this.box.width, this.box.height);

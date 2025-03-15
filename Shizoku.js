@@ -44,8 +44,8 @@ class Shizoku {
         this.lastBox = this.box;
 
         // Healthbar
-        this.hitpoints = 850;
-        this.maxhitpoints = 850;
+        this.hitpoints = 950;
+        this.maxhitpoints = 950;
         this.healthbar = new HealthBar(this);
         this.damageCooldown = 0;
 

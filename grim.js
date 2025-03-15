@@ -32,6 +32,7 @@ class Grim {
         this.landed = false;
         this.attacking = false;
         this.canShoot = true;
+        this.shotCooldown = 0.5; //cooldown in beetween skull projectiles
 
          this.friction = 800; // Friction set to 800, matching other players
         this.knockbackTimer = 0;
@@ -140,7 +141,7 @@ class Grim {
         this.x += this.velocity.x * TICK;
 
         // Long range attack
-        if (this.game.rangeAttack && this.canShoot) {
+        if (this.game.rangeAttack && this.canShoot && (this.shotCooldown <= 0)) {
             const centerX = this.x + (this.box.width / 2);
             const centerY = this.y + (this.box.height / 2);
             const projectileCenterX = centerX - 16;
@@ -165,6 +166,9 @@ class Grim {
             this.game.addEntity(projectile);
 
             this.canShoot = false;
+            this.shotCooldown = 0.5;
+        } else {
+            this.shotCooldown -= TICK;
         }
 
         if (!this.game.rangeAttack) {

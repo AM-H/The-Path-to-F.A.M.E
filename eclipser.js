@@ -58,19 +58,9 @@ class Eclipser {
         this.isPhasing = false;
         this.phaseSpeed = 300;
 
-
-
-        
-        // Add minion spawn properties
-        this.lowHealthThreshold = 0.3; // 30% health threshold
-        this.hasSpawnedMinions = false;
-        this.spawnedMinions = [];
-        
-        // Define minion spawn points
-        this.minionSpawnPoints = [
-            { x: 222, y: 200, speed: 300 },
-            { x: 500, y: 111, speed: 201 }
-        ];
+        // Drone spawn tracking
+        this.spawnedAtHalfHealth = false;
+        this.spawnedAtQuarterHealth = false;
 
         // Initialize bounding box
         this.updateBoundingBox();
@@ -79,15 +69,13 @@ class Eclipser {
         this.defeated = false;
     }
 
-     // Add new method to spawn minions
-    spawnMinions() {
-        console.log(`Spawning minions!`);
-        this.minionSpawnPoints.forEach(point => {
-            const drone = new Drone(this.game, point.x, point.y, point.speed);
+    spawnDrones() {
+        console.log(`Eclipser is spawning drones!`);
+        for (let i = 0; i < 3; i++) {
+            const offsetX = (i - 1) * 50;
+            const drone = new Drone(this.game, this.x + offsetX, this.y - 30, 250);
             this.game.addEntity(drone);
-            this.spawnedMinions.push(drone);
-        });
-        this.hasSpawnedMinions = true;
+        }
     }
 
     // Add method to check if minions are alive
@@ -226,8 +214,19 @@ class Eclipser {
 
     takeDamage(amount) {
         if (this.damageCooldown <= 0) {
-            this.hitpoints -= amount;
-            this.damageCooldown = this.invincibilityTime;
+            this.hitpoints = Math.max(0, this.hitpoints - amount);
+            this.damageCooldown = 0.5;
+            console.log(`Eclipser takes ${amount} damage! Remaining HP: ${this.hitpoints}`);
+            
+            if (!this.spawnedAtHalfHealth && this.hitpoints <= this.maxhitpoints * 0.5) {
+                this.spawnDrones();
+                this.spawnedAtHalfHealth = true;
+            }
+            
+            if (!this.spawnedAtQuarterHealth && this.hitpoints <= this.maxhitpoints * 0.25) {
+                this.spawnDrones();
+                this.spawnedAtQuarterHealth = true;
+            }
         }
     }
 
@@ -277,16 +276,6 @@ class Eclipser {
                 this.defeated = true;
             }
             return;
-        }
-        // Check if health is low and should spawn minions
-        const healthRatio = this.hitpoints / this.maxhitpoints;
-        if (healthRatio <= this.lowHealthThreshold && !this.hasSpawnedMinions) {
-            this.spawnMinions();
-        }
-
-        // Check if minions are dead and can spawn again
-        if (this.hasSpawnedMinions && this.areMinionsDead()) {
-            this.hasSpawnedMinions = true;  // Allow spawning again
         }
         // Update timers
         if (this.laserTimer > 0) this.laserTimer -= TICK;

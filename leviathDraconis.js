@@ -16,8 +16,8 @@ class LeviathDraconis {
         this.landed = false;
         this.timeAbovePlayer = 0;
         this.maxTimeAbovePlayer = 0.5; //Max time that the boss can be above player
-        this.hitpoints = 1000;
-        this.maxhitpoints = 1000;
+        this.hitpoints = 1100;
+        this.maxhitpoints = 1100;
         this.healthbar = new HealthBar(this);
         this.removeFromWorld = false;
         this.defeated = false;

@@ -72,7 +72,7 @@ class HolyDiver {
                 entity.takeDamage(10); // Deal 10 damage to boss
                 console.log(`Boss takes damage! HP: ${entity.hitpoints}`);
             } else if ((entity instanceof Drone ||entity instanceof Phoenix || entity instanceof stormSpirit) && this.box.collide(entity.box) && this.game.closeAttack) {
-                entity.takeDamage(3);
+                entity.takeDamage(10);
                 console.log(`Drone takes damage! HP: ${entity.hitpoints}`);
             }
         });
