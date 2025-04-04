@@ -41,7 +41,6 @@ class LeviathDraconis {
         this.updateBoundingBox();
     };
     getPlayer() {
-        // Find any entity thats a player
         return this.game.entities.find(entity => 
             entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kanji || entity instanceof Kyra
         );
