@@ -45,6 +45,7 @@ class LeviathDraconis {
             entity instanceof AzielSeraph || entity instanceof Grim || entity instanceof Kanji || entity instanceof Kyra
         );
     };
+    
     //No jump zone is below 3rd story platform and in between 2nd story platforms
     inNoJumpZone () {
         let inZone = false;
